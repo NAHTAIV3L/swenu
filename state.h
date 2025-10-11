@@ -1,5 +1,6 @@
 #ifndef STATE_H_
 #define STATE_H_
+
 #include <wayland-client.h>
 #include <wayland-egl.h>
 #include <wlr-layer-shell-unstable-v1.h>
@@ -24,18 +25,10 @@ typedef struct {
     struct wl_keyboard* keyboard;
     struct wl_pointer* pointer;
 
-    struct wl_surface* cursor_surface;
-    struct wl_cursor_image* cursor_image;
-    struct wl_cursor_theme* cursor_theme;
-    struct wl_buffer* cursor_buffer;
-    struct wl_cursor* cursor;
-
-    struct wl_buffer* screen_buffer;
-
 	struct wp_cursor_shape_manager_v1* cursor_shape_manager;
 	struct wp_cursor_shape_device_v1* cursor_shape_device;
 
-    struct xkb_context* xkb_context;
+	struct xkb_context* xkb_context;
     struct xkb_keymap* xkb_keymap;
     struct xkb_state* xkb_state;
 	struct xkb_compose_state* xkb_compose_state;

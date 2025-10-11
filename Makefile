@@ -22,15 +22,15 @@ $(BIN): $(OBJ)
 	printf "  LD %s\n" $@
 	$(CC) $(LDFLAGS) $^ -o $@
 
-$(OBJDIR)/%.o: %.c %.h
+$(OBJDIR)/%.o: %.c %.h state.h
 	printf "  CC %s\n" $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJDIR)/%.o: */%.c */%.h
+$(OBJDIR)/%.o: */%.c */%.h state.h
 	printf "  CC %s\n" $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJDIR)/%.o: %.c
+$(OBJDIR)/%.o: %.c state.h
 	printf "  CC %s\n" $@
 	$(CC) $(CFLAGS) -c $< -o $@
 

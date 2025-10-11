@@ -23,7 +23,6 @@ void global(void *data, struct wl_registry *wl_registry, uint32_t name, const ch
 	}
 	else if (!strcmp(interface, wl_seat_interface.name)) {
 		state->seat = wl_registry_bind(state->registry, name, &wl_seat_interface, 1);
-		setup_seat(state);
 	}
 	else if (!strcmp(interface, zwlr_layer_shell_v1_interface.name)) {
 		state->layer_shell = wl_registry_bind(wl_registry, name, &zwlr_layer_shell_v1_interface, version);

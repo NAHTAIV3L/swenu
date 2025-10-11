@@ -14,14 +14,13 @@ int main() {
 		return 0;
 	}
 
-	// set up globals
+	// bind globals and roundtrip
 	setup_registry_and_globals(&state);
 	wl_display_roundtrip(state.display);
 
-	// create non global objects
+	// set up other objects and roundtrip
+	setup_seat(&state);
 	create_surface(&state);
-
-	// roundtrip to recieve the rest of the events
 	wl_display_roundtrip(state.display);
 
 	// set up graphics

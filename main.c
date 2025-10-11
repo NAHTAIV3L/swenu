@@ -1,4 +1,3 @@
-#include <EGL/egl.h>
 #include <stdio.h>
 
 #include "state.h"
@@ -16,6 +15,7 @@ int main() {
 	}
 
 	setup_registry(&state);
+	setup_seat(&state);
 	setup_surface(&state);
 
 	if (!init_gl(&state)) {

@@ -9,6 +9,8 @@ void setup_pointer(client_state* state) {
 	wl_pointer_add_listener(state->pointer, &pointer_listener, state);
 }
 
+// listeners
+
 void enter(void *data, struct wl_pointer *pointer, uint32_t serial,
 		   struct wl_surface *surface, wl_fixed_t fixed_surface_x, wl_fixed_t fixed_surface_y) {
 	client_state* state = data;

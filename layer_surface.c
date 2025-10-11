@@ -20,6 +20,8 @@ void setup_surface(client_state* state) {
 	wl_display_roundtrip(state->display);
 }
 
+// listeners
+
 void configure(void *data, struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1, uint32_t serial, uint32_t width, uint32_t height) {
 	client_state* state = data;
 	state->width = width;

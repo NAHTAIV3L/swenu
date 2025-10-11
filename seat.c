@@ -4,10 +4,12 @@
 
 struct wl_seat_listener seat_listener;
 
-void setup_seat(client_state* state, uint32_t name) {
-	state->seat = wl_registry_bind(state->registry, name, &wl_seat_interface, 1);
+void setup_seat(client_state* state) {
 	wl_seat_add_listener(state->seat, &seat_listener, state);
+	wl_display_roundtrip(state->display);
 }
+
+// listeners
 
 void capabilities(void *data, struct wl_seat *wl_seat, uint32_t capabilities) {
     client_state* state = data;

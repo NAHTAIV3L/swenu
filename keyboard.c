@@ -11,6 +11,8 @@ void setup_keyboard(client_state* state) {
 	wl_keyboard_add_listener(state->keyboard, &keyboard_listener, state);
 }
 
+// listeners
+
 void wl_keyboard_keymap(void *data, struct wl_keyboard *wl_keyboard,
                         uint32_t format, int32_t fd, uint32_t size) {
     client_state* state = data;
@@ -69,12 +71,12 @@ void wl_keyboard_leave(void *data, struct wl_keyboard *wl_keyboard,
 void wl_keyboard_key(void *data, struct wl_keyboard *wl_keyboard,
                      uint32_t serial, uint32_t time, uint32_t key,
                      uint32_t key_state) {
-  client_state *state = data;
+	client_state *state = data;
 
-  xkb_keysym_t keysym = xkb_state_key_get_one_sym(state->xkb_state, key + 8);
-  if (keysym == XKB_KEY_q) {
-    state->running = false;
-  }
+	xkb_keysym_t keysym = xkb_state_key_get_one_sym(state->xkb_state, key + 8);
+	if (keysym == XKB_KEY_q) {
+		state->running = false;
+	}
 }
 
 void wl_keyboard_modifiers(void *data, struct wl_keyboard *wl_keyboard,

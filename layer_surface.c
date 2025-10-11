@@ -2,7 +2,7 @@
 
 struct zwlr_layer_surface_v1_listener layer_surface_listener;
 
-void setup_surface(client_state* state) {
+void create_surface(client_state* state) {
 	state->surface = wl_compositor_create_surface(state->compositor);
 	state->layer_surface = zwlr_layer_shell_v1_get_layer_surface(
 		state->layer_shell, state->surface, NULL,
@@ -17,7 +17,6 @@ void setup_surface(client_state* state) {
 	zwlr_layer_surface_v1_set_margin(state->layer_surface, 0, 0, 0, 0);
 	zwlr_layer_surface_v1_set_keyboard_interactivity(state->layer_surface, ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_EXCLUSIVE);
 	wl_surface_commit(state->surface);
-	wl_display_roundtrip(state->display);
 }
 
 // listeners

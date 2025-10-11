@@ -7,6 +7,7 @@ void setup_pointer(client_state* state) {
 	state->cursor_shape_device = wp_cursor_shape_manager_v1_get_pointer(
 		state->cursor_shape_manager, state->pointer);
 	wl_pointer_add_listener(state->pointer, &pointer_listener, state);
+	printf("setup pointer\n");
 }
 
 // listeners

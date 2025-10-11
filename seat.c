@@ -6,7 +6,6 @@ struct wl_seat_listener seat_listener;
 
 void setup_seat(client_state* state) {
 	wl_seat_add_listener(state->seat, &seat_listener, state);
-	wl_display_roundtrip(state->display);
 }
 
 // listeners
@@ -14,6 +13,7 @@ void setup_seat(client_state* state) {
 void capabilities(void *data, struct wl_seat *wl_seat, uint32_t capabilities) {
     client_state* state = data;
 
+	printf("seat capablities\n");
     if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD && !state->keyboard) {
 		setup_keyboard(state);
     }

@@ -2,13 +2,13 @@
 #include <string.h>
 
 #include "./state.h"
+#include "wayland.h"
 
 struct wl_registry_listener registry_listener;
 
-void setup_registry(client_state* state) {
+void setup_registry_and_globals(client_state* state) {
 	state->registry = wl_display_get_registry(state->display);
 	wl_registry_add_listener(state->registry, &registry_listener, state);
-	wl_display_roundtrip(state->display);
 }
 
 // listeners
@@ -23,13 +23,13 @@ void global(void *data, struct wl_registry *wl_registry, uint32_t name, const ch
 	}
 	else if (!strcmp(interface, wl_seat_interface.name)) {
 		state->seat = wl_registry_bind(state->registry, name, &wl_seat_interface, 1);
+		setup_seat(state);
 	}
 	else if (!strcmp(interface, zwlr_layer_shell_v1_interface.name)) {
 		state->layer_shell = wl_registry_bind(wl_registry, name, &zwlr_layer_shell_v1_interface, version);
 	}
 	else if (!strcmp(interface, wp_cursor_shape_manager_v1_interface.name)) {
-		state->cursor_shape_manager = wl_registry_bind(
-			wl_registry, name, &wp_cursor_shape_manager_v1_interface, version);
+		state->cursor_shape_manager = wl_registry_bind( wl_registry, name, &wp_cursor_shape_manager_v1_interface, version);
 	}
 	else {
 	}

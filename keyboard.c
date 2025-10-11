@@ -1,9 +1,15 @@
-#include <assert.h>
 #include <sys/mman.h>
 #include <unistd.h>
-#include <wayland-client-protocol.h>
 #include <locale.h>
+
 #include "state.h"
+
+struct wl_keyboard_listener keyboard_listener;
+
+void setup_keyboard(client_state* state) {
+	state->keyboard = wl_seat_get_keyboard(state->seat);
+	wl_keyboard_add_listener(state->keyboard, &keyboard_listener, state);
+}
 
 void wl_keyboard_keymap(void *data, struct wl_keyboard *wl_keyboard,
                         uint32_t format, int32_t fd, uint32_t size) {

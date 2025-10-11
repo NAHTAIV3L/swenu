@@ -1,7 +1,13 @@
-#include "./state.h"
-#include "cursor-shape-v1.h"
-#define CLAMP(x, min, max) (x > max ? max : (x < min ? min : x))
+#include "state.h"
 
+struct wl_pointer_listener pointer_listener;
+
+void setup_pointer(client_state* state) {
+	state->pointer = wl_seat_get_pointer(state->seat);
+	state->cursor_shape_device = wp_cursor_shape_manager_v1_get_pointer(
+		state->cursor_shape_manager, state->pointer);
+	wl_pointer_add_listener(state->pointer, &pointer_listener, state);
+}
 
 void enter(void *data, struct wl_pointer *pointer, uint32_t serial,
 		   struct wl_surface *surface, wl_fixed_t fixed_surface_x, wl_fixed_t fixed_surface_y) {

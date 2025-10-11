@@ -10,6 +10,7 @@ WLC=$(patsubst %.xml,$(OBJDIR)/%.c, $(WLPROT))
 WLH=$(patsubst %.xml,$(OBJDIR)/%.h, $(WLPROT))
 SRC=$(WLC) $(wildcard *.c) $(wildcard glad/*.c)
 OBJ=$(patsubst %.c,$(OBJDIR)/%.o, $(notdir $(SRC)))
+HDEPS=state.h wayland.h
 
 .SILENT: $(OBJ) $(WLC) $(WLH) $(BIN) $(OBJDIR) compile_flags
 
@@ -22,15 +23,15 @@ $(BIN): $(OBJ)
 	printf "  LD %s\n" $@
 	$(CC) $(LDFLAGS) $^ -o $@
 
-$(OBJDIR)/%.o: %.c %.h state.h
+$(OBJDIR)/%.o: %.c %.h $(HDEPS)
 	printf "  CC %s\n" $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJDIR)/%.o: */%.c */%.h state.h
+$(OBJDIR)/%.o: */%.c */%.h $(HDEPS)
 	printf "  CC %s\n" $@
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJDIR)/%.o: %.c state.h
+$(OBJDIR)/%.o: %.c $(HDEPS)
 	printf "  CC %s\n" $@
 	$(CC) $(CFLAGS) -c $< -o $@
 

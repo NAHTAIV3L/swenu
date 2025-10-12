@@ -6,6 +6,7 @@
 #include "wayland.h"
 #include "graphics.h"
 #include "input_field.h"
+#include "font.h"
 
 void poll_events(client_state* state);
 
@@ -33,6 +34,13 @@ int main() {
 		fprintf(stderr, "Failed to Initalize EGL/OpenGL\n");
 		return 1;
 	}
+
+	char* font = get_font("Monospace");
+	printf("font: %s\n", font);
+	if (!init_freetype(&state, font)) {
+		fprintf(stderr, "Failed to Initalize FreeType\n");
+	}
+	free(font);
 
 	// event loop
 	while (state.running) {

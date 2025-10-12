@@ -117,7 +117,6 @@ void wl_keyboard_repeat_info(void *data, struct wl_keyboard *wl_keyboard,
     client_state* state = data;
     state->key_repeat_rate = rate;
     state->key_repeat_delay = delay;
-	printf("repeat info\n");
 }
 
 struct wl_keyboard_listener keyboard_listener = {

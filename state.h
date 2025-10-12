@@ -11,6 +11,9 @@
 #include <cursor-shape-v1.h>
 #include <sys/timerfd.h>
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #include "./glad/glad.h"
 
 typedef struct {
@@ -46,6 +49,10 @@ typedef struct {
 	// state
 	char* input_buffer;
     uint32_t width, height;
+
+	FT_Library ft_library;
+	FT_Face ft_face;
+
     bool running;
 
 } client_state;

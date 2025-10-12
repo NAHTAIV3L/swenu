@@ -1,7 +1,7 @@
 BIN=swenu
 CC=gcc
 OBJDIR=objs
-LIBS=egl wayland-client gl wayland-egl xkbcommon
+LIBS=egl wayland-client gl wayland-egl xkbcommon freetype2 fontconfig
 CFLAGS=-Wall -g $(shell pkg-config --cflags $(LIBS)) -I$(OBJDIR)
 LDFLAGS=$(shell pkg-config --libs $(LIBS))
 VPATH=/usr/share/wayland-protocols/staging/cursor-shape/:/usr/share/wayland-protocols/stable/tablet/:/usr/share/wayland-protocols/stable/xdg-shell/:$(OBJDIR)

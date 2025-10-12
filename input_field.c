@@ -3,7 +3,7 @@
 #include "input_field.h"
 #include "array.h"
 
-void type_key(client_state* state, xkb_keysym_t keysym) {
+bool type_key(client_state* state, xkb_keysym_t keysym) {
 	bool ctrl = xkb_state_mod_name_is_active(state->xkb_state, XKB_MOD_NAME_CTRL, XKB_STATE_MODS_EFFECTIVE);
 
 	// exit app
@@ -12,13 +12,13 @@ void type_key(client_state* state, xkb_keysym_t keysym) {
 		(keysym == XKB_KEY_Escape)) {
 
 		state->running = false;
-		return;
+		return false;
 	}
 
 	// submit line
 	if (keysym == XKB_KEY_Return || keysym == XKB_KEY_KP_Enter) {
 		submit_line(state);
-		return;
+		return false;
 	}
 
 	// delete
@@ -28,7 +28,7 @@ void type_key(client_state* state, xkb_keysym_t keysym) {
 		} else {
 			array_pop(state->input_buffer);
 		}
-		return;
+		return true;
 	}
 
 	// type char into buffer
@@ -38,7 +38,10 @@ void type_key(client_state* state, xkb_keysym_t keysym) {
 		for (int i = 0; i < strlen(buf); i++) {
 			array_add(state->input_buffer, buf[i]);
 		}
+		return true;
 	}
+
+	return false;
 }
 
 void submit_line(client_state* state) {

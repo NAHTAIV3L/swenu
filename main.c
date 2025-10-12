@@ -1,8 +1,13 @@
 #include <stdio.h>
+#include <poll.h>
+#include <unistd.h>
 
 #include "state.h"
 #include "wayland.h"
 #include "graphics.h"
+#include "input_field.h"
+
+void poll_events(client_state* state);
 
 int main() {
 	client_state state = {0};
@@ -31,7 +36,45 @@ int main() {
 
 	// event loop
 	while (state.running) {
-		wl_display_dispatch_pending(state.display);
+		poll_events(&state);
 		render_frame(&state);
 	}
+}
+
+void poll_events(client_state* state) {
+    enum { DISPLAY_FD, KEYREPEAT_FD };
+    struct pollfd fds[] = {
+        [DISPLAY_FD] = { wl_display_get_fd(state->display), POLLIN },
+        [KEYREPEAT_FD] = { state->key_repeat_timer_fd, POLLIN },
+    };
+
+    bool event = false;
+    while (!event) {
+        while (wl_display_prepare_read(state->display) != 0) {
+            if (wl_display_dispatch_pending(state->display) > 0) {
+                return;
+            }
+        }
+        if (poll(fds, sizeof(fds) / sizeof(fds[0]), -1) == -1) {
+            wl_display_cancel_read(state->display);
+            return;
+        }
+        if (fds[DISPLAY_FD].revents & POLLIN) {
+            wl_display_read_events(state->display);
+            if (wl_display_dispatch_pending(state->display) > 0)
+                event = true;
+        }
+        else {
+            wl_display_cancel_read(state->display);
+        }
+        if (fds[KEYREPEAT_FD].revents & POLLIN) {
+            uint64_t repeats;
+            if (read(state->key_repeat_timer_fd, &repeats, sizeof(repeats)) == 8) {
+                for (uint64_t i = 0; i < repeats; i++) {
+					type_key(state, state->repeat_key);
+                }
+                event = true;
+            }
+        }
+    }
 }

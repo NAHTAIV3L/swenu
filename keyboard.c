@@ -3,12 +3,15 @@
 #include <locale.h>
 
 #include "state.h"
+#include "input_field.h"
 
 struct wl_keyboard_listener keyboard_listener;
 
 void setup_keyboard(client_state* state) {
 	state->keyboard = wl_seat_get_keyboard(state->seat);
 	wl_keyboard_add_listener(state->keyboard, &keyboard_listener, state);
+
+	state->key_repeat_timer_fd = timerfd_create(CLOCK_MONOTONIC, TFD_NONBLOCK | TFD_CLOEXEC);
 }
 
 // listeners
@@ -74,8 +77,30 @@ void wl_keyboard_key(void *data, struct wl_keyboard *wl_keyboard,
 	client_state *state = data;
 
 	xkb_keysym_t keysym = xkb_state_key_get_one_sym(state->xkb_state, key + 8);
-	if (keysym == XKB_KEY_q) {
-		state->running = false;
+
+	if (key_state == WL_KEYBOARD_KEY_STATE_PRESSED) {
+		type_key(state, keysym);
+
+		// start repeat
+		state->repeat_key = keysym;
+		struct itimerspec timer = {0};
+		if (state->key_repeat_rate > 1)
+			timer.it_interval.tv_nsec = 1000000000 / state->key_repeat_rate;
+		else
+			timer.it_interval.tv_sec = 1;
+		timer.it_value.tv_sec = state->key_repeat_delay / 1000;
+		timer.it_value.tv_nsec = (state->key_repeat_delay % 1000) * 1000000;
+		if (timerfd_settime(state->key_repeat_timer_fd, 0, &timer, NULL) == -1) {
+			printf("error setting key repeat timer\n");
+		}
+
+	} else if (key_state == WL_KEYBOARD_KEY_STATE_RELEASED) {
+
+		if (keysym == state->repeat_key) {
+			// stop repeat
+			struct itimerspec timer = {0};
+			timerfd_settime(state->key_repeat_timer_fd, 0, &timer, NULL);
+		}
 	}
 }
 
@@ -92,6 +117,7 @@ void wl_keyboard_repeat_info(void *data, struct wl_keyboard *wl_keyboard,
     client_state* state = data;
     state->key_repeat_rate = rate;
     state->key_repeat_delay = delay;
+	printf("repeat info\n");
 }
 
 struct wl_keyboard_listener keyboard_listener = {

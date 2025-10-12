@@ -16,6 +16,20 @@
 
 #include "./glad/glad.h"
 
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+
+typedef struct {
+	float advance_x, advance_y;
+	uint32_t bitmap_width, bitmap_height;
+	uint32_t texture_offset;
+} metrics_t;
+
+typedef struct {
+	uint32_t width, height;
+	GLuint texture;
+	metrics_t metrics[128];
+} atlas_t;
+
 typedef struct {
 	// wayland
     struct wl_display* display;
@@ -52,6 +66,8 @@ typedef struct {
 
 	FT_Library ft_library;
 	FT_Face ft_face;
+
+	atlas_t atlas;
 
     bool running;
 

@@ -36,11 +36,13 @@ int main() {
 	}
 
 	char* font = get_font("Monospace");
-	printf("font: %s\n", font);
 	if (!init_freetype(&state, font)) {
 		fprintf(stderr, "Failed to Initalize FreeType\n");
 	}
 	free(font);
+
+	init_atlas(&state);
+
 
 	// event loop
 	while (state.running) {

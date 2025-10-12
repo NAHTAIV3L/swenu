@@ -46,7 +46,7 @@ char* get_font(const char* font_name) {
 	return font;
 }
 
-bool init_freetype(client_state* state, const char* file) {
+bool freetype_init(client_state* state, const char* file) {
 	if (FT_Init_FreeType(&state->ft_library)) {
 		fprintf(stderr, "Failed to intalize FreeType Library\n");
 		return false;
@@ -59,20 +59,27 @@ bool init_freetype(client_state* state, const char* file) {
 		fprintf(stderr, "Failed to set font size\n");
 		return false;
 	}
+   	state->load_flags = FT_LOAD_RENDER | FT_LOAD_TARGET_(FT_RENDER_MODE_SDF);
 	return true;
 }
 
-bool init_atlas(client_state* state) {
-    FT_Int32 load_flags = FT_LOAD_RENDER | FT_LOAD_TARGET_(FT_RENDER_MODE_SDF);
+void atlas_init(client_state* state) {
 	for (int i = 32; i < 128; i++) {
-		if (FT_Load_Char(state->ft_face, i, load_flags)) {
+		if (FT_Load_Char(state->ft_face, i, state->load_flags)) {
 			fprintf(stderr, "Failed to render character %c\n", (char)i);
 		}
-		printf("%c: %u, %u\n", (char)i, state->ft_face->glyph->bitmap.width, state->ft_face->glyph->bitmap.rows);
 		state->atlas.width += state->ft_face->glyph->bitmap.width;
 		state->atlas.height = MAX(state->atlas.height, state->ft_face->glyph->bitmap.rows);
-	}
 
+		metric_t* metric = &state->atlas.metrics[i];
+		metric->advance_x = (float)state->ft_face->glyph->advance.x / 64;
+		metric->advance_y = (float)state->ft_face->glyph->advance.y / 64;
+		metric->bitmap_width = state->ft_face->glyph->bitmap.width;
+		metric->bitmap_height = state->ft_face->glyph->bitmap.rows;
+	}
+}
+
+void atlas_create_texture(client_state* state) {
     glActiveTexture(GL_TEXTURE0);
     glGenTextures(1, &state->atlas.texture);
     glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
@@ -96,19 +103,12 @@ bool init_atlas(client_state* state) {
 
 	uint32_t x = 0;
 	for (int i = 32; i < 128; i++) {
-		if (FT_Load_Char(state->ft_face, i, load_flags)) {
+		if (FT_Load_Char(state->ft_face, i, state->load_flags)) {
 			fprintf(stderr, "Failed to render character %c\n", (char)i);
 		}
 
-        if (FT_Render_Glyph(state->ft_face->glyph, FT_RENDER_MODE_NORMAL)) {
-            fprintf(stderr, "ERROR: could not render glyph of a character with code %d\n", i);
-        }
-
-		state->atlas.metrics[i].advance_x = (float)state->ft_face->glyph->advance.x / 64;
-		state->atlas.metrics[i].advance_y = (float)state->ft_face->glyph->advance.y / 64;
-		state->atlas.metrics[i].bitmap_width = state->ft_face->glyph->bitmap.width;
-		state->atlas.metrics[i].bitmap_height = state->ft_face->glyph->bitmap.rows;
-		state->atlas.metrics[i].texture_offset = x;
+		metric_t* metric = &state->atlas.metrics[i];
+		metric->texture_offset = (float)x / state->atlas.width;
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexSubImage2D(
@@ -123,6 +123,12 @@ bool init_atlas(client_state* state) {
             state->ft_face->glyph->bitmap.buffer);
         x += state->ft_face->glyph->bitmap.width;
 	}
+}
 
-	return true;
+int atlas_get_strwidth(client_state* state, const char* str) {
+	float width = 0;
+	for (int i = 0; i < strlen(str); i++) {
+		width += ceil(state->atlas.metrics[(int)str[i]].advance_x);
+	}
+	return (int)ceil(width);
 }

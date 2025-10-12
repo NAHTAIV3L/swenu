@@ -14,6 +14,14 @@ int main() {
 	client_state state = {0};
 	state.running = true;
 
+	char* font = get_font("Monospace");
+	if (!freetype_init(&state, font)) {
+		fprintf(stderr, "Failed to Initalize FreeType\n");
+	}
+	free(font);
+
+	atlas_init(&state);
+
 	state.display = wl_display_connect(NULL);
 	if (!state.display) {
 		fprintf(stderr, "Failed to Connect to wayland display\n");
@@ -35,14 +43,7 @@ int main() {
 		return 1;
 	}
 
-	char* font = get_font("Monospace");
-	if (!init_freetype(&state, font)) {
-		fprintf(stderr, "Failed to Initalize FreeType\n");
-	}
-	free(font);
-
-	init_atlas(&state);
-
+	atlas_create_texture(&state);
 
 	// event loop
 	while (state.running) {

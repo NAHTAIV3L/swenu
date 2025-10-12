@@ -21,13 +21,13 @@
 typedef struct {
 	float advance_x, advance_y;
 	uint32_t bitmap_width, bitmap_height;
-	uint32_t texture_offset;
-} metrics_t;
+	float texture_offset;
+} metric_t;
 
 typedef struct {
 	uint32_t width, height;
 	GLuint texture;
-	metrics_t metrics[128];
+	metric_t metrics[128];
 } atlas_t;
 
 typedef struct {
@@ -66,6 +66,7 @@ typedef struct {
 
 	FT_Library ft_library;
 	FT_Face ft_face;
+	FT_Int32 load_flags;
 
 	atlas_t atlas;
 

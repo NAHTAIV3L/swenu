@@ -75,5 +75,18 @@ bool init_gl(client_state* state) {
 void render_frame(client_state *state) {
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
+
+	glBegin(GL_QUADS);
+    glTexCoord2f(0, 0); glVertex2f(-1,1);
+    glTexCoord2f(0, 1); glVertex2f(-1,-1);
+    glTexCoord2f(1, 1); glVertex2f(1,-1);
+    glTexCoord2f(1, 0); glVertex2f(1,1);
+	glEnd();
+
+    glDisable(GL_TEXTURE_2D);
+
 	eglSwapBuffers(state->egl_display, state->egl_surface);
 }

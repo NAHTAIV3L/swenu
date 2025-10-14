@@ -13,6 +13,8 @@ void array_print(void* array);
 void array_pop(void* array);
 void* array_add_(void* array, size_t item_size);
 
+#define CONCAT_INNER(a, b) a ## b
+#define CONCAT(a, b) CONCAT_INNER(a, b)
 
 #define array_clear(array) (((array_info*)(array))[-1].size = 0)
 #define array_size(array) (((array_info*)(array))[-1].size)
@@ -31,8 +33,8 @@ void* array_add_(void* array, size_t item_size);
 
 #define array_last(array) (array)[array_size(array) - 1]
 
-#define array_for_all(type__, it__, array__) \
-type__* it__ = array__; type__* end__ = array__ ? array__ + array_size(array__) : NULL; \
-for (; it__ < end__; it__++)
+#define array_for_all(type__, name__, array__) \
+type__* CONCAT(it__, __LINE__) = array__; type__* CONCAT(end__, __LINE__) = array__ ? array__ + array_size(array__) : NULL; \
+for (type__* name__; (CONCAT(it__, __LINE__) < CONCAT(end__, __LINE__)) ? (name__ = CONCAT(it__, __LINE__), true) : false; CONCAT(it__, __LINE__)++)
 
 #endif // ARRAY_H_

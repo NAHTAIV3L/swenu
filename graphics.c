@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include "array.h"
 
 bool init_gl(client_state* state) {
     EGLint attrs[] = {
@@ -79,11 +80,30 @@ void render_frame(client_state *state) {
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
+	// set up matrices
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0, (double)state->width, (double)state->height, 0.0, -1.0, 1.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+
+	// draw text
 	glBegin(GL_QUADS);
-    glTexCoord2f(0, 0); glVertex2f(-1,1);
-    glTexCoord2f(0, 1); glVertex2f(-1,-1);
-    glTexCoord2f(1, 1); glVertex2f(1,-1);
-    glTexCoord2f(1, 0); glVertex2f(1,1);
+	float pen_x = 300;
+	float pen_y = 200;
+	// TODO for unicode - check for missing characters, iterate over "unicode characters"
+	for ( int n = 0; n < array_size(state->input_buffer); n++ )
+	{
+		char c = state->input_buffer[n];
+		metric_t* metric = &state->atlas.metrics[(int)c];
+
+		glTexCoord2f(metric->texture_offset, 0.0f); glVertex2f(pen_x, pen_y);
+		glTexCoord2f(metric->texture_offset, 1.0f); glVertex2f(pen_x, pen_y + metric->bitmap_height);
+		glTexCoord2f(metric->texture_size, 1.0f); glVertex2f(pen_x + metric->bitmap_width, pen_y + metric->bitmap_height);
+		glTexCoord2f(metric->texture_size, 0.0f); glVertex2f(pen_x + metric->bitmap_width, pen_y);
+		
+		pen_x += metric->advance_x;
+	}
 	glEnd();
 
     glDisable(GL_TEXTURE_2D);

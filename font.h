@@ -2,7 +2,6 @@
 #define FONT_H_
 #include "state.h"
 
-
 char* get_font(const char* font_name);
 bool freetype_init(client_state* state, const char* font);
 void atlas_init(client_state* state);

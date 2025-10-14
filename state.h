@@ -22,6 +22,7 @@ typedef struct {
 	float advance_x, advance_y;
 	uint32_t bitmap_width, bitmap_height;
 	float texture_offset;
+	float texture_size;
 } metric_t;
 
 typedef struct {

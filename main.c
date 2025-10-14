@@ -2,6 +2,7 @@
 #include <poll.h>
 #include <unistd.h>
 
+#include "array.h"
 #include "state.h"
 #include "wayland.h"
 #include "graphics.h"
@@ -13,15 +14,19 @@ void poll_events(client_state* state);
 int main() {
 	client_state state = {0};
 	state.running = true;
+	state.input_buffer = array_new(char, 0);
 
+	// find font
 	char* font = get_font("Monospace");
 	if (!freetype_init(&state, font)) {
 		fprintf(stderr, "Failed to Initalize FreeType\n");
 	}
 	free(font);
 
+	// create font atlas
 	atlas_init(&state);
 
+	// start wayland
 	state.display = wl_display_connect(NULL);
 	if (!state.display) {
 		fprintf(stderr, "Failed to Connect to wayland display\n");
@@ -43,6 +48,7 @@ int main() {
 		return 1;
 	}
 
+	// create font altas textures
 	atlas_create_texture(&state);
 
 	// event loop

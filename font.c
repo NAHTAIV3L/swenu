@@ -122,6 +122,7 @@ void atlas_create_texture(client_state* state) {
             GL_UNSIGNED_BYTE,
             state->ft_face->glyph->bitmap.buffer);
         x += state->ft_face->glyph->bitmap.width;
+		metric->texture_size = (float)x / state->atlas.width;
 	}
 }
 

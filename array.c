@@ -4,9 +4,26 @@
 #include "array.h"
 
 
-array_info* array_new_(size_t item_size, size_t capacity) {
-    array_info* info = calloc(1, sizeof(array_info) + item_size * capacity);
-    info->capacity = capacity;
+array_info* array_new_(size_t item_size, size_t size) {
+	// find capacity
+	size_t cap = 8;
+	if (size > cap) {
+		cap = size;
+		
+		// round up to next power of 2
+		cap--;
+		cap |= cap >> 1;
+		cap |= cap >> 2;
+		cap |= cap >> 4;
+		cap |= cap >> 8;
+		cap |= cap >> 16;
+		cap++;
+	}
+
+	// make array
+    array_info* info = calloc(1, sizeof(array_info) + item_size * cap);
+	info->size = size;
+    info->capacity = cap;
     return info;
 }
 
@@ -41,3 +58,4 @@ void array_pop(void* array) {
     if (info->size)
         info->size--;
 }
+

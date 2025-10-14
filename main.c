@@ -8,13 +8,37 @@
 #include "graphics.h"
 #include "input_field.h"
 #include "font.h"
+#include "array.h"
 
 void poll_events(client_state* state);
+
+void read_stdin(client_state* state) {
+	ssize_t len = 0;
+	size_t a;
+	char* line = NULL;
+	while((len = getline(&line, &a, stdin)) != -1) {
+		if (line[len - 1] == '\n') {
+			line[len - 1] = '\0';
+			len -= 1;
+		}
+		if (len != 0) {
+			array_add(state->items, (item_t){0});
+			array_last(state->items) = (item_t){
+				.text = line,
+				.pixel_len = 0
+			};
+		}
+		line = NULL;
+	}
+	free(line);
+}
 
 int main() {
 	client_state state = {0};
 	state.running = true;
 	state.input_buffer = array_new(char, 0);
+
+	read_stdin(&state);
 
 	// find font
 	char* font = get_font("Monospace");
@@ -25,6 +49,8 @@ int main() {
 
 	// create font atlas
 	atlas_init(&state);
+
+	atlas_calc_item_widths(&state);
 
 	// start wayland
 	state.display = wl_display_connect(NULL);
@@ -56,6 +82,8 @@ int main() {
 		poll_events(&state);
 		render_frame(&state);
 	}
+
+	array_free(state.items);
 }
 
 void poll_events(client_state* state) {

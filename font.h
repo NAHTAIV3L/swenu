@@ -8,5 +8,5 @@ void atlas_init(client_state* state);
 void atlas_create_texture(client_state* state);
 
 int atlas_get_strwidth(client_state* state, const char* str);
-
+void atlas_calc_item_widths(client_state* state);
 #endif // FONT_H_

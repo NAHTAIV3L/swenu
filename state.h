@@ -21,6 +21,7 @@
 typedef struct {
 	float advance_x, advance_y;
 	uint32_t bitmap_width, bitmap_height;
+	int32_t bearing_x, bearing_y;
 	float texture_offset;
 	float texture_size;
 } metric_t;
@@ -30,6 +31,11 @@ typedef struct {
 	GLuint texture;
 	metric_t metrics[128];
 } atlas_t;
+
+typedef struct {
+	char* text;
+	size_t pixel_len;
+} item_t;
 
 typedef struct {
 	// wayland
@@ -72,6 +78,8 @@ typedef struct {
 	atlas_t atlas;
 
     bool running;
+
+	item_t* items;
 
 } client_state;
 

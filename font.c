@@ -1,5 +1,6 @@
 #include <fontconfig/fontconfig.h>
 #include "font.h"
+#include "array.h"
 
 char* get_font(const char* font_name) {
 	FcPattern* pattern = FcNameParse((const FcChar8*)font_name);
@@ -76,6 +77,8 @@ void atlas_init(client_state* state) {
 		metric->advance_y = (float)state->ft_face->glyph->advance.y / 64;
 		metric->bitmap_width = state->ft_face->glyph->bitmap.width;
 		metric->bitmap_height = state->ft_face->glyph->bitmap.rows;
+		metric->bearing_x = state->ft_face->glyph->bitmap_left;
+		metric->bearing_y = state->ft_face->glyph->bitmap_top;
 	}
 }
 
@@ -132,4 +135,10 @@ int atlas_get_strwidth(client_state* state, const char* str) {
 		width += ceil(state->atlas.metrics[(int)str[i]].advance_x);
 	}
 	return (int)ceil(width);
+}
+
+void atlas_calc_item_widths(client_state* state) {
+	array_for_all(item_t, item, state->items) {
+		item->pixel_len = atlas_get_strwidth(state, item->text);
+	}
 }

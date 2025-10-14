@@ -9,7 +9,7 @@ array_info* array_new_(size_t item_size, size_t size) {
 	size_t cap = 8;
 	if (size > cap) {
 		cap = size;
-		
+
 		// round up to next power of 2
 		cap--;
 		cap |= cap >> 1;
@@ -22,7 +22,6 @@ array_info* array_new_(size_t item_size, size_t size) {
 
 	// make array
     array_info* info = calloc(1, sizeof(array_info) + item_size * cap);
-	info->size = size;
     info->capacity = cap;
     return info;
 }

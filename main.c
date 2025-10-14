@@ -23,10 +23,7 @@ void read_stdin(client_state* state) {
 		}
 		if (len != 0) {
 			array_add(state->items, (item_t){0});
-			array_last(state->items) = (item_t){
-				.text = line,
-				.pixel_len = 0
-			};
+			array_last(state->items).text = line;
 		}
 		line = NULL;
 	}

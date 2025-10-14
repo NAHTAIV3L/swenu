@@ -79,7 +79,8 @@ void wl_keyboard_key(void *data, struct wl_keyboard *wl_keyboard,
 	xkb_keysym_t keysym = xkb_state_key_get_one_sym(state->xkb_state, key + 8);
 
 	if (key_state == WL_KEYBOARD_KEY_STATE_PRESSED) {
-		if(type_key(state, keysym)) {
+		// if the key is one we should repeat
+		if (type_key(state, keysym)) {
 			// start repeat
 			state->repeat_key = keysym;
 			struct itimerspec timer = {0};
@@ -92,15 +93,17 @@ void wl_keyboard_key(void *data, struct wl_keyboard *wl_keyboard,
 			if (timerfd_settime(state->key_repeat_timer_fd, 0, &timer, NULL) == -1) {
 				printf("error setting key repeat timer\n");
 			}
-		}
-
-	} else if (key_state == WL_KEYBOARD_KEY_STATE_RELEASED) {
-
-		if (keysym == state->repeat_key) {
-			// stop repeat
+		} else {
+			// otherwise stop repeat
 			struct itimerspec timer = {0};
 			timerfd_settime(state->key_repeat_timer_fd, 0, &timer, NULL);
 		}
+	}
+
+	if (key_state == WL_KEYBOARD_KEY_STATE_RELEASED && keysym == state->repeat_key) {
+		// stop repeat
+		struct itimerspec timer = {0};
+		timerfd_settime(state->key_repeat_timer_fd, 0, &timer, NULL);
 	}
 }
 

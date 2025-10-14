@@ -22,6 +22,7 @@ array_info* array_new_(size_t item_size, size_t size) {
 
 	// make array
     array_info* info = calloc(1, sizeof(array_info) + item_size * cap);
+	info->size = size;
     info->capacity = cap;
     return info;
 }
@@ -29,7 +30,7 @@ array_info* array_new_(size_t item_size, size_t size) {
 void* array_add_(void* array, size_t item_size) {
     array_info* info = NULL;
     if (!array) {
-        info = array_new_(item_size, 8);
+        info = array_new_(item_size, 0);
     }
     else {
         info = ((array_info*)array) - 1;

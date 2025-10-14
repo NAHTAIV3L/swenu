@@ -29,6 +29,10 @@ void* array_add_(void* array, size_t item_size);
     (array)[array_size((array)) - 1] = value;               \
 } while (0)
 
-#define array_last(array) (array_size(array) ? (array)[array_size(array) - 1] : NULL);
+#define array_last(array) (array)[array_size(array) - 1]
+
+#define array_for_all(type__, it__, array__) \
+type__* it__ = array__; type__* end__ = array__ ? array__ + array_size(array__) : NULL; \
+for (; it__ < end__; it__++)
 
 #endif // ARRAY_H_

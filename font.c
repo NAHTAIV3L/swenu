@@ -111,7 +111,7 @@ void atlas_create_texture(client_state* state) {
 		}
 
 		metric_t* metric = &state->atlas.metrics[i];
-		metric->texture_offset = (float)x / state->atlas.width;
+		metric->texture_x_start = (float)x / state->atlas.width;
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexSubImage2D(
@@ -125,7 +125,7 @@ void atlas_create_texture(client_state* state) {
             GL_UNSIGNED_BYTE,
             state->ft_face->glyph->bitmap.buffer);
         x += state->ft_face->glyph->bitmap.width;
-		metric->texture_size = (float)x / state->atlas.width;
+		metric->texture_x_end = (float)x / state->atlas.width;
 	}
 }
 

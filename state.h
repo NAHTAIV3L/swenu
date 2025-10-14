@@ -22,8 +22,8 @@ typedef struct {
 	float advance_x, advance_y;
 	uint32_t bitmap_width, bitmap_height;
 	int32_t bearing_x, bearing_y;
-	float texture_offset;
-	float texture_size;
+	float texture_x_start;
+	float texture_x_end;
 } metric_t;
 
 typedef struct {

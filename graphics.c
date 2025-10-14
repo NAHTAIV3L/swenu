@@ -95,14 +95,16 @@ void render_frame(client_state *state) {
 	for ( int n = 0; n < array_size(state->input_buffer); n++ )
 	{
 		char c = state->input_buffer[n];
-		metric_t* metric = &state->atlas.metrics[(int)c];
+		metric_t* m = &state->atlas.metrics[(int)c];
 
-		glTexCoord2f(metric->texture_offset, 0.0f); glVertex2f(pen_x, pen_y);
-		glTexCoord2f(metric->texture_offset, 1.0f); glVertex2f(pen_x, pen_y + metric->bitmap_height);
-		glTexCoord2f(metric->texture_size, 1.0f); glVertex2f(pen_x + metric->bitmap_width, pen_y + metric->bitmap_height);
-		glTexCoord2f(metric->texture_size, 0.0f); glVertex2f(pen_x + metric->bitmap_width, pen_y);
+		float start_x = pen_x + m->bearing_x;
+		float start_y = pen_y - m->bearing_y;
+		glTexCoord2f(m->texture_x_start, 0.0f); glVertex2f(start_x, start_y);
+		glTexCoord2f(m->texture_x_start, 1.0f); glVertex2f(start_x, start_y + m->bitmap_height);
+		glTexCoord2f(m->texture_x_end, 1.0f); glVertex2f(start_x + m->bitmap_width, start_y + m->bitmap_height);
+		glTexCoord2f(m->texture_x_end, 0.0f); glVertex2f(start_x + m->bitmap_width, start_y);
 		
-		pen_x += metric->advance_x;
+		pen_x += m->advance_x;
 	}
 	glEnd();
 

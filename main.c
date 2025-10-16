@@ -74,7 +74,7 @@ int main() {
 	// create font altas textures
 	atlas_create_texture(&state);
 
-	initTextBuffer(&state, &state.input_buffer_text, "this is a gtest", strlen("this is a gtest"));
+	init_text_buffer(&state, &state.input_buffer_text, "", 0);
 
 	// event loop
 	while (state.running) {

@@ -2,6 +2,12 @@
 
 #include "input_field.h"
 #include "array.h"
+#include "graphics.h"
+
+void regenerate_text_buffer(client_state* state) {
+	destroy_text_buffer(&state->input_buffer_text);
+	init_text_buffer(state, &state->input_buffer_text, state->input_buffer, array_size(state->input_buffer));
+}
 
 bool type_key(client_state* state, xkb_keysym_t keysym) {
 	bool ctrl = xkb_state_mod_name_is_active(state->xkb_state, XKB_MOD_NAME_CTRL, XKB_STATE_MODS_EFFECTIVE);
@@ -18,6 +24,7 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 	// submit line
 	if (keysym == XKB_KEY_Return || keysym == XKB_KEY_KP_Enter) {
 		submit_line(state);
+		regenerate_text_buffer(state);
 		return false;
 	}
 
@@ -28,6 +35,7 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 		} else {
 			array_pop(state->input_buffer);
 		}
+		regenerate_text_buffer(state);
 		return true;
 	}
 
@@ -36,8 +44,9 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 	int len = xkb_keysym_to_utf8(keysym, buf, sizeof(buf));
 	if (len > 0) {
 		for (int i = 0; i < strlen(buf); i++) {
-			array_add(state->input_buffer, buf[i]);
+		array_add(state->input_buffer, buf[i]);
 		}
+		regenerate_text_buffer(state);
 		return true;
 	}
 

@@ -146,7 +146,7 @@ typedef struct {
 	float x, y, u, v;
 } vert_t;
 
-void initTextBuffer(client_state* state, text_buffer_t* buffer, char* text, size_t text_len) {
+void init_text_buffer(client_state* state, text_buffer_t* buffer, char* text, size_t text_len) {
 	// generate openg bullshit
 	glGenVertexArrays(1, &buffer->vao);
 	glBindVertexArray(buffer->vao);
@@ -197,11 +197,6 @@ void initTextBuffer(client_state* state, text_buffer_t* buffer, char* text, size
 		pen_x += m->advance_x;
 	}
 
-	for (int i = 0, n = 0; i < sizeof(vertices) / sizeof(vert_t); ++i, !(i % 4) ? n++ : false) {
-		vert_t v = vertices[i];
-		printf("%c: (%f, %f, %f, %f)\n", text[n], v.x, v.y, v.u, v.v);
-	}
-
 	// vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, buffer->vbo);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -215,4 +210,10 @@ void initTextBuffer(client_state* state, text_buffer_t* buffer, char* text, size
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vert_t), (void*)(2 * sizeof(float)));
 	glEnableVertexAttribArray(1);
+}
+
+void destroy_text_buffer(text_buffer_t* buffer) {
+	glDeleteVertexArrays(1, &buffer->vao);
+    glDeleteBuffers(1, &buffer->vbo);
+    glDeleteBuffers(1, &buffer->ebo);
 }

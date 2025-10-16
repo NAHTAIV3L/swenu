@@ -2,17 +2,16 @@
 #include "shader.h"
 
 void GLAPIENTRY
-MessageCallback( GLenum source,
-                 GLenum type,
-                 GLuint id,
-                 GLenum severity,
-                 GLsizei length,
-                 const GLchar* message,
-                 const void* userParam )
-{
-  fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-           ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
-            type, severity, message );
+MessageCallback(GLenum source,
+				GLenum type,
+				GLuint id,
+				GLenum severity,
+				GLsizei length,
+				const GLchar* message,
+				const void* userParam) {
+	fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+		 ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
+		 type, severity, message );
 }
 
 const char* vertexShader = "#version 330 core\n\
@@ -25,93 +24,96 @@ uniform vec2 u_offset;\n\
 out vec2 o_uv;\n\
 \n\
 void main() {\n\
-    o_uv = uv;\n\
-    gl_Position = vec4((((pos + u_offset) / u_screen_size) - vec2(0.5, 0.5)) * 2.0, 0.0, 1.0);\n\
+	o_uv = uv;\n\
+	gl_Position = vec4((((2.0 * (pos + u_offset)) / u_screen_size) - vec2(1.0)), 0.0, 1.0);\n\
 }";
 
 const char* fragmentShader = "#version 330 core\n\
 uniform sampler2D u_texture;\n\
-in vec2 uv;\n\
+in vec2 o_uv;\n\
 \n\
 layout (location = 0) out vec4 frag_color;\n\
 \n\
 void main() {\n\
-    float d = texture(u_texture, uv).r;\n\
-    float aaf = fwidth(d);\n\
-    float alpha = smoothstep(0.5 - aaf, 0.5 + aaf, d);\n\
-    frag_color = vec4(0.0, 0.0, 0.0, alpha);\n\
+	float d = texture(u_texture, o_uv).r;\n\
+	float aaf = fwidth(d);\n\
+	float alpha = smoothstep(0.5 - aaf, 0.5 + aaf, d);\n\
+	frag_color = vec4(1.0, 1.0, 1.0, alpha);\n\
 }";
 
 bool init_gl(client_state* state) {
-    EGLint attrs[] = {
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
-        EGL_CONFORMANT, EGL_OPENGL_BIT,
-        EGL_RED_SIZE, 8,
-        EGL_GREEN_SIZE, 8,
-        EGL_BLUE_SIZE, 8,
-        EGL_ALPHA_SIZE, 8,
-        EGL_DEPTH_SIZE, 24,
-        EGL_NONE
-    };
+	EGLint attrs[] = {
+		EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+		EGL_CONFORMANT, EGL_OPENGL_BIT,
+		EGL_RED_SIZE, 8,
+		EGL_GREEN_SIZE, 8,
+		EGL_BLUE_SIZE, 8,
+		EGL_ALPHA_SIZE, 8,
+		EGL_DEPTH_SIZE, 24,
+		EGL_NONE
+	};
 
-    state->egl_window = wl_egl_window_create(state->surface, state->width, state->height);
-    if (!state->egl_window) {
-        fprintf(stderr, "ewindow\n");
+	state->egl_window = wl_egl_window_create(state->surface, state->width, state->height);
+	if (!state->egl_window) {
+		fprintf(stderr, "ewindow\n");
 		return false;
-    }
+	}
 
-    state->egl_display = eglGetDisplay(state->display);
-    if (state->egl_display == EGL_NO_DISPLAY)  {
-        fprintf(stderr, "edisplay\n");
+	state->egl_display = eglGetDisplay(state->display);
+	if (state->egl_display == EGL_NO_DISPLAY)  {
+		fprintf(stderr, "edisplay\n");
 		return false;
-    }
-    {
-        EGLint major, minor;
-        if (eglInitialize(state->egl_display, &major, &minor) != EGL_TRUE) {
-            fprintf(stderr, "eglinit\n");
-            return false;
-        }
+	}
+	{
+		EGLint major, minor;
+		if (eglInitialize(state->egl_display, &major, &minor) != EGL_TRUE) {
+			fprintf(stderr, "eglinit\n");
+			return false;
+		}
 
-        printf("EGL version %u.%u\n", major, minor);
-    }
-    eglBindAPI(EGL_OPENGL_API);
+		printf("EGL version %u.%u\n", major, minor);
+	}
+	eglBindAPI(EGL_OPENGL_API);
 
-    EGLint num_configs;
-    if (eglChooseConfig(state->egl_display, attrs, &state->egl_config, 1, &num_configs) != EGL_TRUE) {
-        fprintf(stderr, "econfig: %d\n", eglGetError());
-        return false;
-    }
+	EGLint num_configs;
+	if (eglChooseConfig(state->egl_display, attrs, &state->egl_config, 1, &num_configs) != EGL_TRUE) {
+		fprintf(stderr, "econfig: %d\n", eglGetError());
+		return false;
+	}
 
-    state->egl_surface = eglCreateWindowSurface(state->egl_display, state->egl_config,
-                                            (EGLNativeWindowType)state->egl_window, NULL);
-    if (state->egl_surface == EGL_NO_SURFACE) {
-        fprintf(stderr, "esurface\n");
-        return false;
-    }
+	state->egl_surface = eglCreateWindowSurface(state->egl_display, state->egl_config,
+											 (EGLNativeWindowType)state->egl_window, NULL);
+	if (state->egl_surface == EGL_NO_SURFACE) {
+		fprintf(stderr, "esurface\n");
+		return false;
+	}
 
-    state->egl_context = eglCreateContext(state->egl_display, state->egl_config,
-                                          EGL_NO_CONTEXT, NULL);
-    if (state->egl_context == EGL_NO_CONTEXT) {
-        fprintf(stderr, "econtext: %x\n", eglGetError());
-        return false;
-    }
+	state->egl_context = eglCreateContext(state->egl_display, state->egl_config,
+									   EGL_NO_CONTEXT, NULL);
+	if (state->egl_context == EGL_NO_CONTEXT) {
+		fprintf(stderr, "econtext: %x\n", eglGetError());
+		return false;
+	}
 
-    eglMakeCurrent(state->egl_display, state->egl_surface, state->egl_surface, state->egl_context);
+	eglMakeCurrent(state->egl_display, state->egl_surface, state->egl_surface, state->egl_context);
 
-    if (!gladLoadGL()) {
-        fprintf(stderr, "gladLoadGL");
-        return false;
-    }
+	if (!gladLoadGL()) {
+		fprintf(stderr, "gladLoadGL");
+		return false;
+	}
 
-    {
-        GLint major, minor;
-        glGetIntegerv(GL_MAJOR_VERSION, &major);
-        glGetIntegerv(GL_MINOR_VERSION, &minor);
-        printf("GL version %u.%u\n", major, minor);
-    }
+	{
+		GLint major, minor;
+		glGetIntegerv(GL_MAJOR_VERSION, &major);
+		glGetIntegerv(GL_MINOR_VERSION, &minor);
+		printf("GL version %u.%u\n", major, minor);
+	}
 
-	glEnable              ( GL_DEBUG_OUTPUT );
-	glDebugMessageCallback( MessageCallback, 0 );
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glEnable(GL_DEBUG_OUTPUT);
+	glDebugMessageCallback(MessageCallback, 0);
 
 	state->text_shader = createShader(vertexShader, fragmentShader);
 	state->screen_size_uniform = glGetUniformLocation(state->text_shader, "u_screen_size");
@@ -121,8 +123,12 @@ bool init_gl(client_state* state) {
 }
 
 void render_frame(client_state *state) {
-	glClearColor(1.0, 1.0, 1.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glBindVertexArray(state->input_buffer_text.vao);
+	glBindBuffer(GL_ARRAY_BUFFER, state->input_buffer_text.vbo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, state->input_buffer_text.ebo);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
@@ -130,8 +136,7 @@ void render_frame(client_state *state) {
 	glUseProgram(state->text_shader);
 	glUniform2f(state->screen_size_uniform, state->width, state->height);
 	glUniform2f(state->offset_uniform, 200.0f, 200.0f);
-	glBindVertexArray(state->input_buffer_text.vao);
-	glDrawElements(GL_TRIANGLES, state->input_buffer_text.numElements, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, state->input_buffer_text.num_elements, GL_UNSIGNED_INT, 0);
 
 	eglSwapBuffers(state->egl_display, state->egl_surface);
 }
@@ -143,58 +148,57 @@ typedef struct {
 void initTextBuffer(client_state* state, text_buffer_t* buffer, char* text, size_t text_len) {
 	// generate openg bullshit
 	glGenVertexArrays(1, &buffer->vao);
+	glBindVertexArray(buffer->vao);
 	glGenBuffers(1, &buffer->vbo);
 	glGenBuffers(1, &buffer->ebo);
-	glBindVertexArray(buffer->vao);
 
 	// TODO for unicode - check for missing characters, iterate over "unicode characters" not chars
 	// TODO for all fonts - possibly kerning
 	// generate vertices
 	vert_t vertices[text_len * 4];
 	uint32_t indices[text_len * 6];
-	buffer->numElements = text_len * 6;
+	buffer->num_elements = text_len * 6;
 	float pen_x = 0;
-	for (int n = 0; n < text_len; n++ )
-	{
+	for (int n = 0; n < text_len; n++) {
 		char c = text[n];
 		metric_t* m = &state->atlas.metrics[(int)c];
 
 		float start_x = pen_x + m->bearing_x;
-		float start_y = -m->bearing_y;
+		float start_y = m->bearing_y;
 		uint32_t base_vert = n * 4;
 		uint32_t base_idx = n * 6;
 
-		// top left vert
-		vert_t v = { .x=start_x, .y=start_y, .u=m->texture_x_start, .v=1.0f};
-		vertices[base_vert + 0] = v;
 		// bottom left vert
-		v.y += m->bitmap_height;
-		v.v = 0.0f;
+		vert_t v = { .x=start_x, .y=start_y, .u=m->texture_x_start, .v=0.0f};
+		vertices[base_vert + 0] = v;
+		// top left vert
+		v.y -= m->bitmap_height;
+		v.v = ((float)m->bitmap_height / state->atlas.height);
 		vertices[base_vert + 1] = v;
-		// bottom right vert
+		// top right vert
 		v.x += m->bitmap_width;
 		v.u = m->texture_x_end;
 		vertices[base_vert + 2] = v;
-		// top right vert
+		// bottom right vert
 		v.y = start_y;
-		v.v = 1;
+		v.v = 0.0f;
 		vertices[base_vert + 3] = v;
 
 		// indices
- 		indices[base_idx + 0] = base_vert + 0;
- 		indices[base_idx + 1] = base_vert + 1;
- 		indices[base_idx + 2] = base_vert + 2;
- 		indices[base_idx + 3] = base_vert + 0;
- 		indices[base_idx + 4] = base_vert + 2;
- 		indices[base_idx + 5] = base_vert + 3;
+		indices[base_idx + 0] = base_vert + 0;
+		indices[base_idx + 1] = base_vert + 1;
+		indices[base_idx + 2] = base_vert + 2;
+		indices[base_idx + 3] = base_vert + 0;
+		indices[base_idx + 4] = base_vert + 2;
+		indices[base_idx + 5] = base_vert + 3;
 
 		// go forward
 		pen_x += m->advance_x;
 	}
 
-	for (int i = 0; i < sizeof(vertices) / sizeof(vert_t); ++i) {
+	for (int i = 0, n = 0; i < sizeof(vertices) / sizeof(vert_t); ++i, !(i % 4) ? n++ : false) {
 		vert_t v = vertices[i];
-		printf("(%f, %f, %f, %f)\n", v.x, v.y, v.u, v.v);
+		printf("%c: (%f, %f, %f, %f)\n", text[n], v.x, v.y, v.u, v.v);
 	}
 
 	// vertex buffer
@@ -206,8 +210,8 @@ void initTextBuffer(client_state* state, text_buffer_t* buffer, char* text, size
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// vertex attributes
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vert_t), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(vert_t), (void*)(2 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 }

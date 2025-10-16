@@ -30,7 +30,7 @@ char* get_font(const char* font_name) {
 	FcFontSetSortDestroy(font_patterns);
 	FcPatternDestroy(pattern);
 
-	if (!fs || !font_patterns->nfont)  {
+	if (!fs || !fs->nfont)  {
 		fprintf(stderr, "Could not prepare font set\n");
 	}
 	FcObjectSet* os = FcObjectSetBuild(FC_FILE, (char*)0);
@@ -56,7 +56,7 @@ bool freetype_init(client_state* state, const char* file) {
 		fprintf(stderr, "Failed to create font\n");
 		return false;
 	}
-	if (FT_Set_Char_Size(state->ft_face, 0, 12 << 6, 0, 0)) {
+	if (FT_Set_Char_Size(state->ft_face, 0, 16 << 6, 0, 0)) {
 		fprintf(stderr, "Failed to set font size\n");
 		return false;
 	}

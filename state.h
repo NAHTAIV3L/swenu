@@ -17,10 +17,11 @@
 #include "./glad/glad.h"
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 typedef struct {
 	GLuint vbo, ebo, vao;
-	uint32_t numElements;
+	uint32_t num_elements;
 } text_buffer_t;
 
 typedef struct {

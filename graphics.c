@@ -123,6 +123,7 @@ bool init_gl(client_state* state) {
 }
 
 void render_frame(client_state *state) {
+	glViewport(0, 0, state->width, state->height);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -135,7 +136,7 @@ void render_frame(client_state *state) {
 
 	glUseProgram(state->text_shader);
 	glUniform2f(state->screen_size_uniform, state->width, state->height);
-	glUniform2f(state->offset_uniform, 200.0f, 200.0f);
+	glUniform2f(state->offset_uniform, 0.0f, 0.0f);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_text.num_elements, GL_UNSIGNED_INT, 0);
 
 	eglSwapBuffers(state->egl_display, state->egl_surface);

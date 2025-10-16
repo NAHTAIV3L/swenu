@@ -1,5 +1,46 @@
 #include "graphics.h"
-#include "array.h"
+#include "shader.h"
+
+void GLAPIENTRY
+MessageCallback( GLenum source,
+                 GLenum type,
+                 GLuint id,
+                 GLenum severity,
+                 GLsizei length,
+                 const GLchar* message,
+                 const void* userParam )
+{
+  fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+           ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
+            type, severity, message );
+}
+
+const char* vertexShader = "#version 330 core\n\
+layout (location = 0) in vec2 pos;\n\
+layout (location = 1) in vec2 uv;\n\
+\n\
+uniform vec2 u_screen_size;\n\
+uniform vec2 u_offset;\n\
+\n\
+out vec2 o_uv;\n\
+\n\
+void main() {\n\
+    o_uv = uv;\n\
+    gl_Position = vec4((((pos + u_offset) / u_screen_size) - vec2(0.5, 0.5)) * 2.0, 0.0, 1.0);\n\
+}";
+
+const char* fragmentShader = "#version 330 core\n\
+uniform sampler2D u_texture;\n\
+in vec2 uv;\n\
+\n\
+layout (location = 0) out vec4 frag_color;\n\
+\n\
+void main() {\n\
+    float d = texture(u_texture, uv).r;\n\
+    float aaf = fwidth(d);\n\
+    float alpha = smoothstep(0.5 - aaf, 0.5 + aaf, d);\n\
+    frag_color = vec4(0.0, 0.0, 0.0, alpha);\n\
+}";
 
 bool init_gl(client_state* state) {
     EGLint attrs[] = {
@@ -18,7 +59,6 @@ bool init_gl(client_state* state) {
         fprintf(stderr, "ewindow\n");
 		return false;
     }
-
 
     state->egl_display = eglGetDisplay(state->display);
     if (state->egl_display == EGL_NO_DISPLAY)  {
@@ -70,6 +110,13 @@ bool init_gl(client_state* state) {
         printf("GL version %u.%u\n", major, minor);
     }
 
+	glEnable              ( GL_DEBUG_OUTPUT );
+	glDebugMessageCallback( MessageCallback, 0 );
+
+	state->text_shader = createShader(vertexShader, fragmentShader);
+	state->screen_size_uniform = glGetUniformLocation(state->text_shader, "u_screen_size");
+	state->offset_uniform = glGetUniformLocation(state->text_shader, "u_offset");
+
 	return true;
 }
 
@@ -77,38 +124,90 @@ void render_frame(client_state *state) {
 	glClearColor(1.0, 1.0, 1.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glEnable(GL_TEXTURE_2D);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
-	// set up matrices
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0.0, (double)state->width, (double)state->height, 0.0, -1.0, 1.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glUseProgram(state->text_shader);
+	glUniform2f(state->screen_size_uniform, state->width, state->height);
+	glUniform2f(state->offset_uniform, 200.0f, 200.0f);
+	glBindVertexArray(state->input_buffer_text.vao);
+	glDrawElements(GL_TRIANGLES, state->input_buffer_text.numElements, GL_UNSIGNED_INT, 0);
 
-	// draw text
-	glBegin(GL_QUADS);
-	float pen_x = 300;
-	float pen_y = 200;
-	// TODO for unicode - check for missing characters, iterate over "unicode characters"
-	for ( int n = 0; n < array_size(state->input_buffer); n++ )
+	eglSwapBuffers(state->egl_display, state->egl_surface);
+}
+
+typedef struct {
+	float x, y, u, v;
+} vert_t;
+
+void initTextBuffer(client_state* state, text_buffer_t* buffer, char* text, size_t text_len) {
+	// generate openg bullshit
+	glGenVertexArrays(1, &buffer->vao);
+	glGenBuffers(1, &buffer->vbo);
+	glGenBuffers(1, &buffer->ebo);
+	glBindVertexArray(buffer->vao);
+
+	// TODO for unicode - check for missing characters, iterate over "unicode characters" not chars
+	// TODO for all fonts - possibly kerning
+	// generate vertices
+	vert_t vertices[text_len * 4];
+	uint32_t indices[text_len * 6];
+	buffer->numElements = text_len * 6;
+	float pen_x = 0;
+	for (int n = 0; n < text_len; n++ )
 	{
-		char c = state->input_buffer[n];
+		char c = text[n];
 		metric_t* m = &state->atlas.metrics[(int)c];
 
 		float start_x = pen_x + m->bearing_x;
-		float start_y = pen_y - m->bearing_y;
-		glTexCoord2f(m->texture_x_start, 0.0f); glVertex2f(start_x, start_y);
-		glTexCoord2f(m->texture_x_start, 1.0f); glVertex2f(start_x, start_y + m->bitmap_height);
-		glTexCoord2f(m->texture_x_end, 1.0f); glVertex2f(start_x + m->bitmap_width, start_y + m->bitmap_height);
-		glTexCoord2f(m->texture_x_end, 0.0f); glVertex2f(start_x + m->bitmap_width, start_y);
-		
+		float start_y = -m->bearing_y;
+		uint32_t base_vert = n * 4;
+		uint32_t base_idx = n * 6;
+
+		// top left vert
+		vert_t v = { .x=start_x, .y=start_y, .u=m->texture_x_start, .v=1.0f};
+		vertices[base_vert + 0] = v;
+		// bottom left vert
+		v.y += m->bitmap_height;
+		v.v = 0.0f;
+		vertices[base_vert + 1] = v;
+		// bottom right vert
+		v.x += m->bitmap_width;
+		v.u = m->texture_x_end;
+		vertices[base_vert + 2] = v;
+		// top right vert
+		v.y = start_y;
+		v.v = 1;
+		vertices[base_vert + 3] = v;
+
+		// indices
+ 		indices[base_idx + 0] = base_vert + 0;
+ 		indices[base_idx + 1] = base_vert + 1;
+ 		indices[base_idx + 2] = base_vert + 2;
+ 		indices[base_idx + 3] = base_vert + 0;
+ 		indices[base_idx + 4] = base_vert + 2;
+ 		indices[base_idx + 5] = base_vert + 3;
+
+		// go forward
 		pen_x += m->advance_x;
 	}
-	glEnd();
 
-    glDisable(GL_TEXTURE_2D);
+	for (int i = 0; i < sizeof(vertices) / sizeof(vert_t); ++i) {
+		vert_t v = vertices[i];
+		printf("(%f, %f, %f, %f)\n", v.x, v.y, v.u, v.v);
+	}
 
-	eglSwapBuffers(state->egl_display, state->egl_surface);
+	// vertex buffer
+	glBindBuffer(GL_ARRAY_BUFFER, buffer->vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	// index buffer
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// vertex attributes
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 }

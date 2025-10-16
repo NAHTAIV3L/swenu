@@ -19,6 +19,11 @@
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 typedef struct {
+	GLuint vbo, ebo, vao;
+	uint32_t numElements;
+} text_buffer_t;
+
+typedef struct {
 	float advance_x, advance_y;
 	uint32_t bitmap_width, bitmap_height;
 	int32_t bearing_x, bearing_y;
@@ -67,19 +72,23 @@ typedef struct {
     EGLConfig egl_config;
     EGLContext egl_context;
 
-	// state
-	char* input_buffer;
-    uint32_t width, height;
+	// graphics
+	GLuint text_shader;
+	GLuint screen_size_uniform;
+	GLuint offset_uniform;
+	text_buffer_t input_buffer_text;
 
+	// fonts
 	FT_Library ft_library;
 	FT_Face ft_face;
 	FT_Int32 load_flags;
-
 	atlas_t atlas;
 
-    bool running;
-
+	// state
+	char* input_buffer;
+    uint32_t width, height;
 	item_t* items;
+    bool running;
 
 } client_state;
 

@@ -1,5 +1,5 @@
 #include "./state.h"
-#include "array.h"
+#include "config.h"
 
 struct zwlr_layer_surface_v1_listener layer_surface_listener;
 
@@ -16,8 +16,8 @@ void create_surface(client_state* state) {
 	uint32_t desired_width = 0;
 	uint32_t desired_height = state->line_height;
 	if (state->lines > 0) {
-		desired_width = 600; // calculate based on width of option strings
 		desired_height = (state->lines + 1) * state->line_height;
+		desired_width = MAX(state->required_width, min_width);
 	}
 
 	// create surface

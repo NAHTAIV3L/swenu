@@ -89,6 +89,8 @@ typedef struct {
 	atlas_t atlas;
 	uint32_t line_height;
 
+	uint32_t required_width;
+
 	// arguments
 	int lines;
 

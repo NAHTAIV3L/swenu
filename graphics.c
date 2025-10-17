@@ -142,21 +142,22 @@ void render_frame(client_state *state) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
-
-	float pen_x = state->line_height / 4.0f;
+	float horizontal_spacing = state->line_height / 2.0f;
+	float pen_x = horizontal_spacing / 2.0f;
 	float pen_y = state->line_height * state->lines - state->atlas.vert_shift;
 
+	// draw input buffer
 	if (state->lines > 0) {
 		glScissor(pen_x, pen_y + state->atlas.vert_shift, state->width, state->line_height);
 	}
 	else {
 		glScissor(pen_x, pen_y + state->atlas.vert_shift, state->width / 3.0f - pen_x, state->line_height);
 	}
-	// draw input buffer
 	glBindVertexArray(state->input_buffer_grafix.vao);
 	glUniform2f(state->offset_uniform, pen_x, pen_y);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_grafix.num_elements, GL_UNSIGNED_INT, 0);
-	// shift pen
+
+	// set up drawing for options
 	if (state->lines > 0) {
 		glScissor(0, 0, state->width, pen_y);
 		pen_y -= state->line_height;
@@ -164,9 +165,8 @@ void render_frame(client_state *state) {
 	else {
 		pen_x += state->width / 3.0f;
 		glScissor(pen_x, 0, state->width, state->line_height);
+		pen_x += horizontal_spacing / 2.0f;
 	}
-
-	pen_x += state->line_height / 4.0f;
 
 	// draw options
 	array_for_all(item_t, item, state->items) {
@@ -179,7 +179,7 @@ void render_frame(client_state *state) {
 			pen_y -= state->line_height;
 		}
 		else {
-			pen_x += item->pixel_len + (state->line_height / 2.0f);
+			pen_x += item->pixel_len + horizontal_spacing;
 		}
 	}
 

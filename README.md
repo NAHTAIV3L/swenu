@@ -7,3 +7,4 @@ To build: `make`
 - [ ] "Selection"
 - [ ] Output results and exit code
 - [ ] Scrolling
+- [ ] Unicode

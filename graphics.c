@@ -117,6 +117,8 @@ bool init_gl(client_state* state) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	glEnable(GL_SCISSOR_TEST);
+
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(MessageCallback, 0);
 
@@ -130,6 +132,7 @@ bool init_gl(client_state* state) {
 void render_frame(client_state *state) {
 	// set up frame
 	glViewport(0, 0, state->width, state->height);
+	glScissor(0, 0, state->width, state->height);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -139,26 +142,45 @@ void render_frame(client_state *state) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
-	float pen_x = 5.0f;
+
+	float pen_x = state->line_height / 4.0f;
 	float pen_y = state->line_height * state->lines - state->atlas.vert_shift;
 
+	if (state->lines > 0) {
+		glScissor(pen_x, pen_y + state->atlas.vert_shift, state->width, state->line_height);
+	}
+	else {
+		glScissor(pen_x, pen_y + state->atlas.vert_shift, state->width / 3.0f - pen_x, state->line_height);
+	}
 	// draw input buffer
 	glBindVertexArray(state->input_buffer_grafix.vao);
 	glUniform2f(state->offset_uniform, pen_x, pen_y);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_grafix.num_elements, GL_UNSIGNED_INT, 0);
 	// shift pen
-	if (state->lines > 0) pen_y -= state->line_height;
-	else pen_x = state->width / 3.0f;
+	if (state->lines > 0) {
+		glScissor(0, 0, state->width, pen_y);
+		pen_y -= state->line_height;
+	}
+	else {
+		pen_x += state->width / 3.0f;
+		glScissor(pen_x, 0, state->width, state->line_height);
+	}
+
+	pen_x += state->line_height / 4.0f;
 
 	// draw options
 	array_for_all(item_t, item, state->items) {
 		glBindVertexArray(item->text_buffer.vao);
 		glUniform2f(state->offset_uniform, pen_x, pen_y);
 		glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
-		
+
 		// shift pen
-		if (state->lines > 0) pen_y -= state->line_height;
-		else pen_x += item->pixel_len + (state->line_height / 2.0f);
+		if (state->lines > 0) {
+			pen_y -= state->line_height;
+		}
+		else {
+			pen_x += item->pixel_len + (state->line_height / 2.0f);
+		}
 	}
 
 	// present screen

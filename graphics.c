@@ -148,7 +148,7 @@ void render_frame(client_state *state) {
 	glDrawElements(GL_TRIANGLES, state->input_buffer_grafix.num_elements, GL_UNSIGNED_INT, 0);
 	// shift pen
 	if (state->lines > 0) pen_y -= state->line_height;
-	else pen_x += state->input_buffer_grafix.pixel_len;
+	else pen_x = state->width / 3.0f;
 
 	// draw options
 	array_for_all(item_t, item, state->items) {
@@ -158,7 +158,7 @@ void render_frame(client_state *state) {
 		
 		// shift pen
 		if (state->lines > 0) pen_y -= state->line_height;
-		else pen_x += item->pixel_len;
+		else pen_x += item->pixel_len + (state->line_height / 2.0f);
 	}
 
 	// present screen

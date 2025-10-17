@@ -69,6 +69,10 @@ void wl_keyboard_enter(void *data, struct wl_keyboard *wl_keyboard,
 
 void wl_keyboard_leave(void *data, struct wl_keyboard *wl_keyboard,
                        uint32_t serial, struct wl_surface *surface) {
+	client_state *state = data;
+
+	// close on focus lost
+	state->running = false;
 }
 
 void wl_keyboard_key(void *data, struct wl_keyboard *wl_keyboard,

@@ -128,19 +128,15 @@ void render_frame(client_state *state) {
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// draw text
+	// bind vertex and texture
 	glBindVertexArray(state->input_buffer_text.vao);
 	glActiveTexture(GL_TEXTURE0);
-	
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
+	// bind shader and draw
 	glUseProgram(state->text_shader);
 	glUniform2f(state->screen_size_uniform, state->width, state->height);
-	glUniform2f(state->offset_uniform, 0.0f, 0.0f);
-	glDrawElements(GL_TRIANGLES, state->input_buffer_text.num_elements, GL_UNSIGNED_INT, 0);
-
-	// draw second text a line higher
-	glUniform2f(state->offset_uniform, 0.0f, state->line_height);
+	glUniform2f(state->offset_uniform, 0.0f, state->line_height * (state->lines + 0.15f));
 	glDrawElements(GL_TRIANGLES, state->input_buffer_text.num_elements, GL_UNSIGNED_INT, 0);
 
 	// present screen

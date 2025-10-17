@@ -9,6 +9,7 @@
 #include "input_field.h"
 #include "font.h"
 #include "array.h"
+#include "args.h"
 
 void poll_events(client_state* state);
 
@@ -30,11 +31,12 @@ void read_stdin(client_state* state) {
 	free(line);
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	client_state state = {0};
 	state.running = true;
 	state.input_buffer = array_new(char, 0);
 
+	parse_args(&state, argc, argv);
 	read_stdin(&state);
 
 	// find font

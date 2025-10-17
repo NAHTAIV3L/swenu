@@ -41,6 +41,7 @@ typedef struct {
 typedef struct {
 	char* text;
 	size_t pixel_len;
+	text_buffer_t text_buffer;
 } item_t;
 
 typedef struct {
@@ -84,7 +85,10 @@ typedef struct {
 	FT_Face ft_face;
 	FT_Int32 load_flags;
 	atlas_t atlas;
-	float line_height;
+	uint32_t line_height;
+
+	// arguments
+	int lines;
 
 	// state
 	char* input_buffer;

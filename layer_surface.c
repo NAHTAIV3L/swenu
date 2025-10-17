@@ -1,18 +1,33 @@
 #include "./state.h"
+#include "array.h"
 
 struct zwlr_layer_surface_v1_listener layer_surface_listener;
 
 void create_surface(client_state* state) {
+	// figure out anchor
+	uint32_t anchor = ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP |
+		ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT |
+		ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT;
+	if (state->lines > 0) {
+		anchor |= ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM;
+	}
+
+	// figure out size
+	uint32_t desired_width = 0;
+	uint32_t desired_height = state->line_height;
+	if (state->lines > 0) {
+		desired_width = 600; // figure out later
+		desired_height = (state->lines + 1) * state->line_height;
+	}
+
+	// create surface
 	state->surface = wl_compositor_create_surface(state->compositor);
 	state->layer_surface = zwlr_layer_shell_v1_get_layer_surface(
 		state->layer_shell, state->surface, NULL,
 		ZWLR_LAYER_SHELL_V1_LAYER_TOP, "swenu");
 	zwlr_layer_surface_v1_add_listener(state->layer_surface, &layer_surface_listener, state);
-	zwlr_layer_surface_v1_set_size(state->layer_surface, 600, 400);
-	zwlr_layer_surface_v1_set_anchor(state->layer_surface, ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP |
-								  ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM |
-								  ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT |
-								  ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT);
+	zwlr_layer_surface_v1_set_size(state->layer_surface, desired_width, desired_height);
+	zwlr_layer_surface_v1_set_anchor(state->layer_surface, anchor);
 	zwlr_layer_surface_v1_set_exclusive_zone(state->layer_surface, -1);
 	zwlr_layer_surface_v1_set_margin(state->layer_surface, 0, 0, 0, 0);
 	zwlr_layer_surface_v1_set_keyboard_interactivity(state->layer_surface, ZWLR_LAYER_SURFACE_V1_KEYBOARD_INTERACTIVITY_EXCLUSIVE);

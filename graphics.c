@@ -23,9 +23,13 @@ uniform vec2 u_offset;\n\
 \n\
 out vec2 o_uv;\n\
 \n\
+vec2 project(vec2 point) { \n\
+    return (((2.0 * point) / u_screen_size) - vec2(1)); \n\
+} \n\
+\n\
 void main() {\n\
 	o_uv = uv;\n\
-	gl_Position = vec4((((2.0 * (pos + u_offset)) / u_screen_size) - vec2(1.0)), 0.0, 1.0);\n\
+	gl_Position = vec4(project(pos + u_offset), 0.0, 1.0);\n\
 }";
 
 const char* fragmentShader = "#version 330 core\n\
@@ -136,7 +140,7 @@ void render_frame(client_state *state) {
 	// bind shader and draw
 	glUseProgram(state->text_shader);
 	glUniform2f(state->screen_size_uniform, state->width, state->height);
-	glUniform2f(state->offset_uniform, 0.0f, state->line_height * (state->lines + 0.15f));
+	glUniform2f(state->offset_uniform, 0.0f, state->line_height * state->lines - state->atlas.vert_shift);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_text.num_elements, GL_UNSIGNED_INT, 0);
 
 	// present screen
@@ -171,20 +175,33 @@ void init_text_buffer(client_state* state, text_buffer_t* buffer, char* text, si
 		uint32_t base_idx = n * 6;
 
 		// bottom left vert
-		vert_t v = { .x=start_x, .y=start_y, .u=m->texture_x_start, .v=0.0f};
-		vertices[base_vert + 0] = v;
+		vertices[base_vert + 0] = (vert_t){
+			.x=start_x,
+			.y=start_y,
+			.u=m->texture_x_start,
+			.v=0.0f,
+		};
 		// top left vert
-		v.y -= m->bitmap_height;
-		v.v = ((float)m->bitmap_height / state->atlas.height);
-		vertices[base_vert + 1] = v;
+		vertices[base_vert + 1] = (vert_t){
+			.x=start_x,
+			.y=start_y - m->bitmap_height,
+			.u=m->texture_x_start,
+			.v=(m->bitmap_height / (float)state->atlas.height),
+		};
 		// top right vert
-		v.x += m->bitmap_width;
-		v.u = m->texture_x_end;
-		vertices[base_vert + 2] = v;
+		vertices[base_vert + 2] = (vert_t){
+			.x=start_x + m->bitmap_width,
+			.y=start_y - m->bitmap_height,
+			.u=m->texture_x_end,
+			.v=(m->bitmap_height / (float)state->atlas.height),
+		};
 		// bottom right vert
-		v.y = start_y;
-		v.v = 0.0f;
-		vertices[base_vert + 3] = v;
+		vertices[base_vert + 3] = (vert_t){
+			.x=start_x + m->bitmap_width,
+			.y=start_y,
+			.u=m->texture_x_end,
+			.v=0,
+		};
 
 		// indices
 		indices[base_idx + 0] = base_vert + 0;

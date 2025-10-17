@@ -70,6 +70,7 @@ void atlas_init(client_state* state) {
 		if (FT_Load_Char(state->ft_face, i, state->load_flags)) {
 			fprintf(stderr, "Failed to render character %c\n", (char)i);
 		}
+
 		state->atlas.width += state->ft_face->glyph->bitmap.width;
 		state->atlas.height = MAX(state->atlas.height, state->ft_face->glyph->bitmap.rows);
 
@@ -80,6 +81,11 @@ void atlas_init(client_state* state) {
 		metric->bitmap_height = state->ft_face->glyph->bitmap.rows;
 		metric->bearing_x = state->ft_face->glyph->bitmap_left;
 		metric->bearing_y = state->ft_face->glyph->bitmap_top;
+
+		state->atlas.vert_shift = MAX(state->atlas.vert_shift, metric->bearing_y - metric->bitmap_height);
+
+		// printf("%c: advance: (%f, %f), bitmap: (%u, %u), bearing: (%d, %d)\n",
+		//  (char)i, metric->advance_x, metric->advance_y, metric->bitmap_width, metric->bitmap_height, metric->bearing_x, metric->bearing_y);
 	}
 }
 
@@ -120,12 +126,12 @@ void atlas_create_texture(client_state* state) {
             0,
             x,
             0,
-            state->ft_face->glyph->bitmap.width,
-            state->ft_face->glyph->bitmap.rows,
+            metric->bitmap_width,
+            metric->bitmap_height,
             GL_RED,
             GL_UNSIGNED_BYTE,
             state->ft_face->glyph->bitmap.buffer);
-        x += state->ft_face->glyph->bitmap.width;
+        x += metric->bitmap_width;
 		metric->texture_x_end = (float)x / state->atlas.width;
 	}
 }

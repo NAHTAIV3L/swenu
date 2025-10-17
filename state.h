@@ -35,6 +35,7 @@ typedef struct {
 typedef struct {
 	uint32_t width, height;
 	GLuint texture;
+	int32_t vert_shift;
 	metric_t metrics[128];
 } atlas_t;
 

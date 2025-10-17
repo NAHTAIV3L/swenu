@@ -82,7 +82,9 @@ int main() {
 		render_frame(&state);
 	}
 
-	array_free(state.items);
+	if (state.items) {
+		array_free(state.items);
+	}
 }
 
 void poll_events(client_state* state) {

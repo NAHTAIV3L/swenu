@@ -84,6 +84,7 @@ typedef struct {
 	FT_Face ft_face;
 	FT_Int32 load_flags;
 	atlas_t atlas;
+	float line_height;
 
 	// state
 	char* input_buffer;

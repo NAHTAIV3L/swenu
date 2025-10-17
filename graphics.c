@@ -123,15 +123,15 @@ bool init_gl(client_state* state) {
 }
 
 void render_frame(client_state *state) {
+	// set up frame
 	glViewport(0, 0, state->width, state->height);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	// draw text
 	glBindVertexArray(state->input_buffer_text.vao);
-	glBindBuffer(GL_ARRAY_BUFFER, state->input_buffer_text.vbo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, state->input_buffer_text.ebo);
-
 	glActiveTexture(GL_TEXTURE0);
+	
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
 	glUseProgram(state->text_shader);
@@ -139,6 +139,11 @@ void render_frame(client_state *state) {
 	glUniform2f(state->offset_uniform, 0.0f, 0.0f);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_text.num_elements, GL_UNSIGNED_INT, 0);
 
+	// draw second text a line higher
+	glUniform2f(state->offset_uniform, 0.0f, state->line_height);
+	glDrawElements(GL_TRIANGLES, state->input_buffer_text.num_elements, GL_UNSIGNED_INT, 0);
+
+	// present screen
 	eglSwapBuffers(state->egl_display, state->egl_surface);
 }
 

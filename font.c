@@ -61,6 +61,7 @@ bool freetype_init(client_state* state, const char* file) {
 		return false;
 	}
    	state->load_flags = FT_LOAD_RENDER | FT_LOAD_TARGET_(FT_RENDER_MODE_SDF);
+	state->line_height = (float)(state->ft_face->size->metrics.height >> 6);
 	return true;
 }
 

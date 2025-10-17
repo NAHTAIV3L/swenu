@@ -36,6 +36,7 @@ int main(int argc, char* argv[]) {
 	state.running = true;
 	state.input_buffer = array_new(char, 0);
 
+	// read input
 	parse_args(&state, argc, argv);
 	read_stdin(&state);
 
@@ -48,7 +49,6 @@ int main(int argc, char* argv[]) {
 
 	// create font atlas
 	atlas_init(&state);
-
 	atlas_calc_item_widths(&state);
 
 	// start wayland
@@ -76,7 +76,12 @@ int main(int argc, char* argv[]) {
 	// create font altas textures
 	atlas_create_texture(&state);
 
-	init_text_buffer(&state, &state.input_buffer_text, "", 0);
+	// create text buffers
+	init_text_buffer(&state, &state.input_buffer_grafix, "", 0);
+	array_for_all(item_t, item, state.items) {
+		init_text_buffer(&state, &item->text_buffer, item->text, strlen(item->text));
+		printf("%s\n", item->text);
+	}
 
 	// event loop
 	while (state.running) {

@@ -22,6 +22,7 @@
 typedef struct {
 	GLuint vbo, ebo, vao;
 	uint32_t num_elements;
+	size_t pixel_len;
 } text_buffer_t;
 
 typedef struct {
@@ -79,7 +80,7 @@ typedef struct {
 	GLuint text_shader;
 	GLuint screen_size_uniform;
 	GLuint offset_uniform;
-	text_buffer_t input_buffer_text;
+	text_buffer_t input_buffer_grafix;
 
 	// fonts
 	FT_Library ft_library;

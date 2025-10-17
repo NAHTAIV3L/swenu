@@ -5,8 +5,8 @@
 #include "graphics.h"
 
 void regenerate_text_buffer(client_state* state) {
-	destroy_text_buffer(&state->input_buffer_text);
-	init_text_buffer(state, &state->input_buffer_text, state->input_buffer, array_size(state->input_buffer));
+	destroy_text_buffer(&state->input_buffer_grafix);
+	init_text_buffer(state, &state->input_buffer_grafix, state->input_buffer, array_size(state->input_buffer));
 }
 
 bool type_key(client_state* state, xkb_keysym_t keysym) {

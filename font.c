@@ -138,6 +138,7 @@ void atlas_create_texture(client_state* state) {
 
 int atlas_get_strwidth(client_state* state, const char* str) {
 	float width = 0;
+	// TODO - UNICODE MAKE WORKY
 	for (int i = 0; i < strlen(str); i++) {
 		width += ceil(state->atlas.metrics[(int)str[i]].advance_x);
 	}

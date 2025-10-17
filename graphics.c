@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include "array.h"
 #include "shader.h"
 
 void GLAPIENTRY
@@ -132,16 +133,33 @@ void render_frame(client_state *state) {
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	// bind vertex and texture
-	glBindVertexArray(state->input_buffer_text.vao);
+	// bind shader and texture
+	glUseProgram(state->text_shader);
+	glUniform2f(state->screen_size_uniform, state->width, state->height);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
-	// bind shader and draw
-	glUseProgram(state->text_shader);
-	glUniform2f(state->screen_size_uniform, state->width, state->height);
-	glUniform2f(state->offset_uniform, 0.0f, state->line_height * state->lines - state->atlas.vert_shift);
-	glDrawElements(GL_TRIANGLES, state->input_buffer_text.num_elements, GL_UNSIGNED_INT, 0);
+	float pen_x = 5.0f;
+	float pen_y = state->line_height * state->lines - state->atlas.vert_shift;
+
+	// draw input buffer
+	glBindVertexArray(state->input_buffer_grafix.vao);
+	glUniform2f(state->offset_uniform, pen_x, pen_y);
+	glDrawElements(GL_TRIANGLES, state->input_buffer_grafix.num_elements, GL_UNSIGNED_INT, 0);
+	// shift pen
+	if (state->lines > 0) pen_y -= state->line_height;
+	else pen_x += state->input_buffer_grafix.pixel_len;
+
+	// draw options
+	array_for_all(item_t, item, state->items) {
+		glBindVertexArray(item->text_buffer.vao);
+		glUniform2f(state->offset_uniform, pen_x, pen_y);
+		glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
+		
+		// shift pen
+		if (state->lines > 0) pen_y -= state->line_height;
+		else pen_x += item->pixel_len;
+	}
 
 	// present screen
 	eglSwapBuffers(state->egl_display, state->egl_surface);
@@ -152,6 +170,8 @@ typedef struct {
 } vert_t;
 
 void init_text_buffer(client_state* state, text_buffer_t* buffer, char* text, size_t text_len) {
+	buffer->pixel_len = 0;
+
 	// generate openg bullshit
 	glGenVertexArrays(1, &buffer->vao);
 	glBindVertexArray(buffer->vao);
@@ -213,6 +233,7 @@ void init_text_buffer(client_state* state, text_buffer_t* buffer, char* text, si
 
 		// go forward
 		pen_x += m->advance_x;
+		buffer->pixel_len += ceil(m->advance_x);
 	}
 
 	// vertex buffer

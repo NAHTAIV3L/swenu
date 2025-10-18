@@ -8,16 +8,18 @@ void create_surface(client_state* state) {
 	uint32_t anchor = ZWLR_LAYER_SURFACE_V1_ANCHOR_TOP |
 		ZWLR_LAYER_SURFACE_V1_ANCHOR_LEFT |
 		ZWLR_LAYER_SURFACE_V1_ANCHOR_RIGHT;
-	if (state->lines > 0) {
+	if (state->center) {
 		anchor |= ZWLR_LAYER_SURFACE_V1_ANCHOR_BOTTOM;
 	}
 
 	// figure out size
 	uint32_t desired_width = 0;
 	uint32_t desired_height = state->line_height;
+	if (state->center) {
+		desired_width = MAX(state->required_width, min_width);
+	}
 	if (state->lines > 0) {
 		desired_height = (state->lines + 1) * state->line_height;
-		desired_width = MAX(state->required_width, min_width);
 	}
 
 	// create surface

@@ -95,6 +95,7 @@ typedef struct {
 	// arguments
 	int lines;
 	bool allow_free_result;
+	bool center;
 
 	// state
 	char* input_buffer;

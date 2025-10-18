@@ -8,16 +8,20 @@
 void parse_args(client_state* state, int argc, char* argv[]) {
 	static struct option long_opts[] = {
 		{"lines", required_argument, 0, 'l'},
-		{"allow-free-result", required_argument, 0, 'a'},
+		{"center", no_argument, 0, 'c'},
+		{"allow-free-result", no_argument, 0, 'a'},
 		{0, 0, 0, 0}
 	};
 
     int opt;
     int long_index = 0;
-	while ((opt = getopt_long(argc, argv, "l:a", long_opts, &long_index)) != -1) {
+	while ((opt = getopt_long(argc, argv, "l:ca", long_opts, &long_index)) != -1) {
 		switch (opt) {
 		case 'l':
 			state->lines = atoi(optarg);
+			break;
+		case 'c':
+			state->center = true;
 			break;
 		case 'a':
 			state->allow_free_result = true;

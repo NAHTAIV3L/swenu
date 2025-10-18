@@ -6,4 +6,4 @@ exec $(
 		for file in "$dir"/*; do
 			[ -f "$file" ] && [ -x "$file" ] && printf '%s\n' "${file##*/}"
 		done
-	done | sort -u | ./swenu -al 10)
+	done | sort -u | ./swenu -cal 10)

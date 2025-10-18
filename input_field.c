@@ -4,7 +4,25 @@
 #include "array.h"
 #include "graphics.h"
 
-void regenerate_text_buffer(client_state* state) {
+void filter_items(client_state* state) {
+	array_clear(state->filtered_items);
+
+	// get null terminated input buffer
+	size_t len = array_size(state->input_buffer);
+	char input_buffer_string[len + 1];
+	memcpy(input_buffer_string, state->input_buffer, len);
+	input_buffer_string[len] = '\0';
+	
+	// add all strings with substring
+	for (uint32_t i = 0; i < array_size(state->items); ++i) {
+		if (strstr(state->items[i].text, input_buffer_string) != NULL) {
+			array_add(state->filtered_items, i);
+		}
+	}
+}
+
+void update_text_buffer(client_state* state) {
+	filter_items(state);
 	destroy_text_buffer(&state->input_buffer_grafix);
 	init_text_buffer(state, &state->input_buffer_grafix, state->input_buffer, array_size(state->input_buffer));
 }
@@ -24,7 +42,7 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 	// submit line
 	if (keysym == XKB_KEY_Return || keysym == XKB_KEY_KP_Enter) {
 		submit_line(state);
-		regenerate_text_buffer(state);
+		update_text_buffer(state);
 		return false;
 	}
 
@@ -35,7 +53,7 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 		} else {
 			array_pop(state->input_buffer);
 		}
-		regenerate_text_buffer(state);
+		update_text_buffer(state);
 		return true;
 	}
 
@@ -46,7 +64,7 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 		for (int i = 0; i < strlen(buf); i++) {
 		array_add(state->input_buffer, buf[i]);
 		}
-		regenerate_text_buffer(state);
+		update_text_buffer(state);
 		return true;
 	}
 

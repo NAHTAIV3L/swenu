@@ -158,7 +158,7 @@ void render_frame(client_state *state) {
 	glUniform2f(state->offset_uniform, pen_x, pen_y);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_grafix.num_elements, GL_UNSIGNED_INT, 0);
 
-	// set up drawing for options
+	// set up starting pen and scissor for options
 	if (state->lines > 0) {
 		glScissor(0, 0, state->width, pen_y);
 		pen_y -= state->line_height;
@@ -170,7 +170,8 @@ void render_frame(client_state *state) {
 	}
 
 	// draw options
-	array_for_all(item_t, item, state->items) {
+	array_for_all(uint32_t, i, state->filtered_items) {
+		item_t* item = &state->items[*i];
 		glBindVertexArray(item->text_buffer.vao);
 		glUniform2f(state->offset_uniform, pen_x, pen_y);
 		glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);

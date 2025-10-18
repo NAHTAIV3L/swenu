@@ -98,6 +98,7 @@ typedef struct {
 	char* input_buffer;
     uint32_t width, height;
 	item_t* items;
+	uint32_t* filtered_items;
     bool running;
 
 } client_state;

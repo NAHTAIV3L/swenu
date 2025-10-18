@@ -35,10 +35,12 @@ int main(int argc, char* argv[]) {
 	client_state state = {0};
 	state.running = true;
 	state.input_buffer = array_new(char, 0);
+	state.filtered_items = array_new(uint32_t, 0);
 
 	// read input
 	parse_args(&state, argc, argv);
 	read_stdin(&state);
+	filter_items(&state);
 
 	// find font
 	char* font = get_font("Monospace");

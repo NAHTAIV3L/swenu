@@ -5,6 +5,7 @@
 
 // returns true if the key should repeat
 bool type_key(client_state* state, xkb_keysym_t keysym);
+void filter_items(client_state* state);
 void submit_line(client_state* state);
 
 #endif

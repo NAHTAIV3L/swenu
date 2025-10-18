@@ -4,9 +4,14 @@ To build: `make`
 
 
 ## Todo -
-- [ ] "Selection"
-- [ ] Output results and exit code
-- [ ] Cursor
-- [ ] Scrolling
-- [ ] Unicode
-- [ ] Kerning
+- [x] "selection"
+- [ ] figure out whats going on with stderr and exit code
+- [ ] cursor
+- [ ] fuzzy filter and sort filtering by match %
+- [ ] fancy highlights
+- [ ] scrolling
+- [ ] unicode
+- [ ] kerning
+- [ ] input fluff
+- [ ] config file
+- [ ] emacs keybindings

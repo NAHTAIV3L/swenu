@@ -4,6 +4,8 @@
 #include "array.h"
 #include "config.h"
 
+const float ATLAS_PADDING = 3.0f;
+
 char* get_font(const char* font_name) {
 	FcPattern* pattern = FcNameParse((const FcChar8*)font_name);
 	if (!pattern) {
@@ -73,7 +75,7 @@ void atlas_init(client_state* state) {
 			fprintf(stderr, "Failed to render character %c\n", (char)i);
 		}
 
-		state->atlas.width += state->ft_face->glyph->bitmap.width;
+		state->atlas.width += state->ft_face->glyph->bitmap.width + ATLAS_PADDING;
 		state->atlas.height = MAX(state->atlas.height, state->ft_face->glyph->bitmap.rows);
 
 		metric_t* metric = &state->atlas.metrics[i];
@@ -96,8 +98,8 @@ void atlas_create_texture(client_state* state) {
     glGenTextures(1, &state->atlas.texture);
     glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
@@ -135,6 +137,7 @@ void atlas_create_texture(client_state* state) {
             state->ft_face->glyph->bitmap.buffer);
         x += metric->bitmap_width;
 		metric->texture_x_end = (float)x / state->atlas.width;
+		x += ATLAS_PADDING;
 	}
 }
 

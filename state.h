@@ -103,6 +103,7 @@ typedef struct {
 	item_t* items;
 	uint32_t* filtered_items;
     bool running;
+	int exit_code;
 
 } client_state;
 

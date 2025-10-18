@@ -41,6 +41,7 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 		(keysym == XKB_KEY_Escape)) {
 
 		state->running = false;
+		state->exit_code = EXIT_FAILURE;
 		return false;
 	}
 
@@ -114,4 +115,5 @@ void submit_line(client_state* state) {
 		printf("%s\n", state->items[state->filtered_items[state->selected_filtered_item]].text);
 	}
 	state->running = false;
+	state->exit_code = EXIT_SUCCESS;
 }

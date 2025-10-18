@@ -23,6 +23,7 @@ void wl_keyboard_keymap(void *data, struct wl_keyboard *wl_keyboard,
     if (format != WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1) {
         fprintf(stderr, "unknown keyboard format");
 		state->running = false;
+		state->exit_code = EXIT_FAILURE;
 		return;
     }
 
@@ -30,6 +31,7 @@ void wl_keyboard_keymap(void *data, struct wl_keyboard *wl_keyboard,
     if (buffer == MAP_FAILED) {
         fprintf(stderr, "Failed to mmap keymap");
 		state->running = false;
+		state->exit_code = EXIT_FAILURE;
         return;
     }
 
@@ -37,6 +39,7 @@ void wl_keyboard_keymap(void *data, struct wl_keyboard *wl_keyboard,
     if (!state->xkb_context) {
         fprintf(stderr, "Failed to create xkb context\n");
 		state->running = false;
+		state->exit_code = EXIT_FAILURE;
         return;
     }
 
@@ -49,6 +52,9 @@ void wl_keyboard_keymap(void *data, struct wl_keyboard *wl_keyboard,
     state->xkb_state = xkb_state_new(state->xkb_keymap);
     if (!state->xkb_state) {
         fprintf(stderr, "Failed to create state");
+		state->running = false;
+		state->exit_code = EXIT_FAILURE;
+		return;
     }
 
     struct xkb_compose_table* xkb_compose_table = xkb_compose_table_new_from_locale(
@@ -56,6 +62,8 @@ void wl_keyboard_keymap(void *data, struct wl_keyboard *wl_keyboard,
 
     if (!xkb_compose_table) {
         fprintf(stderr, "Failed to create xkb compose table");
+		state->running = false;
+		state->exit_code = EXIT_FAILURE;
         return;
     }
 
@@ -73,6 +81,7 @@ void wl_keyboard_leave(void *data, struct wl_keyboard *wl_keyboard,
 
 	// close on focus lost
 	state->running = false;
+	state->exit_code = EXIT_FAILURE;
 }
 
 void wl_keyboard_key(void *data, struct wl_keyboard *wl_keyboard,

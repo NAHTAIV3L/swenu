@@ -57,7 +57,7 @@ int main(int argc, char* argv[]) {
 	state.display = wl_display_connect(NULL);
 	if (!state.display) {
 		fprintf(stderr, "Failed to Connect to wayland display\n");
-		return 0;
+		return EXIT_FAILURE;
 	}
 
 	// bind globals and roundtrip
@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 	// set up graphics
 	if (!init_gl(&state)) {
 		fprintf(stderr, "Failed to Initalize EGL/OpenGL\n");
-		return 1;
+		return EXIT_FAILURE;
 	}
 
 	// create font altas textures
@@ -90,9 +90,12 @@ int main(int argc, char* argv[]) {
 		render_frame(&state);
 	}
 
+	// cleanup (of course)
 	if (state.items) {
 		array_free(state.items);
 	}
+
+	return state.exit_code;
 }
 
 void poll_events(client_state* state) {

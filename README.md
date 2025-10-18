@@ -5,7 +5,7 @@ To build: `make`
 
 ## Todo -
 - [x] "selection"
-- [ ] figure out whats going on with stderr and exit code
+- [x] figure out whats going on with stderr and exit code
 - [ ] cursor
 - [ ] fuzzy filter and sort filtering by match %
 - [ ] fancy highlights

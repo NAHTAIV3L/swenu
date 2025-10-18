@@ -45,7 +45,9 @@ void configure(void *data, struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1, 
 
 void closed(void *data, struct zwlr_layer_surface_v1 *zwlr_layer_surface_v1) {
 	client_state* state = data;
+
 	state->running = false;
+	state->exit_code = EXIT_FAILURE;
 }
 
 struct zwlr_layer_surface_v1_listener layer_surface_listener = {

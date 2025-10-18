@@ -1,6 +1,8 @@
 #include <fontconfig/fontconfig.h>
+
 #include "font.h"
 #include "array.h"
+#include "config.h"
 
 char* get_font(const char* font_name) {
 	FcPattern* pattern = FcNameParse((const FcChar8*)font_name);
@@ -56,7 +58,7 @@ bool freetype_init(client_state* state, const char* file) {
 		fprintf(stderr, "Failed to create font\n");
 		return false;
 	}
-	if (FT_Set_Char_Size(state->ft_face, 0, 16 << 6, 0, 0)) {
+	if (FT_Set_Char_Size(state->ft_face, 0, font_size << 6, 0, 0)) {
 		fprintf(stderr, "Failed to set font size\n");
 		return false;
 	}

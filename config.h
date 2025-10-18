@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
-const uint32_t min_width = 600;
+static const uint32_t min_width = 600;
+static const uint32_t font_size = 16;
 
 #endif

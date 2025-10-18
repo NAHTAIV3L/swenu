@@ -105,7 +105,11 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 
 void submit_line(client_state* state) {
 	if (state->selected_filtered_item == -1) {
-		printf("%.*s\n", (int)array_size(state->input_buffer), state->input_buffer);
+		if (state->allow_free_result) {
+			printf("%.*s\n", (int)array_size(state->input_buffer), state->input_buffer);
+		} else {
+			return;
+		}
 	} else {
 		printf("%s\n", state->items[state->filtered_items[state->selected_filtered_item]].text);
 	}

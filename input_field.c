@@ -56,6 +56,6 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 void submit_line(client_state* state) {
 	if (state->input_buffer) {
 		printf("%.*s\n", (int)array_size(state->input_buffer), state->input_buffer);
-		array_clear(state->input_buffer);
+		state->running = false;
 	}
 }

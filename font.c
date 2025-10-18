@@ -84,7 +84,7 @@ void atlas_init(client_state* state) {
 
 		state->atlas.vert_shift = MAX(state->atlas.vert_shift, metric->bearing_y - metric->bitmap_height);
 
-		// printf("%c: advance: (%f, %f), bitmap: (%u, %u), bearing: (%d, %d)\n",
+		// fprintf(stderr, "%c: advance: (%f, %f), bitmap: (%u, %u), bearing: (%d, %d)\n",
 		//  (char)i, metric->advance_x, metric->advance_y, metric->bitmap_width, metric->bitmap_height, metric->bearing_x, metric->bearing_y);
 	}
 }

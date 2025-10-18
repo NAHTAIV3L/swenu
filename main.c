@@ -80,7 +80,6 @@ int main(int argc, char* argv[]) {
 	init_text_buffer(&state, &state.input_buffer_grafix, "", 0);
 	array_for_all(item_t, item, state.items) {
 		init_text_buffer(&state, &item->text_buffer, item->text, strlen(item->text));
-		printf("%s\n", item->text);
 	}
 
 	// event loop

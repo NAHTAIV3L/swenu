@@ -10,7 +10,8 @@ MessageCallback(GLenum source,
 				GLsizei length,
 				const GLchar* message,
 				const void* userParam) {
-	fprintf( stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+	if (type != GL_DEBUG_TYPE_ERROR) return;
+	fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
 		 ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ),
 		 type, severity, message );
 }
@@ -76,7 +77,7 @@ bool init_gl(client_state* state) {
 			return false;
 		}
 
-		printf("EGL version %u.%u\n", major, minor);
+		fprintf(stderr, "EGL version %u.%u\n", major, minor);
 	}
 	eglBindAPI(EGL_OPENGL_API);
 

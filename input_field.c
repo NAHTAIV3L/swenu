@@ -33,6 +33,7 @@ void update_text_buffer(client_state* state) {
 
 bool type_key(client_state* state, xkb_keysym_t keysym) {
 	bool ctrl = xkb_state_mod_name_is_active(state->xkb_state, XKB_MOD_NAME_CTRL, XKB_STATE_MODS_EFFECTIVE);
+	bool alt = xkb_state_mod_name_is_active(state->xkb_state, XKB_MOD_NAME_ALT, XKB_STATE_MODS_EFFECTIVE);
 
 	// exit app
 	if ((keysym == XKB_KEY_c && ctrl) ||
@@ -43,14 +44,29 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 		return false;
 	}
 
+	// complete
+	if ((keysym == XKB_KEY_i && ctrl && alt) || keysym == XKB_KEY_Tab) {
+		if (state->selected_filtered_item != -1) {
+			char* selected = state->items[state->filtered_items[state->selected_filtered_item]].text;
+			size_t len = strlen(selected);
+
+			array_free(state->input_buffer);
+			state->input_buffer = array_new(char, len);
+			memcpy(state->input_buffer, selected, len);
+			
+			update_text_buffer(state);
+		}
+		return true;
+	}
+
 	// select next
-	if (keysym == XKB_KEY_n && ctrl) {
+	if ((keysym == XKB_KEY_n && ctrl) || keysym == XKB_KEY_Right || keysym == XKB_KEY_Down) {
 		state->selected_filtered_item = MIN(state->selected_filtered_item + 1, array_size(state->filtered_items) - 1);
 		return true;
 	}
 
 	// select previous
-	if (keysym == XKB_KEY_p && ctrl) {
+	if ((keysym == XKB_KEY_p && ctrl) || keysym == XKB_KEY_Left || keysym == XKB_KEY_Up) {
 		state->selected_filtered_item = MAX(state->selected_filtered_item - 1, 0);
 		return true;
 	}
@@ -88,8 +104,10 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 }
 
 void submit_line(client_state* state) {
-	if (state->input_buffer) {
+	if (state->selected_filtered_item == -1) {
 		printf("%.*s\n", (int)array_size(state->input_buffer), state->input_buffer);
-		state->running = false;
+	} else {
+		printf("%s\n", state->items[state->filtered_items[state->selected_filtered_item]].text);
 	}
+	state->running = false;
 }

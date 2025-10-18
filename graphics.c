@@ -36,6 +36,7 @@ void main() {\n\
 
 const char* fragmentShader = "#version 330 core\n\
 uniform sampler2D u_texture;\n\
+uniform vec3 u_color;\n\
 in vec2 o_uv;\n\
 \n\
 layout (location = 0) out vec4 frag_color;\n\
@@ -44,7 +45,7 @@ void main() {\n\
 	float d = texture(u_texture, o_uv).r;\n\
 	float aaf = fwidth(d);\n\
 	float alpha = smoothstep(0.5 - aaf, 0.5 + aaf, d);\n\
-	frag_color = vec4(1.0, 1.0, 1.0, alpha);\n\
+	frag_color = vec4(u_color, alpha);\n\
 }";
 
 bool init_gl(client_state* state) {
@@ -126,6 +127,7 @@ bool init_gl(client_state* state) {
 	state->text_shader = createShader(vertexShader, fragmentShader);
 	state->screen_size_uniform = glGetUniformLocation(state->text_shader, "u_screen_size");
 	state->offset_uniform = glGetUniformLocation(state->text_shader, "u_offset");
+	state->color_uniform = glGetUniformLocation(state->text_shader, "u_color");
 
 	return true;
 }
@@ -140,6 +142,7 @@ void render_frame(client_state *state) {
 	// bind shader and texture
 	glUseProgram(state->text_shader);
 	glUniform2f(state->screen_size_uniform, state->width, state->height);
+	glUniform3f(state->color_uniform, 1.0f, 1.0f, 1.0f);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
@@ -170,11 +173,14 @@ void render_frame(client_state *state) {
 	}
 
 	// draw options
-	array_for_all(uint32_t, i, state->filtered_items) {
-		item_t* item = &state->items[*i];
+	for (uint32_t i = 0; i < array_size(state->filtered_items); ++i) {
+		item_t* item = &state->items[state->filtered_items[i]];
+
 		glBindVertexArray(item->text_buffer.vao);
 		glUniform2f(state->offset_uniform, pen_x, pen_y);
+		if (i == state->selected_filtered_item) glUniform3f(state->color_uniform, 0.0f, 0.4f, 0.8f);
 		glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
+		if (i == state->selected_filtered_item) glUniform3f(state->color_uniform, 1.0f, 1.0f, 1.0f);
 
 		// shift pen
 		if (state->lines > 0) {

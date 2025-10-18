@@ -80,6 +80,7 @@ typedef struct {
 	GLuint text_shader;
 	GLuint screen_size_uniform;
 	GLuint offset_uniform;
+	GLuint color_uniform;
 	text_buffer_t input_buffer_grafix;
 
 	// fonts
@@ -96,6 +97,7 @@ typedef struct {
 
 	// state
 	char* input_buffer;
+	int selected_filtered_item;
     uint32_t width, height;
 	item_t* items;
 	uint32_t* filtered_items;

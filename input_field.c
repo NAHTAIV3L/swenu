@@ -19,6 +19,10 @@ void filter_items(client_state* state) {
 			array_add(state->filtered_items, i);
 		}
 	}
+	
+	// select item
+	if (array_size(state->filtered_items) > 0) state->selected_filtered_item = 0;
+	else state->selected_filtered_item = -1;
 }
 
 void update_text_buffer(client_state* state) {
@@ -37,6 +41,18 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 
 		state->running = false;
 		return false;
+	}
+
+	// select next
+	if (keysym == XKB_KEY_n && ctrl) {
+		state->selected_filtered_item = MIN(state->selected_filtered_item + 1, array_size(state->filtered_items) - 1);
+		return true;
+	}
+
+	// select previous
+	if (keysym == XKB_KEY_p && ctrl) {
+		state->selected_filtered_item = MAX(state->selected_filtered_item - 1, 0);
+		return true;
 	}
 
 	// submit line

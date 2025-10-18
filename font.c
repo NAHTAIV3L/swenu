@@ -62,7 +62,7 @@ bool freetype_init(client_state* state, const char* file) {
 		fprintf(stderr, "Failed to set font size\n");
 		return false;
 	}
-   	state->load_flags = FT_LOAD_RENDER | FT_LOAD_TARGET_(FT_RENDER_MODE_SDF);
+   	state->load_flags = FT_LOAD_RENDER;
 	state->line_height = state->ft_face->size->metrics.height >> 6;
 	return true;
 }
@@ -96,8 +96,8 @@ void atlas_create_texture(client_state* state) {
     glGenTextures(1, &state->atlas.texture);
     glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 

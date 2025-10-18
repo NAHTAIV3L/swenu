@@ -42,10 +42,7 @@ in vec2 o_uv;\n\
 layout (location = 0) out vec4 frag_color;\n\
 \n\
 void main() {\n\
-	float d = texture(u_texture, o_uv).r;\n\
-	float aaf = fwidth(d) * 0.5f;\n\
-	float alpha = smoothstep(0.5 - aaf, 0.5 + aaf, d);\n\
-	frag_color = vec4(u_color, alpha);\n\
+	frag_color = vec4(u_color, texture(u_texture, o_uv).r);\n\
 }";
 
 bool init_gl(client_state* state) {

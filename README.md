@@ -6,12 +6,14 @@ To build: `make`
 ## Todo -
 - [x] "selection"
 - [x] figure out whats going on with stderr and exit code
-- [ ] cursor
+- [ ] unicode
 - [ ] fuzzy filter and sort filtering by match %
+- [ ] cursor
 - [ ] fancy highlights
 - [ ] scrolling
-- [ ] unicode
 - [ ] kerning
-- [ ] input fluff
 - [ ] config file
 - [ ] emacs keybindings
+- [ ] special mode if there is no stdin
+- [ ] input fluff
+- [ ] "prompt"

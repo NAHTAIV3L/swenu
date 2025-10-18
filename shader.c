@@ -14,7 +14,7 @@ GLuint createShader(const char *vertexCode, const char *fragmentCode) {
     glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-        fprintf(stderr, "ERROR: Failed to compile vertex shader: %s\n", infoLog);
+		fprintf(stderr, "ERROR: Failed to compile vertex shader: %s\n", infoLog);
     }
 
     fragment = glCreateShader(GL_FRAGMENT_SHADER);
@@ -24,7 +24,7 @@ GLuint createShader(const char *vertexCode, const char *fragmentCode) {
     glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
     if (!success) {
         glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-        fprintf(stderr, "ERROR: Failed to compile fragment shader: %s\n", infoLog);
+		fprintf(stderr, "ERROR: Failed to compile fragment shader: %s\n", infoLog);
     }
 
     GLuint ShaderProgram = glCreateProgram();
@@ -34,7 +34,7 @@ GLuint createShader(const char *vertexCode, const char *fragmentCode) {
 
     glGetProgramiv(ShaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
-        fprintf(stderr, "Failed to link shaders\n");
+		fprintf(stderr, "Failed to link shaders\n");
     }
 
     glDeleteShader(vertex);

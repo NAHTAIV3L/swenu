@@ -16,7 +16,9 @@ void setup_registry_and_globals(client_state* state) {
 void global(void *data, struct wl_registry *wl_registry, uint32_t name, const char *interface, uint32_t version) {
 	client_state* state = data;
 
-	fprintf(stderr, "iface: %s v%d\n", interface, version);
+	if (state->verbose) {
+		fprintf(stderr, "iface: %s v%d\n", interface, version);
+	}
 
 	if (!strcmp(interface, wl_compositor_interface.name)) {
 		state->compositor = wl_registry_bind(wl_registry, name, &wl_compositor_interface, 1);

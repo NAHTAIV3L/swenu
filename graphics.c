@@ -59,54 +59,56 @@ bool init_gl(client_state* state) {
 
 	state->egl_window = wl_egl_window_create(state->surface, state->width, state->height);
 	if (!state->egl_window) {
-		fprintf(stderr, "ewindow\n");
+		fprintf(stderr, "Failed to create EGL Window\n");
 		return false;
 	}
 
 	state->egl_display = eglGetDisplay(state->display);
 	if (state->egl_display == EGL_NO_DISPLAY)  {
-		fprintf(stderr, "edisplay\n");
+		fprintf(stderr, "Failed to create EGL Display\n");
 		return false;
 	}
 	{
 		EGLint major, minor;
 		if (eglInitialize(state->egl_display, &major, &minor) != EGL_TRUE) {
-			fprintf(stderr, "eglinit\n");
+			fprintf(stderr, "Failed to initalize EGL\n");
 			return false;
 		}
 
-		fprintf(stderr, "EGL version %u.%u\n", major, minor);
+		if (state->verbose) {
+			fprintf(stderr, "EGL version %u.%u\n", major, minor);
+		}
 	}
 	eglBindAPI(EGL_OPENGL_API);
 
 	EGLint num_configs;
 	if (eglChooseConfig(state->egl_display, attrs, &state->egl_config, 1, &num_configs) != EGL_TRUE) {
-		fprintf(stderr, "econfig: %d\n", eglGetError());
+		fprintf(stderr, "Failed to choose EGL Config: %d\n", eglGetError());
 		return false;
 	}
 
 	state->egl_surface = eglCreateWindowSurface(state->egl_display, state->egl_config,
 											 (EGLNativeWindowType)state->egl_window, NULL);
 	if (state->egl_surface == EGL_NO_SURFACE) {
-		fprintf(stderr, "esurface\n");
+		fprintf(stderr, "Failed to create EGL Window Surface\n");
 		return false;
 	}
 
 	state->egl_context = eglCreateContext(state->egl_display, state->egl_config,
 									   EGL_NO_CONTEXT, NULL);
 	if (state->egl_context == EGL_NO_CONTEXT) {
-		fprintf(stderr, "econtext: %x\n", eglGetError());
+		fprintf(stderr, "Failed to create EGL Context: %x\n", eglGetError());
 		return false;
 	}
 
 	eglMakeCurrent(state->egl_display, state->egl_surface, state->egl_surface, state->egl_context);
 
 	if (!gladLoadGL()) {
-		fprintf(stderr, "gladLoadGL");
+		fprintf(stderr, "Failed to load OpenGL functions\n");
 		return false;
 	}
 
-	{
+	if (state->verbose) {
 		GLint major, minor;
 		glGetIntegerv(GL_MAJOR_VERSION, &major);
 		glGetIntegerv(GL_MINOR_VERSION, &minor);

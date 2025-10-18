@@ -96,6 +96,7 @@ typedef struct {
 	int lines;
 	bool allow_free_result;
 	bool center;
+	bool verbose;
 
 	// state
 	char* input_buffer;

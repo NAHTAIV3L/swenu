@@ -15,9 +15,9 @@ void filter_items(client_state* state) {
 	input_buffer_string[len] = '\0';
 
 	// add all strings with substring
-	for (uint32_t i = 0; i < array_size(state->items); ++i) {
-		if (strstr(state->items[i].text, input_buffer_string) != NULL) {
-			array_add(state->filtered_items, i);
+	array_for_all(item_t, i, state->items) {
+		if (strstr(i->text, input_buffer_string) != NULL) {
+			array_add(state->filtered_items, (item_display_t){ .item = i });
 		}
 	}
 
@@ -49,7 +49,7 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 	// complete
 	if ((keysym == XKB_KEY_i && ctrl && alt) || keysym == XKB_KEY_Tab) {
 		if (state->selected_filtered_item != -1) {
-			char* selected = state->items[state->filtered_items[state->selected_filtered_item]].text;
+			char* selected = state->filtered_items[state->selected_filtered_item].item->text;
 			size_t len = strlen(selected);
 
 			array_free(state->input_buffer);
@@ -108,11 +108,11 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 void submit_line(client_state* state) {
 	if (state->exact_match) {
 		if (state->selected_filtered_item == -1) return;
-		printf("%s\n", state->items[state->filtered_items[state->selected_filtered_item]].text);
+		printf("%s\n", state->filtered_items[state->selected_filtered_item].item->text);
 	}
 	else {
 		if (state->selected_filtered_item == -1) printf("%.*s\n", (int)array_size(state->input_buffer), state->input_buffer);
-		else printf("%s\n", state->items[state->filtered_items[state->selected_filtered_item]].text);
+		else printf("%s\n", state->filtered_items[state->selected_filtered_item].item->text);
 	}
 	state->running = false;
 	state->exit_code = EXIT_SUCCESS;

@@ -47,6 +47,10 @@ typedef struct {
 } item_t;
 
 typedef struct {
+	item_t* item;
+} item_display_t;
+
+typedef struct {
 	// wayland
     struct wl_display* display;
     struct wl_registry* registry;
@@ -103,7 +107,7 @@ typedef struct {
 	int selected_filtered_item;
     uint32_t width, height;
 	item_t* items;
-	uint32_t* filtered_items;
+	item_display_t* filtered_items;
     bool running;
 	int exit_code;
 

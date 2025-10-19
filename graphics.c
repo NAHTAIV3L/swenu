@@ -147,20 +147,21 @@ void render_frame(client_state *state) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
+	// calculate input buffer
 	float horizontal_spacing = state->line_height / 2.0f;
-	float pen_x = horizontal_spacing / 2.0f;
-	float pen_y = state->line_height * state->lines - state->atlas.vert_shift;
+	float input_y = state->line_height * state->lines;
+	float input_width;
+	if (state->lines > 0) { input_width = state->width; }
+	else { input_width = state->width / 3.0f; }
 
 	// draw input buffer
-	if (state->lines > 0) {
-		glScissor(pen_x, pen_y + state->atlas.vert_shift, state->width, state->line_height);
-	}
-	else {
-		glScissor(pen_x, pen_y + state->atlas.vert_shift, state->width / 3.0f - pen_x, state->line_height);
-	}
+	glScissor(0, input_y, input_width - horizontal_spacing / 2.0f, state->line_height);
 	glBindVertexArray(state->input_buffer_grafix.vao);
-	glUniform2f(state->offset_uniform, pen_x, pen_y);
+	glUniform2f(state->offset_uniform, horizontal_spacing / 2.0f, input_y - state->atlas.vert_shift);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_grafix.num_elements, GL_UNSIGNED_INT, 0);
+
+	float pen_x = 0.0f;
+	float pen_y = input_y;
 
 	// set up starting pen and scissor for options
 	if (state->lines > 0) {
@@ -168,17 +169,16 @@ void render_frame(client_state *state) {
 		pen_y -= state->line_height;
 	}
 	else {
-		pen_x += state->width / 3.0f;
+		pen_x = input_width;
 		glScissor(pen_x, 0, state->width, state->line_height);
-		pen_x += horizontal_spacing / 2.0f;
 	}
 
 	// draw options
 	for (uint32_t i = 0; i < array_size(state->filtered_items); ++i) {
-		item_t* item = &state->items[state->filtered_items[i]];
+		item_t* item = state->filtered_items[i].item;
 
 		glBindVertexArray(item->text_buffer.vao);
-		glUniform2f(state->offset_uniform, pen_x, pen_y);
+		glUniform2f(state->offset_uniform, pen_x + horizontal_spacing / 2.0f, pen_y - state->atlas.vert_shift);
 		if (i == state->selected_filtered_item) glUniform3f(state->color_uniform, 0.0f, 0.4f, 0.8f);
 		glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
 		if (i == state->selected_filtered_item) glUniform3f(state->color_uniform, 1.0f, 1.0f, 1.0f);

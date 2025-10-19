@@ -94,7 +94,7 @@ typedef struct {
 
 	// arguments
 	int lines;
-	bool allow_free_result;
+	bool exact_match;
 	bool center;
 	bool verbose;
 

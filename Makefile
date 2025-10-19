@@ -10,7 +10,7 @@ WLC=$(patsubst %.xml,$(OBJDIR)/%.c, $(WLPROT))
 WLH=$(patsubst %.xml,$(OBJDIR)/%.h, $(WLPROT))
 SRC=$(WLC) $(wildcard *.c) $(wildcard glad/*.c)
 OBJ=$(patsubst %.c,$(OBJDIR)/%.o, $(notdir $(SRC)))
-HDEPS=state.h wayland.h
+HDEPS=state.h wayland.h config.h
 
 .SILENT: $(OBJ) $(WLC) $(WLH) $(BIN) $(OBJDIR) compile_flags
 
@@ -58,6 +58,6 @@ uninstall:
 	rm -rf $(PREFIX)/usr/bin/$(BIN)
 
 run: all
-	./$(BIN)
+	./swenu-run.sh
 
 .PHONY: all clean run compile_flags install uninstall

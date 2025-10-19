@@ -53,9 +53,13 @@ clean:
 
 install: all
 	install -m 755 ./$(BIN) $(PREFIX)/usr/bin
+	install -m 755 ./swenu-run $(PREFIX)/usr/bin
+	install -m 755 ./swenu-path $(PREFIX)/usr/bin
 
 uninstall:
-	rm -rf $(PREFIX)/usr/bin/$(BIN)
+	rm -f $(PREFIX)/usr/bin/$(BIN)
+	rm -f $(PREFIX)/usr/bin/swenu-run
+	rm -f $(PREFIX)/usr/bin/swenu-path
 
 run: all
 	./swenu-run.sh

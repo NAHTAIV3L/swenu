@@ -154,7 +154,12 @@ void render_frame(client_state *state) {
 	else { input_width = state->width / 3.0f; }
 
 	// draw input buffer
-	glScissor(0, input_y, input_width - state->horizontal_spacing / 2.0f, state->line_height);
+	if (array_size(state->filtered_items) != 0) {
+		glScissor(0, input_y, input_width - state->horizontal_spacing / 2.0f, state->line_height);
+	}
+	else {
+		glScissor(0, 0, state->width, state->height);
+	}
 	glBindVertexArray(state->input_buffer_grafix.vao);
 	glUniform2f(state->offset_uniform, state->horizontal_spacing / 2.0f, input_y - state->atlas.vert_shift);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_grafix.num_elements, GL_UNSIGNED_INT, 0);
@@ -165,35 +170,39 @@ void render_frame(client_state *state) {
 		glScissor(0, 0, state->width, input_y);
 		start = input_y - state->line_height + state->scroll;
 
-		// calc scroll
-		float selected_bot = start - state->filtered_items[state->selected_filtered_item].offset;
-		float selected_top = selected_bot + state->line_height;
-		if (selected_bot < 0) {
-			state->scroll -= selected_bot;
-			start -= selected_bot;
-		}
-		float diff = selected_top - input_y;
-		if (diff > 0) {
-			state->scroll -= diff;
-			start -= diff;
+		if (array_size(state->filtered_items) != 0) {
+			// calc scroll
+			float selected_bot = start - state->filtered_items[state->selected_filtered_item].offset;
+			float selected_top = selected_bot + state->line_height;
+			if (selected_bot < 0) {
+				state->scroll -= selected_bot;
+				start -= selected_bot;
+			}
+			float diff = selected_top - input_y;
+			if (diff > 0) {
+				state->scroll -= diff;
+				start -= diff;
+			}
 		}
 	} else {
 		glScissor(input_width, 0, state->width, state->line_height);
 		start = input_width + state->scroll;
 
-		// calc scroll
-		item_display_t* selected = &state->filtered_items[state->selected_filtered_item];
-		float selected_left = start + selected->offset;
-		float selected_right = selected_left + selected->item->pixel_len + state->horizontal_spacing;
-		float diff = selected_right - state->width;
-		if (diff > 0) {
-			state->scroll -= diff;
-			start -= diff;
-		}
-		diff = selected_left - input_width;
-		if (diff < 0) {
-			state->scroll -= diff;
-			start -= diff;
+		if (array_size(state->filtered_items) != 0) {
+			// calc scroll
+			item_display_t* selected = &state->filtered_items[state->selected_filtered_item];
+			float selected_left = start + selected->offset;
+			float selected_right = selected_left + selected->item->pixel_len + state->horizontal_spacing;
+			float diff = selected_right - state->width;
+			if (diff > 0) {
+				state->scroll -= diff;
+				start -= diff;
+			}
+			diff = selected_left - input_width;
+			if (diff < 0) {
+				state->scroll -= diff;
+				start -= diff;
+			}
 		}
 	}
 
@@ -214,9 +223,22 @@ void render_frame(client_state *state) {
 
 		glBindVertexArray(item->text_buffer.vao);
 		glUniform2f(state->offset_uniform, x + state->horizontal_spacing / 2.0f, y - state->atlas.vert_shift);
-		if (i == state->selected_filtered_item) glUniform3f(state->color_uniform, 0.0f, 0.4f, 0.8f);
+		if (i == state->selected_filtered_item) {
+			glUniform3f(state->color_uniform, 1.0f, 1.0f, 1.0f);
+			glScissor(x, y, ((state->lines > 0) ? state->width : item->pixel_len + state->horizontal_spacing), state->line_height);
+			glClearColor(0.0f, 0.4f, 0.8f, 1.0);
+			glClear(GL_COLOR_BUFFER_BIT);
+		}
 		glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
-		if (i == state->selected_filtered_item) glUniform3f(state->color_uniform, 1.0f, 1.0f, 1.0f);
+		if (i == state->selected_filtered_item) {
+			glUniform3f(state->color_uniform, 1.0f, 1.0f, 1.0f);
+			if (state->lines > 0) {
+				glScissor(0, 0, state->width, input_y);
+			}
+			else {
+				glScissor(input_width, 0, state->width, state->line_height);
+			}
+		}
 	}
 
 	// present screen

@@ -16,34 +16,36 @@ MessageCallback(GLenum source,
 		 type, severity, message );
 }
 
-const char* vertexShader = "#version 330 core\n\
-layout (location = 0) in vec2 pos;\n\
-layout (location = 1) in vec2 uv;\n\
-\n\
-uniform vec2 u_screen_size;\n\
-uniform vec2 u_offset;\n\
-\n\
-out vec2 o_uv;\n\
-\n\
-vec2 project(vec2 point) { \n\
-    return (((2.0 * point) / u_screen_size) - vec2(1)); \n\
-} \n\
-\n\
-void main() {\n\
-	o_uv = uv;\n\
-	gl_Position = vec4(project(pos + u_offset), 0.0, 1.0);\n\
-}";
+const char* vertexShader =
+	"#version 330 core\n"
+	"layout (location = 0) in vec2 pos;"
+	"layout (location = 1) in vec2 uv;"
+	""
+	"uniform vec2 u_screen_size;"
+	"uniform vec2 u_offset;"
+	""
+	"out vec2 o_uv;"
+	""
+	"vec2 project(vec2 point) { "
+	"	return (((2.0 * point) / u_screen_size) - vec2(1)); "
+	"}"
+	""
+	"void main() {"
+	"	o_uv = uv;"
+	"	gl_Position = vec4(project(pos + u_offset), 0.0, 1.0);"
+	"}";
 
-const char* fragmentShader = "#version 330 core\n\
-uniform sampler2D u_texture;\n\
-uniform vec3 u_color;\n\
-in vec2 o_uv;\n\
-\n\
-layout (location = 0) out vec4 frag_color;\n\
-\n\
-void main() {\n\
-	frag_color = vec4(u_color, texture(u_texture, o_uv).r);\n\
-}";
+const char* fragmentShader =
+	"#version 330 core\n"
+	"uniform sampler2D u_texture;"
+	"uniform vec3 u_color;"
+	"in vec2 o_uv;"
+	""
+	"layout (location = 0) out vec4 frag_color;"
+	""
+	"void main() {"
+	"	frag_color = vec4(u_color, texture(u_texture, o_uv).r);"
+	"}";
 
 bool init_gl(client_state* state) {
 	EGLint attrs[] = {

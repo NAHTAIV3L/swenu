@@ -111,7 +111,8 @@ void submit_line(client_state* state) {
 		printf("%s\n", state->items[state->filtered_items[state->selected_filtered_item]].text);
 	}
 	else {
-		printf("%.*s\n", (int)array_size(state->input_buffer), state->input_buffer);
+		if (state->selected_filtered_item == -1) printf("%.*s\n", (int)array_size(state->input_buffer), state->input_buffer);
+		else printf("%s\n", state->items[state->filtered_items[state->selected_filtered_item]].text);
 	}
 	state->running = false;
 	state->exit_code = EXIT_SUCCESS;

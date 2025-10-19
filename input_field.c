@@ -24,6 +24,14 @@ void filter_items(client_state* state) {
 	// select item
 	if (array_size(state->filtered_items) > 0) state->selected_filtered_item = 0;
 	else state->selected_filtered_item = -1;
+
+	// lay out items
+	float offset = 0;
+	array_for_all(item_display_t, display, state->filtered_items) {
+		display->offset = offset;
+		if (state->lines > 0) offset += state->line_height;
+		else offset += display->item->pixel_len + state->horizontal_spacing;
+	}
 }
 
 void update_text_buffer(client_state* state) {

@@ -66,6 +66,8 @@ bool freetype_init(client_state* state, const char* file) {
 	}
    	state->load_flags = FT_LOAD_RENDER;
 	state->line_height = state->ft_face->size->metrics.height >> 6;
+	state->horizontal_spacing = state->line_height / 2.0f;
+
 	return true;
 }
 
@@ -154,7 +156,7 @@ void atlas_calc_item_widths(client_state* state) {
 	if (state->items) {
 		array_for_all(item_t, item, state->items) {
 			item->pixel_len = atlas_get_strwidth(state, item->text);
-			state->required_width = MAX(state->required_width, item->pixel_len + state->line_height / 2.0f);
+			state->required_width = MAX(state->required_width, item->pixel_len + state->horizontal_spacing);
 		}
 	}
 }

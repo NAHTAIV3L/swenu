@@ -40,7 +40,6 @@ int main(int argc, char* argv[]) {
 	// read input
 	parse_args(&state, argc, argv);
 	read_stdin(&state);
-	filter_items(&state);
 
 	// find font
 	char* font = get_font("Monospace");
@@ -83,6 +82,7 @@ int main(int argc, char* argv[]) {
 	array_for_all(item_t, item, state.items) {
 		init_text_buffer(&state, &item->text_buffer, item->text, strlen(item->text));
 	}
+	filter_items(&state);
 
 	// event loop
 	while (state.running) {

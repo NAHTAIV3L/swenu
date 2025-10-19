@@ -48,6 +48,7 @@ typedef struct {
 
 typedef struct {
 	item_t* item;
+	float offset;
 } item_display_t;
 
 typedef struct {
@@ -95,6 +96,7 @@ typedef struct {
 	uint32_t line_height;
 
 	uint32_t required_width;
+	float horizontal_spacing;
 
 	// arguments
 	int lines;
@@ -104,6 +106,7 @@ typedef struct {
 
 	// state
 	char* input_buffer;
+	float scroll;
 	int selected_filtered_item;
     uint32_t width, height;
 	item_t* items;

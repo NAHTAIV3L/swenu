@@ -204,7 +204,7 @@ void render_frame(client_state *state) {
 	glUniform4f(state->b_color_uniform, cursor_color.r,cursor_color.g,cursor_color.b,cursor_color.a);
 	glUniform2f(state->b_screen_size_uniform, state->width, state->height);
 	glUniform2f(state->b_start_uniform, state->input_buffer_grafix.pixel_len + state->horizontal_spacing / 2.0f, input_y);
-	glUniform2f(state->b_size_uniform, 10.0f, state->line_height);
+	glUniform2f(state->b_size_uniform, state->atlas.metrics['m'].bitmap_width, state->line_height);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	float start;

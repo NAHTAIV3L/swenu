@@ -99,11 +99,11 @@ int main(int argc, char* argv[]) {
 }
 
 void poll_events(client_state* state) {
-    enum { DISPLAY_FD, KEYREPEAT_FD };
-    struct pollfd fds[] = {
-        [DISPLAY_FD] = { wl_display_get_fd(state->display), POLLIN },
-        [KEYREPEAT_FD] = { state->key_repeat_timer_fd, POLLIN },
-    };
+	enum { DISPLAY_FD, KEYREPEAT_FD };
+	struct pollfd fds[] = {
+		[DISPLAY_FD] = { wl_display_get_fd(state->display), POLLIN },
+		[KEYREPEAT_FD] = { state->key_repeat_timer_fd, POLLIN },
+	};
 
     bool event = false;
     while (!event) {

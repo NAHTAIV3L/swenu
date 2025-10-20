@@ -224,20 +224,23 @@ void render_frame(client_state *state) {
 		glBindVertexArray(item->text_buffer.vao);
 		glUniform2f(state->offset_uniform, x + state->horizontal_spacing / 2.0f, y - state->atlas.vert_shift);
 		if (i == state->selected_filtered_item) {
-			glUniform3f(state->color_uniform, 1.0f, 1.0f, 1.0f);
+			// draw box
 			glScissor(x, y, ((state->lines > 0) ? state->width : item->pixel_len + state->horizontal_spacing), state->line_height);
 			glClearColor(0.0f, 0.4f, 0.8f, 1.0);
 			glClear(GL_COLOR_BUFFER_BIT);
-		}
-		glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
-		if (i == state->selected_filtered_item) {
-			glUniform3f(state->color_uniform, 1.0f, 1.0f, 1.0f);
 			if (state->lines > 0) {
 				glScissor(0, 0, state->width, input_y);
 			}
 			else {
 				glScissor(input_width, 0, state->width, state->line_height);
 			}
+
+			// draw text
+			glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
+		} else {
+
+			// draw text
+			glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
 		}
 	}
 

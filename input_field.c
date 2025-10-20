@@ -4,9 +4,12 @@
 #include "array.h"
 #include "graphics.h"
 
+int compare(const void *a, const void *b) {
+    return strlen(((item_display_t*)a)->item->text) > strlen(((item_display_t*)b)->item->text);
+}
+
 void filter_items(client_state* state) {
 	if (!state->items) return;
-	array_clear(state->filtered_items);
 
 	// get null terminated input buffer
 	size_t len = array_size(state->input_buffer);
@@ -15,11 +18,13 @@ void filter_items(client_state* state) {
 	input_buffer_string[len] = '\0';
 
 	// add all strings with substring
+	array_clear(state->filtered_items);
 	array_for_all(item_t, i, state->items) {
 		if (strstr(i->text, input_buffer_string) != NULL) {
 			array_add(state->filtered_items, (item_display_t){ .item = i });
 		}
 	}
+	qsort(state->filtered_items, array_size(state->filtered_items), sizeof(item_display_t), compare);
 
 	// select item
 	if (array_size(state->filtered_items) > 0) state->selected_filtered_item = 0;

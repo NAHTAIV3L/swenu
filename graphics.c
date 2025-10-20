@@ -145,7 +145,7 @@ bool init_gl(client_state* state) {
 	}
 
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 	glEnable(GL_SCISSOR_TEST);
 
@@ -173,9 +173,7 @@ void render_frame(client_state *state) {
 	glViewport(0, 0, state->width, state->height);
 	glScissor(0, 0, state->width, state->height);
 	glClearColor(background_color.r,background_color.g,background_color.b,background_color.a);
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE); // allow alpha channel set by background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_FALSE); // don't allow alpha channel to be set after
 
 	// bind shader and texture
 	glUseProgram(state->text_shader);

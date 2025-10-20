@@ -1,5 +1,6 @@
 #include "graphics.h"
 #include "array.h"
+#include "config.h"
 #include "shader.h"
 
 void GLAPIENTRY
@@ -38,13 +39,13 @@ const char* vertexShader =
 const char* fragmentShader =
 	"#version 330 core\n"
 	"uniform sampler2D u_texture;"
-	"uniform vec3 u_color;"
+	"uniform vec4 u_color;"
 	"in vec2 o_uv;"
 	""
 	"layout (location = 0) out vec4 frag_color;"
 	""
 	"void main() {"
-	"	frag_color = vec4(u_color, texture(u_texture, o_uv).r);"
+	"	frag_color = u_color * vec4(1.0, 1.0, 1.0, texture(u_texture, o_uv).r);"
 	"}";
 
 bool init_gl(client_state* state) {
@@ -137,13 +138,13 @@ void render_frame(client_state *state) {
 	// set up frame
 	glViewport(0, 0, state->width, state->height);
 	glScissor(0, 0, state->width, state->height);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClearColor(background_color.r,background_color.g,background_color.b,background_color.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// bind shader and texture
 	glUseProgram(state->text_shader);
 	glUniform2f(state->screen_size_uniform, state->width, state->height);
-	glUniform3f(state->color_uniform, 1.0f, 1.0f, 1.0f);
+	glUniform4f(state->color_uniform, text_color.r,text_color.g,text_color.b,text_color.a);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
@@ -226,7 +227,7 @@ void render_frame(client_state *state) {
 		if (i == state->selected_filtered_item) {
 			// draw box
 			glScissor(x, y, ((state->lines > 0) ? state->width : item->pixel_len + state->horizontal_spacing), state->line_height);
-			glClearColor(0.0f, 0.4f, 0.8f, 1.0);
+			glClearColor(highlight_color.r,highlight_color.g,highlight_color.b,highlight_color.a);
 			glClear(GL_COLOR_BUFFER_BIT);
 			if (state->lines > 0) {
 				glScissor(0, 0, state->width, input_y);

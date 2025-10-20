@@ -83,9 +83,14 @@ typedef struct {
 
 	// graphics
 	GLuint text_shader;
-	GLuint screen_size_uniform;
-	GLuint offset_uniform;
-	GLuint color_uniform;
+	GLuint t_screen_size_uniform;
+	GLuint t_offset_uniform;
+	GLuint t_color_uniform;
+	GLuint box_shader;
+	GLuint b_screen_size_uniform;
+	GLuint b_start_uniform;
+	GLuint b_size_uniform;
+	GLuint b_color_uniform;
 	text_buffer_t input_buffer_grafix;
 
 	// fonts
@@ -105,12 +110,12 @@ typedef struct {
 	bool verbose;
 
 	// state
-	char* input_buffer;
-	float scroll;
-	int selected_filtered_item;
     uint32_t width, height;
+	char* input_buffer;
 	item_t* items;
 	item_display_t* filtered_items;
+	int selected_filtered_item;
+	float scroll;
     bool running;
 	int exit_code;
 

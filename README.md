@@ -10,16 +10,11 @@ To build: `make`
 - [X] special mode if there is no stdin
 - [x] sort filtering by match %
 - [ ] cursor
+- [ ] page scroll
 - [ ] fuzzy filter
-- [ ] unicode
-- [ ] kerning
-- [ ] config file
-- [ ] emacs keybindings
-- [ ] input fluff
 - [ ] "prompt"
 - [ ] cursor
 - [ ] emacs keybindings
-- [ ] fuzzy filter
 - [ ] config file
 - [ ] input fluff
 - [ ] unicode

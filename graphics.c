@@ -17,7 +17,7 @@ MessageCallback(GLenum source,
 		 type, severity, message );
 }
 
-const char* vertexShader =
+const char* text_vertex_shader =
 	"#version 330 core\n"
 	"layout (location = 0) in vec2 pos;"
 	"layout (location = 1) in vec2 uv;"
@@ -36,7 +36,7 @@ const char* vertexShader =
 	"	gl_Position = vec4(project(pos + u_offset), 0.0, 1.0);"
 	"}";
 
-const char* fragmentShader =
+const char* text_fragment_shader =
 	"#version 330 core\n"
 	"uniform sampler2D u_texture;"
 	"uniform vec4 u_color;"
@@ -46,6 +46,32 @@ const char* fragmentShader =
 	""
 	"void main() {"
 	"	frag_color = u_color * vec4(1.0, 1.0, 1.0, texture(u_texture, o_uv).r);"
+	"}";
+
+const char* box_vertex_shader =
+	"#version 330 core\n"
+	"uniform vec2 u_screen_size;"
+	"uniform vec2 u_start;"
+	"uniform vec2 u_size;"
+	""
+	"vec2 project(vec2 point) { "
+	"	return (((2.0 * point) / u_screen_size) - vec2(1)); "
+	"}"
+	""
+	"void main() {"
+	"   uint b = uint(1 << (gl_VertexID % 6));"
+	"   vec2 offset = vec2((uint(0x1C) & b) != uint(0), (uint(0x0E) & b) != uint(0));"
+	"	gl_Position = vec4(project(u_start + offset * u_size), 0.0, 1.0);"
+	"}";
+
+const char* box_fragment_shader =
+	"#version 330 core\n"
+	"uniform vec4 u_color;"
+	""
+	"layout (location = 0) out vec4 frag_color;"
+	""
+	"void main() {"
+	"	frag_color = u_color;"
 	"}";
 
 bool init_gl(client_state* state) {
@@ -126,10 +152,18 @@ bool init_gl(client_state* state) {
 	glEnable(GL_DEBUG_OUTPUT);
 	glDebugMessageCallback(MessageCallback, 0);
 
-	state->text_shader = createShader(vertexShader, fragmentShader);
-	state->screen_size_uniform = glGetUniformLocation(state->text_shader, "u_screen_size");
-	state->offset_uniform = glGetUniformLocation(state->text_shader, "u_offset");
-	state->color_uniform = glGetUniformLocation(state->text_shader, "u_color");
+	// text shader
+	state->text_shader = createShader(text_vertex_shader, text_fragment_shader);
+	state->t_screen_size_uniform = glGetUniformLocation(state->text_shader, "u_screen_size");
+	state->t_offset_uniform = glGetUniformLocation(state->text_shader, "u_offset");
+	state->t_color_uniform = glGetUniformLocation(state->text_shader, "u_color");
+
+	// box shader
+	state->box_shader = createShader(box_vertex_shader, box_fragment_shader);
+	state->b_screen_size_uniform = glGetUniformLocation(state->box_shader, "u_screen_size");
+	state->b_start_uniform = glGetUniformLocation(state->box_shader, "u_start");
+	state->b_size_uniform = glGetUniformLocation(state->box_shader, "u_size");
+	state->b_color_uniform = glGetUniformLocation(state->box_shader, "u_color");
 
 	return true;
 }
@@ -143,8 +177,8 @@ void render_frame(client_state *state) {
 
 	// bind shader and texture
 	glUseProgram(state->text_shader);
-	glUniform2f(state->screen_size_uniform, state->width, state->height);
-	glUniform4f(state->color_uniform, text_color.r,text_color.g,text_color.b,text_color.a);
+	glUniform2f(state->t_screen_size_uniform, state->width, state->height);
+	glUniform4f(state->t_color_uniform, text_color.r,text_color.g,text_color.b,text_color.a);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
@@ -162,8 +196,16 @@ void render_frame(client_state *state) {
 		glScissor(0, 0, state->width, state->height);
 	}
 	glBindVertexArray(state->input_buffer_grafix.vao);
-	glUniform2f(state->offset_uniform, state->horizontal_spacing / 2.0f, input_y - state->atlas.vert_shift);
+	glUniform2f(state->t_offset_uniform, state->horizontal_spacing / 2.0f, input_y - state->atlas.vert_shift);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_grafix.num_elements, GL_UNSIGNED_INT, 0);
+
+	// draw cursor box
+	glUseProgram(state->box_shader);
+	glUniform4f(state->b_color_uniform, cursor_color.r,cursor_color.g,cursor_color.b,cursor_color.a);
+	glUniform2f(state->b_screen_size_uniform, state->width, state->height);
+	glUniform2f(state->b_start_uniform, state->input_buffer_grafix.pixel_len + state->horizontal_spacing / 2.0f, input_y);
+	glUniform2f(state->b_size_uniform, 10.0f, state->line_height);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	float start;
 	// set up starting pen and scissor for options
@@ -207,7 +249,35 @@ void render_frame(client_state *state) {
 		}
 	}
 
+	// draw highlighted option box
+	if (state->selected_filtered_item != -1) {
+		item_display_t* display = &state->filtered_items[state->selected_filtered_item];
+		item_t* item = display->item;
+
+		float x,y;
+		if (state->lines > 0) {
+			x = 0;
+			y = start - display->offset;
+		}
+		else {
+			x = start + display->offset;
+			y = 0;
+		}
+
+		glUseProgram(state->box_shader);
+		glUniform4f(state->b_color_uniform, highlight_color.r,highlight_color.g,highlight_color.b,highlight_color.a);
+		glUniform2f(state->b_screen_size_uniform, state->width, state->height);
+		glUniform2f(state->b_start_uniform, x, y);
+		glUniform2f(state->b_size_uniform, (state->lines > 0) ? state->width : item->pixel_len + state->horizontal_spacing, state->line_height);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+
 	// draw options
+	glUseProgram(state->text_shader);
+	glUniform2f(state->t_screen_size_uniform, state->width, state->height);
+	glUniform4f(state->t_color_uniform, text_color.r,text_color.g,text_color.b,text_color.a);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 	for (uint32_t i = 0; i < array_size(state->filtered_items); ++i) {
 		item_display_t* display = &state->filtered_items[i];
 		item_t* item = display->item;
@@ -223,26 +293,8 @@ void render_frame(client_state *state) {
 		}
 
 		glBindVertexArray(item->text_buffer.vao);
-		glUniform2f(state->offset_uniform, x + state->horizontal_spacing / 2.0f, y - state->atlas.vert_shift);
-		if (i == state->selected_filtered_item) {
-			// draw box
-			glScissor(x, y, ((state->lines > 0) ? state->width : item->pixel_len + state->horizontal_spacing), state->line_height);
-			glClearColor(highlight_color.r,highlight_color.g,highlight_color.b,highlight_color.a);
-			glClear(GL_COLOR_BUFFER_BIT);
-			if (state->lines > 0) {
-				glScissor(0, 0, state->width, input_y);
-			}
-			else {
-				glScissor(input_width, 0, state->width, state->line_height);
-			}
-
-			// draw text
-			glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
-		} else {
-
-			// draw text
-			glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
-		}
+		glUniform2f(state->t_offset_uniform, x + state->horizontal_spacing / 2.0f, y - state->atlas.vert_shift);
+		glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
 	}
 
 	// present screen

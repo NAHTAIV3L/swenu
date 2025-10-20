@@ -89,7 +89,6 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 	// submit line
 	if (keysym == XKB_KEY_Return || keysym == XKB_KEY_KP_Enter) {
 		submit_line(state);
-		update_text_buffer(state);
 		return false;
 	}
 

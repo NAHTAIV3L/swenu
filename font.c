@@ -66,7 +66,7 @@ bool freetype_init(client_state* state, const char* file) {
 	}
    	state->load_flags = FT_LOAD_RENDER;
 	state->line_height = state->ft_face->size->metrics.height >> 6;
-	state->horizontal_spacing = state->line_height;
+	state->horizontal_spacing = state->line_height / 2.0f;
 
 	return true;
 }

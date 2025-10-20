@@ -17,3 +17,10 @@ To build: `make`
 - [ ] emacs keybindings
 - [ ] input fluff
 - [ ] "prompt"
+- [ ] cursor
+- [ ] emacs keybindings
+- [ ] fuzzy filter
+- [ ] config file
+- [ ] input fluff
+- [ ] unicode
+- [ ] kerning

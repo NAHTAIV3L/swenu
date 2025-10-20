@@ -1,3 +1,4 @@
+PREFIX=/usr
 BIN=swenu
 CC=gcc
 OBJDIR=objs
@@ -8,18 +9,22 @@ VPATH=/usr/share/wayland-protocols/staging/cursor-shape/:/usr/share/wayland-prot
 WLPROT=cursor-shape-v1.xml tablet-v2.xml wlr-layer-shell-unstable-v1.xml xdg-shell.xml
 WLC=$(patsubst %.xml,$(OBJDIR)/%.c, $(WLPROT))
 WLH=$(patsubst %.xml,$(OBJDIR)/%.h, $(WLPROT))
-SRC=$(WLC) $(wildcard *.c) $(wildcard glad/*.c)
+SRC=$(WLC) $(filter-out swenu-exes.c , $(wildcard *.c)) $(wildcard glad/*.c)
 OBJ=$(patsubst %.c,$(OBJDIR)/%.o, $(notdir $(SRC)))
 HDEPS=state.h wayland.h config.h
 
-.SILENT: $(OBJ) $(WLC) $(WLH) $(BIN) $(OBJDIR) compile_flags
+.SILENT: $(OBJ) $(WLC) $(WLH) $(BIN) $(OBJDIR) compile_flags swenu-exes $(OBJDIR)/swenu-exes.o
 
-all: $(OBJDIR) $(BIN)
+all: $(OBJDIR) $(BIN) swenu-exes
 
 $(OBJDIR):
 	[ -d $@ ] || mkdir -p $@
 
 $(BIN): $(OBJ)
+	printf "  LD %s\n" $@
+	$(CC) $(LDFLAGS) $^ -o $@
+
+swenu-exes: $(OBJDIR)/swenu-exes.o
 	printf "  LD %s\n" $@
 	$(CC) $(LDFLAGS) $^ -o $@
 
@@ -52,14 +57,16 @@ clean:
 	rm -rf $(BIN) $(OBJDIR)
 
 install: all
-	install -m 755 ./$(BIN) $(PREFIX)/usr/bin
-	install -m 755 ./swenu-run $(PREFIX)/usr/bin
-	install -m 755 ./swenu-path $(PREFIX)/usr/bin
+	install -m 755 ./$(BIN) $(PREFIX)/bin
+	install -m 755 ./swenu-run $(PREFIX)/bin
+	install -m 755 ./swenu-path $(PREFIX)/bin
+	install -m 755 ./swenu-exes $(PREFIX)/bin
 
 uninstall:
-	rm -f $(PREFIX)/usr/bin/$(BIN)
-	rm -f $(PREFIX)/usr/bin/swenu-run
-	rm -f $(PREFIX)/usr/bin/swenu-path
+	rm -f $(PREFIX)/bin/$(BIN)
+	rm -f $(PREFIX)/bin/swenu-run
+	rm -f $(PREFIX)/bin/swenu-path
+	rm -f $(PREFIX)/bin/swenu-exes
 
 run: all
 	./swenu-run.sh

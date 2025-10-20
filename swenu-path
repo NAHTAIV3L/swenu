@@ -1,6 +1,12 @@
 #!/bin/sh
 
-IFS=:
-for dir in $PATH; do
-	[ -e ${dir} ]  && find ${dir} -executable -printf '%f\n'
-done | sort -u
+cachedir="${XDG_CACHE_HOME:-"$HOME/.cache"}"
+cache="$cachedir/swenu-run"
+
+[ ! -e "$cachedir" ] && mkdir -p "$cachedir"
+
+if swenu-exes "$cache"; then
+	swenu-exes | sort -u | tee $cache
+else
+	cat $cache
+fi

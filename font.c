@@ -68,7 +68,7 @@ bool freetype_init(client_state* state, const char* file) {
 		fprintf(stderr, "Failed to set font size\n");
 		return false;
 	}
-   	state->load_flags = FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL;
+	state->load_flags = FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL;
 	state->line_height = state->ft_face->size->metrics.height >> 6;
 	state->horizontal_spacing = state->line_height / 2.0f;
 

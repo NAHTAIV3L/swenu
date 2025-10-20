@@ -9,13 +9,13 @@ To build: `make`
 - [X] scrolling
 - [X] special mode if there is no stdin
 - [x] sort filtering by match %
-- [ ] cursor
+- [x] cursor
 - [ ] page scroll
+- [ ] unicode
+- [ ] emacs keybindings
+- [ ] protocol clipboard
 - [ ] fuzzy filter
 - [ ] "prompt"
-- [ ] cursor
-- [ ] emacs keybindings
 - [ ] config file
 - [ ] input fluff
-- [ ] unicode
 - [ ] kerning

@@ -76,13 +76,17 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 
 	// select next
 	if ((keysym == XKB_KEY_n && ctrl) || keysym == XKB_KEY_Right || keysym == XKB_KEY_Down) {
-		state->selected_filtered_item = MIN(state->selected_filtered_item + 1, array_size(state->filtered_items) - 1);
+		if (state->selected_filtered_item != -1) {
+			state->selected_filtered_item = MIN(state->selected_filtered_item + 1, (int)array_size(state->filtered_items) - 1);
+		}
 		return true;
 	}
 
 	// select previous
 	if ((keysym == XKB_KEY_p && ctrl) || keysym == XKB_KEY_Left || keysym == XKB_KEY_Up) {
-		state->selected_filtered_item = MAX(state->selected_filtered_item - 1, 0);
+		if (state->selected_filtered_item != -1) {
+			state->selected_filtered_item = MAX(state->selected_filtered_item - 1, 0);
+		}
 		return true;
 	}
 

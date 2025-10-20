@@ -3,6 +3,7 @@
 #include "font.h"
 #include "array.h"
 #include "config.h"
+#include <freetype/ftmodapi.h>
 
 const float ATLAS_PADDING = 3.0f;
 
@@ -56,6 +57,9 @@ bool freetype_init(client_state* state, const char* file) {
 		fprintf(stderr, "Failed to intalize FreeType Library\n");
 		return false;
 	}
+	FT_Bool     no_stem_darkening = true;
+	FT_Property_Set(state->ft_library, "cff",
+				 "no-stem-darkening", &no_stem_darkening );
 	if (FT_New_Face(state->ft_library, file, 0, &state->ft_face)) {
 		fprintf(stderr, "Failed to create font\n");
 		return false;
@@ -64,7 +68,7 @@ bool freetype_init(client_state* state, const char* file) {
 		fprintf(stderr, "Failed to set font size\n");
 		return false;
 	}
-   	state->load_flags = FT_LOAD_RENDER;
+   	state->load_flags = FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL;
 	state->line_height = state->ft_face->size->metrics.height >> 6;
 	state->horizontal_spacing = state->line_height / 2.0f;
 

@@ -43,6 +43,23 @@ void* array_add_(void* array, size_t item_size) {
     return &(info[1]);
 }
 
+void array_resize(void* array, size_t size) {
+    array_info* info = &((array_info*)array)[-1];
+	info->size = size;
+	if (size > info->capacity) {
+		info->capacity = size;
+
+		// round up to next power of 2
+		info->capacity--;
+		info->capacity |= info->capacity >> 1;
+		info->capacity |= info->capacity >> 2;
+		info->capacity |= info->capacity >> 4;
+		info->capacity |= info->capacity >> 8;
+		info->capacity |= info->capacity >> 16;
+		info->capacity++;
+	}
+}
+
 void array_print(void* array) {
     array_info* info = &((array_info*)array)[-1];
     printf( "size: %lu\n"

@@ -10,6 +10,7 @@ typedef struct {
 } array_info;
 
 array_info* array_new_(size_t item_size, size_t size);
+void array_resize(void* array, size_t size);
 void array_print(void* array);
 void array_pop(void* array);
 void* array_add_(void* array, size_t item_size);

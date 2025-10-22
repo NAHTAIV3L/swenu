@@ -112,7 +112,7 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 		update_text_buffer(state);
 
 		free(buffer);
-		return false;
+		return true;
 	}
 
 	// submit line

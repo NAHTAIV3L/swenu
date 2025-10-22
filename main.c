@@ -1,3 +1,5 @@
+#include <locale.h>
+#include <langinfo.h>
 #include <stdio.h>
 #include <poll.h>
 #include <unistd.h>
@@ -36,6 +38,14 @@ int main(int argc, char* argv[]) {
 	state.running = true;
 	state.input_buffer = array_new(char, 0);
 	state.filtered_items = array_new(item_display_t, 0);
+
+	// check locale
+	setlocale(LC_ALL, "");
+	const char *encoding = nl_langinfo(CODESET);
+	if (strcmp(encoding, "UTF-8") != 0) {
+		fprintf(stderr, "Cannot continue because encoding (%s), is not UTF-8.", encoding);
+		return EXIT_FAILURE;
+	}
 
 	// read input
 	parse_args(&state, argc, argv);

@@ -24,13 +24,16 @@ void global(void *data, struct wl_registry *wl_registry, uint32_t name, const ch
 		state->compositor = wl_registry_bind(wl_registry, name, &wl_compositor_interface, 1);
 	}
 	else if (!strcmp(interface, wl_seat_interface.name)) {
-		state->seat = wl_registry_bind(state->registry, name, &wl_seat_interface, 4);
+		state->seat = wl_registry_bind(wl_registry, name, &wl_seat_interface, 4);
 	}
 	else if (!strcmp(interface, zwlr_layer_shell_v1_interface.name)) {
 		state->layer_shell = wl_registry_bind(wl_registry, name, &zwlr_layer_shell_v1_interface, 5);
 	}
 	else if (!strcmp(interface, wp_cursor_shape_manager_v1_interface.name)) {
 		state->cursor_shape_manager = wl_registry_bind( wl_registry, name, &wp_cursor_shape_manager_v1_interface, 1);
+	}
+	else if (!strcmp(interface, wl_data_device_manager_interface.name)) {
+		state->data_device_manager = wl_registry_bind(wl_registry, name, &wl_data_device_manager_interface, 3);
 	}
 	else {
 	}

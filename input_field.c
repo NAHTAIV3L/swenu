@@ -123,26 +123,14 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 
 	// paste
 	if (keysym == XKB_KEY_v && ctrl) {
-		FILE* fp = popen("wl-paste --no-newline --type text/plain 2>/dev/null", "r");
-		if (!fp) return false;
 
-		char* buffer = NULL;
-		size_t size = 0;
-		ssize_t len = getdelim(&buffer, &size, '\0', fp);
-		int status = pclose(fp);
-
-		if (status != 0 || len <= 0) {
-			free(buffer);
-			return false;
-		}
-
-		for (size_t i = 0; i < len; ++i) {
-			array_add(state->input_buffer, buffer[i]);
+		for (size_t i = 0; i < state->clipboard_size; ++i) {
+			array_insert(state->input_buffer, state->cursor_index, state->clipboard[i]);
+			++state->cursor_index;
 		}
 
 		update_text_buffer(state);
 
-		free(buffer);
 		return true;
 	}
 

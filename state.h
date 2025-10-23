@@ -60,6 +60,9 @@ typedef struct {
     struct zwlr_layer_shell_v1* layer_shell;
     struct zwlr_layer_surface_v1* layer_surface;
     struct wl_seat* seat;
+	struct wl_data_device_manager *data_device_manager;
+	struct wl_data_device *data_device;
+	struct wl_data_offer *data_offer;
     struct wl_keyboard* keyboard;
     struct wl_pointer* pointer;
 	struct wp_cursor_shape_manager_v1* cursor_shape_manager;
@@ -113,6 +116,8 @@ typedef struct {
 
 	// state
     uint32_t width, height;
+	char* clipboard;
+	size_t clipboard_size;
 	char* input_buffer;
 	item_t* items;
 	item_display_t* filtered_items;

@@ -2,6 +2,7 @@
 #include "array.h"
 #include "config.h"
 #include "shader.h"
+#include "font.h"
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -203,8 +204,8 @@ void render_frame(client_state *state) {
 	glUseProgram(state->box_shader);
 	glUniform4f(state->b_color_uniform, cursor_color.r,cursor_color.g,cursor_color.b,cursor_color.a);
 	glUniform2f(state->b_screen_size_uniform, state->width, state->height);
-	glUniform2f(state->b_start_uniform, state->input_buffer_grafix.pixel_len + state->horizontal_spacing / 2.0f, input_y);
-	glUniform2f(state->b_size_uniform, state->atlas.metrics['m'].bitmap_width, state->line_height);
+	glUniform2f(state->b_start_uniform, atlas_get_strwidth_len(state, state->input_buffer, state->cursor_index) + state->horizontal_spacing / 2.0f, input_y);
+	glUniform2f(state->b_size_uniform, state->atlas.metrics['M'].bitmap_width, state->line_height);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	float start;

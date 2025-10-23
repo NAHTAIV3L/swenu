@@ -1,6 +1,9 @@
 # SWENU - Simple Wayland ENU
 
-To build: `make`
+To build:
+```sh
+make
+```
 
 ## Todo -
 - [x] "selection"

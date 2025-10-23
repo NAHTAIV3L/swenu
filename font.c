@@ -156,6 +156,15 @@ int atlas_get_strwidth(client_state* state, const char* str) {
 	return (int)ceil(width);
 }
 
+int atlas_get_strwidth_len(client_state* state, const char* str, size_t len) {
+	float width = 0;
+	// TODO - UNICODE MAKE WORKY
+	for (int i = 0; i < len; i++) {
+		width += ceil(state->atlas.metrics[(int)str[i]].advance_x);
+	}
+	return (int)ceil(width);
+}
+
 void atlas_calc_item_widths(client_state* state) {
 	if (state->items) {
 		array_for_all(item_t, item, state->items) {

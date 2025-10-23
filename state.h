@@ -93,6 +93,8 @@ typedef struct {
 	GLuint b_color_uniform;
 	text_buffer_t input_buffer_grafix;
 
+	size_t cursor_index;
+
 	// fonts
 	FT_Library ft_library;
 	FT_Face ft_face;

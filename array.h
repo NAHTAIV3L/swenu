@@ -27,6 +27,23 @@ void* array_add_(void* array, size_t item_size);
     (array) = NULL;                     \
 } while (0)
 
+#define array_erase(array, index) do { \
+	if ((index)) {\
+		for (int __i = (index) - 1; __i < array_size((array)) - 1; __i++) \
+			(array)[__i] = (array)[__i + 1]; \
+		((array_info*)(array))[-1].size--; \
+	} \
+} while(0)
+
+#define array_insert(array, index, value) do { 						\
+	void* __temp = array_add_((array), sizeof(*(array))); 			\
+	(array) = __temp; 												\
+	for (int __i = array_size((array)) - 1; __i > (index); __i--) 	\
+		(array)[__i] = (array)[__i - 1]; 							\
+	(array)[(index)] = value; 										\
+} while(0) 															\
+
+
 #define array_add(array, value) do {                        \
     void* __temp = array_add_((array), sizeof(*(array)));   \
     (array) = __temp;                                       \

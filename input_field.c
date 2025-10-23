@@ -68,6 +68,7 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 			array_free(state->input_buffer);
 			state->input_buffer = array_new(char, len);
 			memcpy(state->input_buffer, selected, len);
+			state->cursor_index = len;
 
 			update_text_buffer(state);
 		}
@@ -87,6 +88,36 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 		if (state->selected_filtered_item != -1) {
 			state->selected_filtered_item = MAX(state->selected_filtered_item - 1, 0);
 		}
+		return true;
+	}
+
+	if (keysym == XKB_KEY_e && ctrl) {
+		state->cursor_index = array_size(state->input_buffer);
+		return true;
+	}
+
+	if (keysym == XKB_KEY_a && ctrl) {
+		state->cursor_index = 0;
+		return true;
+	}
+
+	if (keysym == XKB_KEY_f && ctrl) {
+		if (state->cursor_index < array_size(state->input_buffer)) {
+			state->cursor_index++;
+		}
+		return true;
+	}
+
+	if (keysym == XKB_KEY_b && ctrl) {
+		if (state->cursor_index > 0) {
+			state->cursor_index--;
+		}
+		return true;
+	}
+
+	if (keysym == XKB_KEY_k && ctrl) {
+		array_resize(state->input_buffer, state->cursor_index);
+		update_text_buffer(state);
 		return true;
 	}
 
@@ -125,8 +156,12 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 	if (keysym == XKB_KEY_BackSpace || keysym == XKB_KEY_Delete) {
 		if (ctrl) {
 			array_clear(state->input_buffer);
+			state->cursor_index = 0;
 		} else {
-			array_pop(state->input_buffer);
+			if (state->cursor_index) {
+				array_erase(state->input_buffer, state->cursor_index);
+				state->cursor_index--;
+			}
 		}
 		update_text_buffer(state);
 		return true;
@@ -137,7 +172,8 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 	int len = xkb_keysym_to_utf8(keysym, buf, sizeof(buf));
 	if (len > 0) {
 		for (int i = 0; i < strlen(buf); i++) {
-		array_add(state->input_buffer, buf[i]);
+			array_insert(state->input_buffer, state->cursor_index, buf[i]);
+			state->cursor_index++;
 		}
 		update_text_buffer(state);
 		return true;

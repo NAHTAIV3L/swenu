@@ -67,6 +67,8 @@ typedef struct {
     struct wl_pointer* pointer;
 	struct wp_cursor_shape_manager_v1* cursor_shape_manager;
 	struct wp_cursor_shape_device_v1* cursor_shape_device;
+	char* clipboard;
+	size_t clipboard_size;
 
 	// xkb
 	struct xkb_context* xkb_context;
@@ -96,8 +98,6 @@ typedef struct {
 	GLuint b_color_uniform;
 	text_buffer_t input_buffer_grafix;
 
-	size_t cursor_index;
-
 	// fonts
 	FT_Library ft_library;
 	FT_Face ft_face;
@@ -114,17 +114,18 @@ typedef struct {
 	bool center;
 	bool verbose;
 
-	// state
-    uint32_t width, height;
-	char* clipboard;
-	size_t clipboard_size;
-	char* input_buffer;
+	// input
 	item_t* items;
-	item_display_t* filtered_items;
-	int selected_filtered_item;
-	float scroll;
+
+	// state
     bool running;
 	int exit_code;
+    uint32_t width, height;
+	item_display_t* filtered_items;
+	int selected_filtered_item;
+	char* input_buffer;
+	size_t cursor_index;
+	float scroll;
 
 } client_state;
 

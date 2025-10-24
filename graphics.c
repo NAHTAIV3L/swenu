@@ -371,6 +371,7 @@ void init_text_buffer(client_state* state, text_buffer_t* buffer, char* text, si
 		// go forward
 		pen_x += m->advance_x;
 		buffer->pixel_len += ceil(m->advance_x);
+		if (n == 0) buffer->pixel_len += ceil(m->advance_x); // add a second if we are the first to equal padding on the right
 	}
 
 	// vertex buffer

@@ -13,12 +13,12 @@ make
 - [X] special mode if there is no stdin
 - [x] sort filtering by match %
 - [x] cursor
+- [x] protocol clipboard
 - [ ] page scroll
-- [ ] unicode
 - [ ] emacs keybindings
-- [ ] protocol clipboard
 - [ ] fuzzy filter
 - [ ] "prompt"
+- [ ] unicode
 - [ ] config file
 - [ ] input fluff
 - [ ] kerning

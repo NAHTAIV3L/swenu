@@ -185,9 +185,7 @@ void render_frame(client_state *state) {
 
 	// calculate input buffer
 	float input_y = state->line_height * state->lines;
-	float input_width;
-	if (state->lines > 0) { input_width = state->width; }
-	else { input_width = state->width / 3.0f; }
+	float input_width = state->lines ? state->width : state->width / 3.0f;
 
 	// draw input buffer
 	if (array_size(state->filtered_items) != 0) {
@@ -210,7 +208,7 @@ void render_frame(client_state *state) {
 
 	float start;
 	// set up starting pen and scissor for options
-	if (state->lines > 0) {
+	if (state->lines) {
 		glScissor(0, 0, state->width, input_y);
 		start = input_y - state->line_height + state->scroll;
 
@@ -261,7 +259,7 @@ void render_frame(client_state *state) {
 		item_t* item = display->item;
 
 		float x,y;
-		if (state->lines > 0) {
+		if (state->lines) {
 			x = 0;
 			y = start - display->offset;
 		}
@@ -274,7 +272,7 @@ void render_frame(client_state *state) {
 		glUniform4f(state->b_color_uniform, highlight_color.r,highlight_color.g,highlight_color.b,highlight_color.a);
 		glUniform2f(state->b_screen_size_uniform, state->width, state->height);
 		glUniform2f(state->b_start_uniform, x, y);
-		glUniform2f(state->b_size_uniform, (state->lines > 0) ? state->width : item->pixel_len + state->horizontal_spacing, state->line_height);
+		glUniform2f(state->b_size_uniform, (state->lines) ? state->width : item->pixel_len + state->horizontal_spacing * 2, state->line_height);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 
@@ -289,7 +287,7 @@ void render_frame(client_state *state) {
 		item_t* item = display->item;
 
 		float x,y;
-		if (state->lines > 0) {
+		if (state->lines) {
 			x = 0;
 			y = start - display->offset;
 		}
@@ -299,7 +297,7 @@ void render_frame(client_state *state) {
 		}
 
 		glBindVertexArray(item->text_buffer.vao);
-		glUniform2f(state->t_offset_uniform, x + state->horizontal_spacing / 2.0f, y - state->atlas.vert_shift);
+		glUniform2f(state->t_offset_uniform, x + (state->lines ? state->horizontal_spacing / 2.0f : state->horizontal_spacing), y - state->atlas.vert_shift);
 		glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
 	}
 

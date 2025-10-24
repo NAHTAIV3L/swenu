@@ -18,7 +18,7 @@ void create_surface(client_state* state) {
 	if (state->center) {
 		desired_width = MAX(state->required_width, min_width);
 	}
-	if (state->lines > 0) {
+	if (state->lines) {
 		desired_height = (state->lines + 1) * state->line_height;
 	}
 

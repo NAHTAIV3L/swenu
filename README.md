@@ -18,7 +18,8 @@ make
 - [ ] emacs keybindings
 - [ ] fuzzy filter
 - [ ] "prompt"
-- [ ] unicode
 - [ ] config file
-- [ ] input fluff
-- [ ] kerning
+- [ ] unicode + shaping
+
+Stretch:
+- [ ] input fluff (icons, descriptions, output names)

@@ -205,7 +205,7 @@ void render_frame(client_state *state) {
 	glUniform4f(state->b_color_uniform, cursor_color.r,cursor_color.g,cursor_color.b,cursor_color.a);
 	glUniform2f(state->b_screen_size_uniform, state->width, state->height);
 	glUniform2f(state->b_start_uniform, atlas_get_strwidth_len(state, state->input_buffer, state->cursor_index) + state->horizontal_spacing / 2.0f, input_y);
-	glUniform2f(state->b_size_uniform, state->atlas.metrics['M'].bitmap_width, state->line_height);
+	glUniform2f(state->b_size_uniform, state->cursor_index == array_size(state->input_buffer) ? state->atlas.metrics['M'].bitmap_width : state->atlas.metrics[(int)state->input_buffer[state->cursor_index]].bitmap_width, state->line_height);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	float start;
@@ -235,17 +235,22 @@ void render_frame(client_state *state) {
 		if (array_size(state->filtered_items) != 0) {
 			// calc scroll
 			item_display_t* selected = &state->filtered_items[state->selected_filtered_item];
+			float selected_len = selected->item->pixel_len + state->horizontal_spacing;
 			float selected_left = start + selected->offset;
-			float selected_right = selected_left + selected->item->pixel_len + state->horizontal_spacing;
-			float diff = selected_right - state->width;
-			if (diff > 0) {
-				state->scroll -= diff;
-				start -= diff;
+			float selected_right = selected_left + selected_len;
+			float right_diff = selected_right - state->width;
+			float left_diff = selected_left - input_width;
+			if (selected_len > state->width - input_width) {
+				state->scroll -= left_diff;
+				start -= left_diff;
 			}
-			diff = selected_left - input_width;
-			if (diff < 0) {
-				state->scroll -= diff;
-				start -= diff;
+			else if (right_diff > 0) {
+				state->scroll -= right_diff;
+				start -= right_diff;
+			}
+			else if (left_diff < 0) {
+				state->scroll -= left_diff;
+				start -= left_diff;
 			}
 		}
 	}

@@ -4,9 +4,9 @@
 #include <stdbool.h>
 
 typedef struct {
-    size_t size;
-    size_t capacity;
-    char array[];
+	size_t size;
+	size_t capacity;
+	char array[];
 } array_info;
 
 array_info* array_new_(size_t item_size, size_t size);
@@ -23,16 +23,16 @@ void* array_add_(void* array, size_t item_size);
 #define array_new(type, size) ((type*)(array_new_(sizeof(type), size)->array))
 
 #define array_free(array) do {          \
-    free(((array_info*)(array)) - 1);   \
-    (array) = NULL;                     \
+	free(((array_info*)(array)) - 1);   \
+	(array) = NULL;                     \
 } while (0)
 
-#define array_erase(array, index) do { \
-	if ((index)) {\
-		for (int __i = (index) - 1; __i < array_size((array)) - 1; __i++) \
-			(array)[__i] = (array)[__i + 1]; \
-		((array_info*)(array))[-1].size--; \
-	} \
+#define array_erase(array, index) do { 										\
+	if ((index)) {															\
+		for (int __i = (index) - 1; __i < array_size((array)) - 1; __i++) 	\
+			(array)[__i] = (array)[__i + 1]; 								\
+		((array_info*)(array))[-1].size--; 									\
+	} 																		\
 } while(0)
 
 #define array_insert(array, index, value) do { 						\
@@ -45,15 +45,15 @@ void* array_add_(void* array, size_t item_size);
 
 
 #define array_add(array, value) do {                        \
-    void* __temp = array_add_((array), sizeof(*(array)));   \
-    (array) = __temp;                                       \
-    (array)[array_size((array)) - 1] = value;               \
+	void* __temp = array_add_((array), sizeof(*(array)));   \
+	(array) = __temp;                                       \
+	(array)[array_size((array)) - 1] = value;               \
 } while (0)
 
 #define array_last(array) (array)[array_size(array) - 1]
 
-#define array_for_all(type__, name__, array__) \
-type__* CONCAT(it__, __LINE__) = array__; type__* CONCAT(end__, __LINE__) = array__ ? array__ + array_size(array__) : NULL; \
+#define array_for_all(type__, name__, array__) 																											\
+type__* CONCAT(it__, __LINE__) = array__; type__* CONCAT(end__, __LINE__) = array__ ? array__ + array_size(array__) : NULL; 							\
 for (type__* name__; (CONCAT(it__, __LINE__) < CONCAT(end__, __LINE__)) ? (name__ = CONCAT(it__, __LINE__), true) : false; CONCAT(it__, __LINE__)++)
 
 #endif // ARRAY_H_

@@ -1,9 +1,9 @@
 #include <fontconfig/fontconfig.h>
+#include <freetype/ftmodapi.h>
 
 #include "font.h"
 #include "array.h"
 #include "config.h"
-#include <freetype/ftmodapi.h>
 
 const float ATLAS_PADDING = 3.0f;
 
@@ -14,8 +14,8 @@ char* get_font(const char* font_name) {
 		return NULL;
 	}
 
-    FcConfigSubstitute(0, pattern, FcMatchPattern);
-    FcDefaultSubstitute(pattern);
+	FcConfigSubstitute(0, pattern, FcMatchPattern);
+	FcDefaultSubstitute(pattern);
 
 	FcResult result = 0;
 	FcFontSet* font_patterns = FcFontSort(0, pattern, FcTrue, 0, &result);
@@ -100,26 +100,26 @@ void atlas_init(client_state* state) {
 }
 
 void atlas_create_texture(client_state* state) {
-    glActiveTexture(GL_TEXTURE0);
-    glGenTextures(1, &state->atlas.texture);
-    glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, &state->atlas.texture);
+	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    glTexImage2D(
-        GL_TEXTURE_2D,
-        0,
-        GL_RED,
-        (GLsizei) state->atlas.width,
-        (GLsizei) state->atlas.height,
-        0,
-        GL_RED,
-        GL_UNSIGNED_BYTE,
-        NULL);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_RED,
+		(GLsizei) state->atlas.width,
+		(GLsizei) state->atlas.height,
+		0,
+		GL_RED,
+		GL_UNSIGNED_BYTE,
+		NULL);
 
 	uint32_t x = 0;
 	for (int i = 32; i < 128; i++) {
@@ -130,18 +130,18 @@ void atlas_create_texture(client_state* state) {
 		metric_t* metric = &state->atlas.metrics[i];
 		metric->texture_x_start = (float)x / state->atlas.width;
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-        glTexSubImage2D(
-            GL_TEXTURE_2D,
-            0,
-            x,
-            0,
-            metric->bitmap_width,
-            metric->bitmap_height,
-            GL_RED,
-            GL_UNSIGNED_BYTE,
-            state->ft_face->glyph->bitmap.buffer);
-        x += metric->bitmap_width;
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		glTexSubImage2D(
+			GL_TEXTURE_2D,
+			0,
+			x,
+			0,
+			metric->bitmap_width,
+			metric->bitmap_height,
+			GL_RED,
+			GL_UNSIGNED_BYTE,
+			state->ft_face->glyph->bitmap.buffer);
+		x += metric->bitmap_width;
 		metric->texture_x_end = (float)x / state->atlas.width;
 		x += ATLAS_PADDING;
 	}

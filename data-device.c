@@ -9,7 +9,7 @@ void setup_data_device(client_state* state) {
 }
 
 static void data_offer_handle_offer(void *data, struct wl_data_offer *offer,
-		const char *mime_type) {
+									const char *mime_type) {
 }
 
 static const struct wl_data_offer_listener data_offer_listener = {
@@ -17,13 +17,13 @@ static const struct wl_data_offer_listener data_offer_listener = {
 };
 
 static void data_device_handle_data_offer(void *data,
-		struct wl_data_device *data_device, struct wl_data_offer *offer) {
+										  struct wl_data_device *data_device, struct wl_data_offer *offer) {
 	// An application has created a new data source
 	wl_data_offer_add_listener(offer, &data_offer_listener, NULL);
 }
 
 static void data_device_handle_selection(void *data,
-		struct wl_data_device *data_device, struct wl_data_offer *offer) {
+										 struct wl_data_device *data_device, struct wl_data_offer *offer) {
 
 	client_state *state = data;
 	state->data_offer = offer;
@@ -64,11 +64,11 @@ static void data_device_handle_selection(void *data,
 	state->clipboard_size = current_clip; // we don't need the ACTUAL length of the buffer anymore, just the string :D
 	// remove newlines
 	int i, j;
-    for (i = 0, j = 0; i < state->clipboard_size; i++) {
-        if (state->clipboard[i] != '\n' && state->clipboard[i] != '\r') {
-            state->clipboard[j++] = state->clipboard[i];
-        }
-    }
+	for (i = 0, j = 0; i < state->clipboard_size; i++) {
+		if (state->clipboard[i] != '\n' && state->clipboard[i] != '\r') {
+			state->clipboard[j++] = state->clipboard[i];
+		}
+	}
 	state->clipboard_size = j;
 
 	wl_data_offer_destroy(offer);

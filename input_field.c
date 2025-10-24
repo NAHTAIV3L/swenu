@@ -5,7 +5,7 @@
 #include "graphics.h"
 
 int compare(const void *a, const void *b) {
-    return strlen(((item_display_t*)a)->item->text) > strlen(((item_display_t*)b)->item->text);
+	return strlen(((item_display_t*)a)->item->text) > strlen(((item_display_t*)b)->item->text);
 }
 
 void filter_items(client_state* state) {

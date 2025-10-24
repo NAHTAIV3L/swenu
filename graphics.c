@@ -396,6 +396,6 @@ void init_text_buffer(client_state* state, text_buffer_t* buffer, char* text, si
 
 void destroy_text_buffer(text_buffer_t* buffer) {
 	glDeleteVertexArrays(1, &buffer->vao);
-    glDeleteBuffers(1, &buffer->vbo);
-    glDeleteBuffers(1, &buffer->ebo);
+	glDeleteBuffers(1, &buffer->vbo);
+	glDeleteBuffers(1, &buffer->ebo);
 }

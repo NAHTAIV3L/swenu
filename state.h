@@ -53,18 +53,18 @@ typedef struct {
 
 typedef struct {
 	// wayland
-    struct wl_display* display;
-    struct wl_registry* registry;
-    struct wl_compositor* compositor;
-    struct wl_surface* surface;
-    struct zwlr_layer_shell_v1* layer_shell;
-    struct zwlr_layer_surface_v1* layer_surface;
-    struct wl_seat* seat;
+	struct wl_display* display;
+	struct wl_registry* registry;
+	struct wl_compositor* compositor;
+	struct wl_surface* surface;
+	struct zwlr_layer_shell_v1* layer_shell;
+	struct zwlr_layer_surface_v1* layer_surface;
+	struct wl_seat* seat;
 	struct wl_data_device_manager *data_device_manager;
 	struct wl_data_device *data_device;
 	struct wl_data_offer *data_offer;
-    struct wl_keyboard* keyboard;
-    struct wl_pointer* pointer;
+	struct wl_keyboard* keyboard;
+	struct wl_pointer* pointer;
 	struct wp_cursor_shape_manager_v1* cursor_shape_manager;
 	struct wp_cursor_shape_device_v1* cursor_shape_device;
 	char* clipboard;
@@ -72,19 +72,19 @@ typedef struct {
 
 	// xkb
 	struct xkb_context* xkb_context;
-    struct xkb_keymap* xkb_keymap;
-    struct xkb_state* xkb_state;
+	struct xkb_keymap* xkb_keymap;
+	struct xkb_state* xkb_state;
 	struct xkb_compose_state* xkb_compose_state;
 	int key_repeat_rate, key_repeat_delay;
-    int key_repeat_timer_fd;
+	int key_repeat_timer_fd;
 	xkb_keysym_t repeat_key;
 
 	// egl
-    struct wl_egl_window* egl_window;
-    EGLDisplay egl_display;
-    EGLSurface egl_surface;
-    EGLConfig egl_config;
-    EGLContext egl_context;
+	struct wl_egl_window* egl_window;
+	EGLDisplay egl_display;
+	EGLSurface egl_surface;
+	EGLConfig egl_config;
+	EGLContext egl_context;
 
 	// graphics
 	GLuint text_shader;
@@ -118,9 +118,9 @@ typedef struct {
 	item_t* items;
 
 	// state
-    bool running;
+	bool running;
 	int exit_code;
-    uint32_t width, height;
+	uint32_t width, height;
 	item_display_t* filtered_items;
 	int selected_filtered_item;
 	char* input_buffer;

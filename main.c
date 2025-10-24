@@ -115,33 +115,33 @@ void poll_events(client_state* state) {
 		[KEYREPEAT_FD] = { state->key_repeat_timer_fd, POLLIN },
 	};
 
-    bool event = false;
-    while (!event) {
-        while (wl_display_prepare_read(state->display) != 0) {
-            if (wl_display_dispatch_pending(state->display) > 0) {
-                return;
-            }
-        }
-        if (poll(fds, sizeof(fds) / sizeof(fds[0]), -1) == -1) {
-            wl_display_cancel_read(state->display);
-            return;
-        }
-        if (fds[DISPLAY_FD].revents & POLLIN) {
-            wl_display_read_events(state->display);
-            if (wl_display_dispatch_pending(state->display) > 0)
-                event = true;
-        }
-        else {
-            wl_display_cancel_read(state->display);
-        }
-        if (fds[KEYREPEAT_FD].revents & POLLIN) {
-            uint64_t repeats;
-            if (read(state->key_repeat_timer_fd, &repeats, sizeof(repeats)) == 8) {
-                for (uint64_t i = 0; i < repeats; i++) {
+	bool event = false;
+	while (!event) {
+		while (wl_display_prepare_read(state->display) != 0) {
+			if (wl_display_dispatch_pending(state->display) > 0) {
+				return;
+			}
+		}
+		if (poll(fds, sizeof(fds) / sizeof(fds[0]), -1) == -1) {
+			wl_display_cancel_read(state->display);
+			return;
+		}
+		if (fds[DISPLAY_FD].revents & POLLIN) {
+			wl_display_read_events(state->display);
+			if (wl_display_dispatch_pending(state->display) > 0)
+				event = true;
+		}
+		else {
+			wl_display_cancel_read(state->display);
+		}
+		if (fds[KEYREPEAT_FD].revents & POLLIN) {
+			uint64_t repeats;
+			if (read(state->key_repeat_timer_fd, &repeats, sizeof(repeats)) == 8) {
+				for (uint64_t i = 0; i < repeats; i++) {
 					type_key(state, state->repeat_key);
-                }
-                event = true;
-            }
-        }
-    }
+				}
+				event = true;
+			}
+		}
+	}
 }

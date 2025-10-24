@@ -14,8 +14,8 @@ void parse_args(client_state* state, int argc, char* argv[]) {
 		{0, 0, 0, 0}
 	};
 
-    int opt;
-    int long_index = 0;
+	int opt;
+	int long_index = 0;
 	while ((opt = getopt_long(argc, argv, "l:cev", long_opts, &long_index)) != -1) {
 		switch (opt) {
 		case 'l':

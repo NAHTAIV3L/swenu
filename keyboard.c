@@ -126,6 +126,8 @@ void wl_keyboard_modifiers(void *data, struct wl_keyboard *wl_keyboard,
 						   uint32_t group) {
 	client_state* state = data;
 	xkb_state_update_mask(state->xkb_state, mods_depressed, mods_latched, mods_locked, 0, 0, group);
+	struct itimerspec timer = {0};
+	timerfd_settime(state->key_repeat_timer_fd, 0, &timer, NULL);
 }
 
 void wl_keyboard_repeat_info(void *data, struct wl_keyboard *wl_keyboard,

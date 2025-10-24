@@ -40,16 +40,19 @@ void* array_add_(void* array, size_t item_size) {
 		info = realloc(info, sizeof(array_info) + (info->capacity * item_size));
 	}
 	info->size++;
-	return &(info[1]);
+	return info->array;
 }
 
-void array_resize(void* array, size_t size) {
-	array_info* info = &((array_info*)array)[-1];
-	info->size = size;
-	if (size > info->capacity) {
+void* array_resize_(void* array, size_t item_size, size_t size) {
+	array_info* info = NULL;
+	if (!array) {
+		info = array_new_(item_size, 0);
+	}
+	else {
+		info = ((array_info*)array) - 1;
+	}
+	if (size >= info->capacity) {
 		info->capacity = size;
-
-		// round up to next power of 2
 		info->capacity--;
 		info->capacity |= info->capacity >> 1;
 		info->capacity |= info->capacity >> 2;
@@ -57,7 +60,10 @@ void array_resize(void* array, size_t size) {
 		info->capacity |= info->capacity >> 8;
 		info->capacity |= info->capacity >> 16;
 		info->capacity++;
+		info = realloc(info, sizeof(array_info) + (info->capacity * item_size));
 	}
+	info->size = size;
+	return info->array;
 }
 
 void array_print(void* array) {

@@ -51,8 +51,14 @@ void* array_resize_(void* array, size_t item_size, size_t size) {
 	else {
 		info = ((array_info*)array) - 1;
 	}
-	if (size >= info->capacity) {
-		info->capacity = size;
+	if (size == -1)  {
+		info->size++;
+	}
+	else {
+		info->size = size;
+	}
+	if (info->size >= info->capacity) {
+		info->capacity = info->size;
 		info->capacity--;
 		info->capacity |= info->capacity >> 1;
 		info->capacity |= info->capacity >> 2;
@@ -61,12 +67,6 @@ void* array_resize_(void* array, size_t item_size, size_t size) {
 		info->capacity |= info->capacity >> 16;
 		info->capacity++;
 		info = realloc(info, sizeof(array_info) + (info->capacity * item_size));
-	}
-	if (size == -1)  {
-		info->size++;
-	}
-	else {
-		info->size = size;
 	}
 	return info->array;
 }

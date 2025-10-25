@@ -62,7 +62,12 @@ void* array_resize_(void* array, size_t item_size, size_t size) {
 		info->capacity++;
 		info = realloc(info, sizeof(array_info) + (info->capacity * item_size));
 	}
-	info->size = size;
+	if (size == -1)  {
+		info->size++;
+	}
+	else {
+		info->size = size;
+	}
 	return info->array;
 }
 

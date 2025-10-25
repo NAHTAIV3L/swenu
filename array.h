@@ -46,9 +46,9 @@ void* array_resize_(void* array, size_t item_size, size_t size);
 #define array_insert_many(array, index, values, len) do {                             \
 	void* __temp = array_resize_((array), sizeof(*(array)), array_size(array) + len); \
  	(array) = __temp;                                                                 \
-	for (int __i = array_size((array)) - 1; __i > (index) + len; __i--)               \
+	for (int __i = array_size((array)) - 1; __i > (index) + len - 1; __i--)               \
 		(array)[__i] = (array)[__i - len];                                            \
-	memcpy(&array[(index)], (values), len * sizeof(*(array)))                         \
+	memcpy(&array[(index)], (values), len * sizeof(*(array)));                        \
 } while (0)
 
 #define array_insert_str(array, index, values) array_insert_many((array), (index), (values), strlen(values))
@@ -56,7 +56,7 @@ void* array_resize_(void* array, size_t item_size, size_t size);
 #define array_add_many(array, index, values, len) do {                                \
 	void* __temp = array_resize_((array), sizeof(*(array)), array_size(array) + len); \
 	(array) = __temp;                                                                 \
-	memcpy(&array[array_size((array)) - 1], (values), len * sizeof(*(array)))         \
+	memcpy(&array[array_size((array)) - 1], (values), len * sizeof(*(array)));        \
 } while (0)
 
 #define array_add_str(array, index, values) array_add_many((array), (index), (values), strlen(values))
@@ -67,7 +67,7 @@ void* array_resize_(void* array, size_t item_size, size_t size);
 } while (0)
 
 #define array_add(array, value) do {                                                \
-	void* __temp = array_resize_((array), sizeof(*(array)), array_size(array) + 1); \
+	void* __temp = array_resize_((array), sizeof(*(array)), -1); \
 	(array) = __temp;                                                               \
 	(array)[array_size((array)) - 1] = value;                                       \
 } while (0)

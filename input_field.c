@@ -124,10 +124,8 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 	// paste
 	if (keysym == XKB_KEY_v && ctrl) {
 
-		for (size_t i = 0; i < state->clipboard_size; ++i) {
-			array_insert(state->input_buffer, state->cursor_index, state->clipboard[i]);
-			++state->cursor_index;
-		}
+		array_insert_many(state->input_buffer, state->cursor_index, state->clipboard, state->clipboard_size);
+		state->cursor_index += state->clipboard_size;
 
 		update_text_buffer(state);
 

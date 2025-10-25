@@ -27,22 +27,6 @@ array_info* array_new_(size_t item_size, size_t size) {
 	return info;
 }
 
-void* array_add_(void* array, size_t item_size) {
-	array_info* info = NULL;
-	if (!array) {
-		info = array_new_(item_size, 0);
-	}
-	else {
-		info = ((array_info*)array) - 1;
-	}
-	if (info->size == info->capacity) {
-		info->capacity <<= 1;
-		info = realloc(info, sizeof(array_info) + (info->capacity * item_size));
-	}
-	info->size++;
-	return info->array;
-}
-
 void* array_resize_(void* array, size_t item_size, size_t size) {
 	array_info* info = NULL;
 	if (!array) {
@@ -51,7 +35,13 @@ void* array_resize_(void* array, size_t item_size, size_t size) {
 	else {
 		info = ((array_info*)array) - 1;
 	}
-	if (size >= info->capacity) {
+	if (size == -1) {
+		info->size++;
+	}
+	else {
+		info->size = size;
+	}
+	if (info->size >= info->capacity) {
 		info->capacity = size;
 		info->capacity--;
 		info->capacity |= info->capacity >> 1;
@@ -61,12 +51,6 @@ void* array_resize_(void* array, size_t item_size, size_t size) {
 		info->capacity |= info->capacity >> 16;
 		info->capacity++;
 		info = realloc(info, sizeof(array_info) + (info->capacity * item_size));
-	}
-	if (size == -1)  {
-		info->size++;
-	}
-	else {
-		info->size = size;
 	}
 	return info->array;
 }

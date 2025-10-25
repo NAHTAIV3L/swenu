@@ -12,7 +12,6 @@ typedef struct {
 array_info* array_new_(size_t item_size, size_t size);
 void array_print(void* array);
 void array_pop(void* array);
-void* array_add_(void* array, size_t item_size);
 void* array_resize_(void* array, size_t item_size, size_t size);
 
 #define CONCAT_INNER(a, b) a ## b
@@ -66,10 +65,10 @@ void* array_resize_(void* array, size_t item_size, size_t size);
 	(array) = __temp;                                               \
 } while (0)
 
-#define array_add(array, value) do {                                                \
+#define array_add(array, value) do {                             \
 	void* __temp = array_resize_((array), sizeof(*(array)), -1); \
-	(array) = __temp;                                                               \
-	(array)[array_size((array)) - 1] = value;                                       \
+	(array) = __temp;                                            \
+	(array)[array_size((array)) - 1] = value;                    \
 } while (0)
 
 #define array_last(array) (array)[array_size(array) - 1]

@@ -1,6 +1,4 @@
-#include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 #include "array.h"
 
 
@@ -57,12 +55,13 @@ void* array_resize_(void* array, size_t item_size, size_t size) {
 
 void array_print(void* array) {
 	array_info* info = &((array_info*)array)[-1];
-	printf( "size: %lu\n"
-		"capacity: %lu\n"
-		"array: %p\n",
-		info->size,
-		info->capacity,
-		info->array);
+	fprintf(stderr,
+		 "size: %lu\n"
+		 "capacity: %lu\n"
+		 "array: %p\n",
+		 info->size,
+		 info->capacity,
+		 info->array);
 }
 
 void array_pop(void* array) {

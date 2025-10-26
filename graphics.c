@@ -3,6 +3,7 @@
 #include "config.h"
 #include "shader.h"
 #include "font.h"
+#include "layout.h"
 
 void GLAPIENTRY
 MessageCallback(GLenum source,
@@ -183,34 +184,38 @@ void render_frame(client_state *state) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 
-	// calculate input buffer
-	float input_y = state->line_height * state->lines;
-	float input_width = state->lines ? state->width : state->width / 3.0f;
+	// calculate input buffer size
+	Rect input = { .x = 0, .y = state->line_height * state->lines, .dx = state->width, .dy = state->line_height };
+	if (state->lines == 0 && array_size(state->filtered_items) != 0) {
+		input.dx = state->width / 3.0f;
+	}
 
 	// draw input buffer
-	if (array_size(state->filtered_items) != 0) {
-		glScissor(0, input_y, input_width - state->horizontal_spacing / 2.0f, state->line_height);
-	}
-	else {
-		glScissor(0, 0, state->width, state->height);
-	}
+	glScissor(input.x, input.y, input.dx - state->horizontal_spacing / 2.0f, input.dy);
 	glBindVertexArray(state->input_buffer_grafix.vao);
-	glUniform2f(state->t_offset_uniform, state->horizontal_spacing / 2.0f, input_y - state->atlas.vert_shift);
+	glUniform2f(state->t_offset_uniform, input.x + state->horizontal_spacing / 2.0f, input.y - state->atlas.vert_shift);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_grafix.num_elements, GL_UNSIGNED_INT, 0);
 
 	// draw cursor box
+	float cursor_size = state->atlas.metrics['M'].bitmap_width;
+	if (state->cursor_index != array_size(state->input_buffer)) {
+		cursor_size = state->atlas.metrics[(int)state->input_buffer[state->cursor_index]].advance_x;
+	}
 	glUseProgram(state->box_shader);
 	glUniform4f(state->b_color_uniform, cursor_color.r,cursor_color.g,cursor_color.b,cursor_color.a);
 	glUniform2f(state->b_screen_size_uniform, state->width, state->height);
-	glUniform2f(state->b_start_uniform, atlas_get_strwidth_len(state, state->input_buffer, state->cursor_index) + state->horizontal_spacing / 2.0f, input_y);
-	glUniform2f(state->b_size_uniform, state->cursor_index == array_size(state->input_buffer) ? state->atlas.metrics['M'].bitmap_width : state->atlas.metrics[(int)state->input_buffer[state->cursor_index]].advance_x, state->line_height);
+	glUniform2f(state->b_start_uniform, input.x + atlas_get_strwidth_len(state, state->input_buffer, state->cursor_index) + state->horizontal_spacing / 2.0f, input.y);
+	glUniform2f(state->b_size_uniform, cursor_size, input.dy);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
+	Rect options = {0};
 	float start;
 	// set up starting pen and scissor for options
 	if (state->lines) {
-		glScissor(0, 0, state->width, input_y);
-		start = input_y - state->line_height + state->scroll;
+		options.dx = state->width;
+		options.dy = input.y;
+
+		start = input.y - state->line_height + state->scroll;
 
 		if (array_size(state->filtered_items) != 0) {
 			// calc scroll
@@ -220,15 +225,18 @@ void render_frame(client_state *state) {
 				state->scroll -= selected_bot;
 				start -= selected_bot;
 			}
-			float diff = selected_top - input_y;
+			float diff = selected_top - input.y;
 			if (diff > 0) {
 				state->scroll -= diff;
 				start -= diff;
 			}
 		}
 	} else {
-		glScissor(input_width, 0, state->width, state->line_height);
-		start = input_width + state->scroll;
+		options.x = input.x + input.dx;
+		options.dx = state->width - options.x;
+		options.dy = state->line_height;
+
+		start = input.dx + state->scroll;
 
 		if (array_size(state->filtered_items) != 0) {
 			// calc scroll
@@ -237,8 +245,8 @@ void render_frame(client_state *state) {
 			float selected_left = start + selected->offset;
 			float selected_right = selected_left + selected_len;
 			float right_diff = selected_right - state->width;
-			float left_diff = selected_left - input_width;
-			if (selected_len > state->width - input_width) {
+			float left_diff = selected_left - input.dx;
+			if (selected_len > state->width - input.dx) {
 				state->scroll -= left_diff;
 				start -= left_diff;
 			}
@@ -252,6 +260,7 @@ void render_frame(client_state *state) {
 			}
 		}
 	}
+	glScissor(options.x, options.y, options.dx, options.dy);
 
 	// draw highlighted option box
 	if (state->selected_filtered_item != -1) {
@@ -272,7 +281,7 @@ void render_frame(client_state *state) {
 		glUniform4f(state->b_color_uniform, highlight_color.r,highlight_color.g,highlight_color.b,highlight_color.a);
 		glUniform2f(state->b_screen_size_uniform, state->width, state->height);
 		glUniform2f(state->b_start_uniform, x, y);
-		glUniform2f(state->b_size_uniform, (state->lines) ? state->width : item->pixel_len + state->horizontal_spacing * 2, state->line_height);
+		glUniform2f(state->b_size_uniform, (state->lines) ? state->width : item->pixel_len + state->horizontal_spacing, state->line_height);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 
@@ -297,7 +306,7 @@ void render_frame(client_state *state) {
 		}
 
 		glBindVertexArray(item->text_buffer.vao);
-		glUniform2f(state->t_offset_uniform, x + (state->lines ? state->horizontal_spacing / 2.0f : state->horizontal_spacing), y - state->atlas.vert_shift);
+		glUniform2f(state->t_offset_uniform, x + state->horizontal_spacing / 2.0f, y - state->atlas.vert_shift);
 		glDrawElements(GL_TRIANGLES, item->text_buffer.num_elements, GL_UNSIGNED_INT, 0);
 	}
 

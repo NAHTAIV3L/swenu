@@ -35,7 +35,7 @@ void filter_items(client_state* state) {
 	array_for_all(item_display_t, display, state->filtered_items) {
 		display->offset = offset;
 		if (state->lines) offset += state->line_height;
-		else offset += display->item->pixel_len + state->horizontal_spacing * 2.0f;
+		else offset += display->item->pixel_len + state->horizontal_spacing;
 	}
 }
 

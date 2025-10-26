@@ -20,6 +20,10 @@
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 typedef struct {
+	float x, y, dx, dy;
+} Rect;
+
+typedef struct {
 	GLuint vbo, ebo, vao;
 	uint32_t num_elements;
 	size_t pixel_len;

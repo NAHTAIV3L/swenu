@@ -2,10 +2,11 @@
 #define INPUT_FIELD_H_
 
 #include "state.h"
+#include "keybind.h"
 
 // returns true if the key should repeat
-bool type_key(client_state* state, xkb_keysym_t keysym);
+key_repeat_t type_key(client_state* state, xkb_keysym_t keysym);
 void filter_items(client_state* state);
-void submit_line(client_state* state);
+void update_text_buffer(client_state* state);
 
 #endif

@@ -27,12 +27,16 @@ void* array_resize_(void* array, size_t item_size, size_t size);
 	(array) = NULL;                     \
 } while (0)
 
-#define array_erase(array, index) do {                                      \
-	if ((index)) {                                                          \
-		for (int __i = (index) - 1; __i < array_size((array)) - 1; __i++)   \
-			(array)[__i] = (array)[__i + 1];                                \
-		((array_info*)(array))[-1].size--;                                  \
-	}                                                                       \
+#define array_erase(array, index) do {                                \
+		for (int __i = (index); __i < array_size((array)) - 1; __i++) \
+			(array)[__i] = (array)[__i + 1];                          \
+		((array_info*)(array))[-1].size--;                            \
+} while(0)
+
+#define array_erase_range(array, startinc, endinc) do {               \
+		for (int __i = (startinc); __i < array_size((array)) - ((endinc) - (startinc) + 1); __i++) \
+			(array)[__i] = (array)[__i + ((endinc) - (startinc) + 1)];                                \
+		((array_info*)(array))[-1].size -= ((endinc) - (startinc) + 1); \
 } while(0)
 
 #define array_insert(array, index, value) do {                                      \

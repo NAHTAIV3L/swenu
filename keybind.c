@@ -1,0 +1,122 @@
+#include "keybind.h"
+#include "array.h"
+#include "input_field.h"
+
+key_repeat_t quit(client_state* state) {
+	state->running = false;
+	state->exit_code = EXIT_FAILURE;
+	return KEY_NO_REPEAT;
+}
+
+key_repeat_t submit_line(client_state* state) {
+	if (state->exact_match) {
+		if (state->selected_filtered_item == -1) return false;
+		printf("%s\n", state->filtered_items[state->selected_filtered_item].item->text);
+	}
+	else {
+		if (state->selected_filtered_item == -1) printf("%.*s\n", (int)array_size(state->input_buffer), state->input_buffer);
+		else printf("%s\n", state->filtered_items[state->selected_filtered_item].item->text);
+	}
+	state->running = false;
+	state->exit_code = EXIT_SUCCESS;
+	return KEY_NO_REPEAT;
+}
+
+key_repeat_t insert_selected(client_state* state) {
+	if (state->selected_filtered_item != -1) {
+		char* selected = state->filtered_items[state->selected_filtered_item].item->text;
+		size_t len = strlen(selected);
+
+		array_free(state->input_buffer);
+		state->input_buffer = array_new(char, len);
+		memcpy(state->input_buffer, selected, len);
+		state->cursor_index = len;
+
+		update_text_buffer(state);
+	}
+	return KEY_NO_REPEAT;
+}
+
+key_repeat_t select_next(client_state* state) {
+	if (state->selected_filtered_item != -1) {
+		state->selected_filtered_item = MIN(state->selected_filtered_item + 1, (int)array_size(state->filtered_items) - 1);
+	}
+	return KEY_REPEAT;
+}
+
+key_repeat_t select_previous(client_state* state) {
+	if (state->selected_filtered_item != -1) {
+		state->selected_filtered_item = MAX(state->selected_filtered_item - 1, 0);
+	}
+	return KEY_REPEAT;
+}
+
+key_repeat_t goto_end(client_state* state) {
+	state->cursor_index = array_size(state->input_buffer);
+	return KEY_NO_REPEAT;
+}
+
+key_repeat_t goto_begining(client_state* state) {
+	state->cursor_index = 0;
+	return KEY_NO_REPEAT;
+}
+
+key_repeat_t forward_char(client_state* state) {
+	if (state->cursor_index < array_size(state->input_buffer)) {
+		state->cursor_index++;
+	}
+	return KEY_REPEAT;
+}
+
+key_repeat_t backward_char(client_state* state) {
+	if (state->cursor_index > 0) {
+		state->cursor_index--;
+	}
+	return KEY_REPEAT;
+}
+
+key_repeat_t kill_to_end(client_state* state) {
+	array_resize(state->input_buffer, state->cursor_index);
+	update_text_buffer(state);
+	return KEY_NO_REPEAT;
+}
+
+key_repeat_t delete_word(client_state* state) {
+	if (state->cursor_index != array_size(state->input_buffer)) {
+		size_t endidx = state->cursor_index;
+		for (; endidx < array_size(state->input_buffer) - 1; endidx++) {
+			if (state->input_buffer[endidx] == ' ') {
+				break;
+			}
+		}
+		array_erase_range(state->input_buffer, state->cursor_index, endidx);
+		update_text_buffer(state);
+	}
+	return KEY_REPEAT;
+}
+
+key_repeat_t delete_char(client_state* state) {
+	if (state->cursor_index != array_size(state->input_buffer)) {
+		array_erase(state->input_buffer, state->cursor_index);
+		update_text_buffer(state);
+		return KEY_NO_REPEAT;
+	}
+	return KEY_REPEAT;
+}
+
+key_repeat_t delete_char_backward(client_state* state) {
+	if (state->cursor_index) {
+		array_erase(state->input_buffer, state->cursor_index - 1);
+		state->cursor_index--;
+		update_text_buffer(state);
+		return KEY_REPEAT;
+	}
+	return KEY_NO_REPEAT;
+}
+
+key_repeat_t clear_input(client_state* state) {
+	array_clear(state->input_buffer);
+	state->cursor_index = 0;
+	update_text_buffer(state);
+	return KEY_NO_REPEAT;
+}

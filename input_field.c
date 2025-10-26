@@ -49,108 +49,48 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 	bool ctrl = xkb_state_mod_name_is_active(state->xkb_state, XKB_MOD_NAME_CTRL, XKB_STATE_MODS_EFFECTIVE);
 	bool alt = xkb_state_mod_name_is_active(state->xkb_state, XKB_MOD_NAME_ALT, XKB_STATE_MODS_EFFECTIVE);
 
-	// exit app
-	if ((keysym == XKB_KEY_c && ctrl) ||
-		(keysym == XKB_KEY_g && ctrl) ||
-		(keysym == XKB_KEY_Escape)) {
-
-		state->running = false;
-		state->exit_code = EXIT_FAILURE;
-		return false;
-	}
-
-	// complete
-	if ((keysym == XKB_KEY_i && ctrl && alt) || keysym == XKB_KEY_Tab) {
-		if (state->selected_filtered_item != -1) {
-			char* selected = state->filtered_items[state->selected_filtered_item].item->text;
-			size_t len = strlen(selected);
-
-			array_free(state->input_buffer);
-			state->input_buffer = array_new(char, len);
-			memcpy(state->input_buffer, selected, len);
-			state->cursor_index = len;
-
-			update_text_buffer(state);
+	if (ctrl && alt) {
+		switch (keysym) {
+			case XKB_KEY_i: return insert_selected(state);
+			case XKB_KEY_d: return delete_word(state);
 		}
-		return true;
 	}
+	else if (ctrl) {
+		switch (keysym) {
+			case XKB_KEY_c:
+			case XKB_KEY_g:
+				return quit(state);
 
-	// select next
-	if ((keysym == XKB_KEY_n && ctrl) || keysym == XKB_KEY_Right || keysym == XKB_KEY_Down) {
-		if (state->selected_filtered_item != -1) {
-			state->selected_filtered_item = MIN(state->selected_filtered_item + 1, (int)array_size(state->filtered_items) - 1);
+			case XKB_KEY_n: return select_next(state);
+			case XKB_KEY_p: return select_previous(state);
+
+			case XKB_KEY_e: return goto_end(state);
+			case XKB_KEY_a: return goto_begining(state);
+
+			case XKB_KEY_f: return forward_char(state);
+			case XKB_KEY_b: return backward_char(state);
+
+			case XKB_KEY_k: return kill_to_end(state);
+			case XKB_KEY_d: return delete_char(state);
+			case XKB_KEY_BackSpace:
+			case XKB_KEY_Delete:
+				return clear_input(state);
 		}
-		return true;
 	}
-
-	// select previous
-	if ((keysym == XKB_KEY_p && ctrl) || keysym == XKB_KEY_Left || keysym == XKB_KEY_Up) {
-		if (state->selected_filtered_item != -1) {
-			state->selected_filtered_item = MAX(state->selected_filtered_item - 1, 0);
+	else if (alt) {
+		switch (keysym) {
+			case XKB_KEY_d: return delete_word(state);
 		}
-		return true;
 	}
-
-	if (keysym == XKB_KEY_e && ctrl) {
-		state->cursor_index = array_size(state->input_buffer);
-		return true;
-	}
-
-	if (keysym == XKB_KEY_a && ctrl) {
-		state->cursor_index = 0;
-		return true;
-	}
-
-	if (keysym == XKB_KEY_f && ctrl) {
-		if (state->cursor_index < array_size(state->input_buffer)) {
-			state->cursor_index++;
-		}
-		return true;
-	}
-
-	if (keysym == XKB_KEY_b && ctrl) {
-		if (state->cursor_index > 0) {
-			state->cursor_index--;
-		}
-		return true;
-	}
-
-	if (keysym == XKB_KEY_k && ctrl) {
-		array_resize(state->input_buffer, state->cursor_index);
-		update_text_buffer(state);
-		return true;
-	}
-
-	// paste
-	if (keysym == XKB_KEY_v && ctrl) {
-
-		array_insert_many(state->input_buffer, state->cursor_index, state->clipboard, state->clipboard_size);
-		state->cursor_index += state->clipboard_size;
-
-		update_text_buffer(state);
-
-		return true;
-	}
-
-	// submit line
-	if (keysym == XKB_KEY_Return || keysym == XKB_KEY_KP_Enter) {
-		submit_line(state);
-		return false;
-	}
-
-	// delete
-	if (keysym == XKB_KEY_BackSpace || keysym == XKB_KEY_Delete) {
-		if (ctrl) {
-			array_clear(state->input_buffer);
-			state->cursor_index = 0;
-		} else {
-			if (state->cursor_index) {
-				array_erase(state->input_buffer, state->cursor_index);
-				state->cursor_index--;
-			}
-		}
-		update_text_buffer(state);
-		return true;
+	switch (keysym) {
+		case XKB_KEY_Tab: return insert_selected(state);
+		case XKB_KEY_Escape: return quit(state);
+		case XKB_KEY_Return:
+		case XKB_KEY_KP_Enter:
+			return submit_line(state);
+		case XKB_KEY_BackSpace:
+		case XKB_KEY_Delete:
+			return delete_char_backward(state);
 	}
 
 	// type char into buffer
@@ -168,15 +108,3 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 	return false;
 }
 
-void submit_line(client_state* state) {
-	if (state->exact_match) {
-		if (state->selected_filtered_item == -1) return;
-		printf("%s\n", state->filtered_items[state->selected_filtered_item].item->text);
-	}
-	else {
-		if (state->selected_filtered_item == -1) printf("%.*s\n", (int)array_size(state->input_buffer), state->input_buffer);
-		else printf("%s\n", state->filtered_items[state->selected_filtered_item].item->text);
-	}
-	state->running = false;
-	state->exit_code = EXIT_SUCCESS;
-}

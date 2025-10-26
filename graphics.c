@@ -203,7 +203,7 @@ void render_frame(client_state *state) {
 	glUniform4f(state->b_color_uniform, cursor_color.r,cursor_color.g,cursor_color.b,cursor_color.a);
 	glUniform2f(state->b_screen_size_uniform, state->width, state->height);
 	glUniform2f(state->b_start_uniform, atlas_get_strwidth_len(state, state->input_buffer, state->cursor_index) + state->horizontal_spacing / 2.0f, input_y);
-	glUniform2f(state->b_size_uniform, state->cursor_index == array_size(state->input_buffer) ? state->atlas.metrics['M'].bitmap_width : state->atlas.metrics[(int)state->input_buffer[state->cursor_index]].bitmap_width, state->line_height);
+	glUniform2f(state->b_size_uniform, state->cursor_index == array_size(state->input_buffer) ? state->atlas.metrics['M'].bitmap_width : state->atlas.metrics[(int)state->input_buffer[state->cursor_index]].advance_x, state->line_height);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	float start;

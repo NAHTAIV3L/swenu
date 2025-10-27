@@ -8,5 +8,6 @@
 key_repeat_t type_key(client_state* state, xkb_keysym_t keysym);
 void filter_items(client_state* state);
 void update_text_buffer(client_state* state);
+void update_layout(client_state* state);
 
 #endif

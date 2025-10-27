@@ -3,9 +3,15 @@
 #include "input_field.h"
 #include "array.h"
 #include "graphics.h"
+#include "layout.h"
 
 int compare(const void *a, const void *b) {
 	return strlen(((item_display_t*)a)->item->text) > strlen(((item_display_t*)b)->item->text);
+}
+
+void update_layout(client_state* state) {
+	rect_t input, options;
+	calculate_layout(state, &input, &options, true);
 }
 
 void filter_items(client_state* state) {
@@ -30,13 +36,8 @@ void filter_items(client_state* state) {
 	if (array_size(state->filtered_items) > 0) state->selected_filtered_item = 0;
 	else state->selected_filtered_item = -1;
 
-	// lay out items
-	float offset = 0;
-	array_for_all(item_display_t, display, state->filtered_items) {
-		display->offset = offset;
-		if (state->lines) offset += state->line_height;
-		else offset += display->item->pixel_len + state->horizontal_spacing;
-	}
+	// update layout
+	update_layout(state);
 }
 
 void update_text_buffer(client_state* state) {

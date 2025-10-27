@@ -21,7 +21,7 @@
 
 typedef struct {
 	float x, y, dx, dy;
-} Rect;
+} rect_t;
 
 typedef struct {
 	GLuint vbo, ebo, vao;
@@ -52,7 +52,7 @@ typedef struct {
 
 typedef struct {
 	item_t* item;
-	float offset;
+	rect_t r;
 } item_display_t;
 
 typedef struct {
@@ -129,7 +129,7 @@ typedef struct {
 	int selected_filtered_item;
 	char* input_buffer;
 	size_t cursor_index;
-	float scroll;
+	float fancy_scroll;
 
 } client_state;
 

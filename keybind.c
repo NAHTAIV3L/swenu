@@ -40,6 +40,7 @@ key_repeat_t insert_selected(client_state* state) {
 key_repeat_t select_next(client_state* state) {
 	if (state->selected_filtered_item != -1) {
 		state->selected_filtered_item = MIN(state->selected_filtered_item + 1, (int)array_size(state->filtered_items) - 1);
+		update_layout(state);
 	}
 	return KEY_REPEAT;
 }
@@ -47,6 +48,7 @@ key_repeat_t select_next(client_state* state) {
 key_repeat_t select_previous(client_state* state) {
 	if (state->selected_filtered_item != -1) {
 		state->selected_filtered_item = MAX(state->selected_filtered_item - 1, 0);
+		update_layout(state);
 	}
 	return KEY_REPEAT;
 }

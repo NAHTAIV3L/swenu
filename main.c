@@ -38,6 +38,7 @@ int main(int argc, char* argv[]) {
 	state.running = true;
 	state.input_buffer = array_new(char, 0);
 	state.filtered_items = array_new(item_display_t, 0);
+	state.selected_filtered_item = -1;
 
 	// check locale
 	setlocale(LC_ALL, "");
@@ -98,6 +99,7 @@ int main(int argc, char* argv[]) {
 	while (state.running) {
 		poll_events(&state);
 		render_frame(&state);
+		wl_display_dispatch(state.display);
 	}
 
 	// cleanup (of course)

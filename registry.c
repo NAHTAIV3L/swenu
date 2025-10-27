@@ -33,11 +33,10 @@ void global(void *data, struct wl_registry *wl_registry, uint32_t name, const ch
 		state->cursor_shape_manager = wl_registry_bind( wl_registry, name, &wp_cursor_shape_manager_v1_interface, 1);
 	}
 	else if (!strcmp(interface, wl_data_device_manager_interface.name)) {
-		state->data_device_manager = wl_registry_bind(wl_registry, name, &wl_data_device_manager_interface, 3);
+		state->data_device_manager = wl_registry_bind(wl_registry, name, &wl_data_device_manager_interface, 2);
 	}
 	else {
 	}
-
 }
 
 void global_remove(void *data, struct wl_registry *wl_registry, uint32_t name) {

@@ -30,11 +30,17 @@ void filter_items(client_state* state) {
 			array_add(state->filtered_items, (item_display_t){ .item = i });
 		}
 	}
-	if (array_size(state->input_buffer)) qsort(state->filtered_items, array_size(state->filtered_items), sizeof(item_display_t), compare);
+	if (array_size(state->input_buffer)) {
+		qsort(state->filtered_items, array_size(state->filtered_items), sizeof(item_display_t), compare);
+	}
 
 	// select item
-	if (array_size(state->filtered_items) > 0) state->selected_filtered_item = 0;
-	else state->selected_filtered_item = -1;
+	if (array_size(state->filtered_items) > 0) {
+		state->selected_filtered_item = 0;
+	}
+	else {
+		state->selected_filtered_item = -1;
+	}
 
 	// update layout
 	update_layout(state);

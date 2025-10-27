@@ -246,6 +246,12 @@ typedef struct {
 void init_text_buffer(client_state* state, text_buffer_t* buffer, char* text, size_t text_len) {
 	buffer->pixel_len = 0;
 
+	char buf[text_len];
+	if (state->password && text == state->input_buffer) {
+		memset(buf, '*', text_len);
+		text = buf;
+	}
+
 	// generate openg bullshit
 	glGenVertexArrays(1, &buffer->vao);
 	glBindVertexArray(buffer->vao);

@@ -52,7 +52,7 @@ void update_text_buffer(client_state* state) {
 	init_text_buffer(state, &state->input_buffer_grafix, state->input_buffer, array_size(state->input_buffer));
 }
 
-bool type_key(client_state* state, xkb_keysym_t keysym) {
+key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
 	bool ctrl = xkb_state_mod_name_is_active(state->xkb_state, XKB_MOD_NAME_CTRL, XKB_STATE_MODS_EFFECTIVE);
 	bool alt = xkb_state_mod_name_is_active(state->xkb_state, XKB_MOD_NAME_ALT, XKB_STATE_MODS_EFFECTIVE);
 
@@ -109,9 +109,9 @@ bool type_key(client_state* state, xkb_keysym_t keysym) {
 			state->cursor_index++;
 		}
 		update_text_buffer(state);
-		return true;
+		return KEY_REPEAT;
 	}
 
-	return false;
+	return KEY_NO_REPEAT;
 }
 

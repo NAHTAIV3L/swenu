@@ -117,6 +117,7 @@ typedef struct {
 	bool exact_match;
 	bool center;
 	bool verbose;
+	bool password;
 
 	// input
 	item_t* items;

@@ -101,6 +101,7 @@ typedef struct {
 	GLuint b_size_uniform;
 	GLuint b_color_uniform;
 	text_buffer_t input_buffer_grafix;
+	text_buffer_t prompt_text_buffer;
 
 	// fonts
 	FT_Library ft_library;
@@ -114,6 +115,7 @@ typedef struct {
 
 	// arguments
 	int lines;
+	char* prompt;
 	bool exact_match;
 	bool center;
 	bool verbose;

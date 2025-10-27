@@ -10,8 +10,8 @@ int compare(const void *a, const void *b) {
 }
 
 void update_layout(client_state* state) {
-	rect_t input, options;
-	calculate_layout(state, &input, &options, true);
+	rect_t prompt, input, options;
+	calculate_layout(state, &prompt, &input, &options, true);
 }
 
 void filter_items(client_state* state) {
@@ -79,6 +79,9 @@ key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
 
 			case XKB_KEY_k: return kill_to_end(state);
 			case XKB_KEY_d: return delete_char(state);
+
+			case XKB_KEY_v: return paste_from_clipboard(state);
+
 			case XKB_KEY_BackSpace:
 			case XKB_KEY_Delete:
 				return clear_input(state);

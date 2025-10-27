@@ -5,6 +5,11 @@ To build:
 make
 ```
 
+To install(have to be root):
+```sh
+make install
+```
+
 ## Todo -
 - [x] "selection"
 - [x] figure out whats going on with stderr and exit code

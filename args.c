@@ -12,15 +12,19 @@ void parse_args(client_state* state, int argc, char* argv[]) {
 		{"exact-match", no_argument, 0, 'e'},
 		{"verbose", no_argument, 0, 'v'},
 		{"password", no_argument, 0, 'P'},
+		{"prompt", no_argument, 0, 'p'},
 		{0, 0, 0, 0}
 	};
 
 	int opt;
 	int long_index = 0;
-	while ((opt = getopt_long(argc, argv, "l:cevP", long_opts, &long_index)) != -1) {
+	while ((opt = getopt_long(argc, argv, "l:p:cevP", long_opts, &long_index)) != -1) {
 		switch (opt) {
 		case 'l':
 			state->lines = atoi(optarg);
+			break;
+		case 'p':
+			state->prompt = optarg;
 			break;
 		case 'c':
 			state->center = true;

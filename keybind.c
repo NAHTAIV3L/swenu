@@ -101,9 +101,9 @@ key_repeat_t delete_char(client_state* state) {
 	if (state->cursor_index != array_size(state->input_buffer)) {
 		array_erase(state->input_buffer, state->cursor_index);
 		update_text_buffer(state);
-		return KEY_NO_REPEAT;
+		return KEY_REPEAT;
 	}
-	return KEY_REPEAT;
+	return KEY_NO_REPEAT;
 }
 
 key_repeat_t delete_char_backward(client_state* state) {
@@ -121,4 +121,11 @@ key_repeat_t clear_input(client_state* state) {
 	state->cursor_index = 0;
 	update_text_buffer(state);
 	return KEY_NO_REPEAT;
+}
+
+key_repeat_t paste_from_clipboard(client_state* state) {
+	array_insert_many(state->input_buffer, state->cursor_index, state->clipboard, state->clipboard_size);
+	state->cursor_index += state->clipboard_size;
+	update_text_buffer(state);
+	return KEY_REPEAT;
 }

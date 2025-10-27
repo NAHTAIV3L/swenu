@@ -52,6 +52,8 @@ int main(int argc, char* argv[]) {
 	parse_args(&state, argc, argv);
 	read_stdin(&state);
 
+	array_dump(state.items, item_t, item, "%s: %lu", item->text, strlen(item->text));
+
 	// find font
 	char* font = get_font("Monospace");
 	if (!freetype_init(&state, font)) {
@@ -87,6 +89,10 @@ int main(int argc, char* argv[]) {
 
 	// create font altas textures
 	atlas_create_texture(&state);
+
+	if (state.prompt && *state.prompt) {
+		init_text_buffer(&state, &state.prompt_text_buffer, state.prompt, strlen(state.prompt));
+	}
 
 	// create text buffers
 	init_text_buffer(&state, &state.input_buffer_grafix, "", 0);

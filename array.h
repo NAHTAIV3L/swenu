@@ -84,12 +84,12 @@ for (type__* name__; (CONCAT(it__, __LINE__) < CONCAT(end__, __LINE__)) ? (name_
 
 #define array_dump(array, type, name, fmt,  ...) do { \
 	array_print(array); \
-	fprintf(stderr, "vals: \n"); \
+	fprintf(stderr, "vals: {\n"); \
 	type* it__  = (array); type* end__ = (array) ? (array) + array_size(array) : NULL; \
 	for (type* name; it__ < end__ ? (name = it__, true) : false; it__++) { \
-		fprintf(stderr, fmt", ", __VA_ARGS__); \
+		fprintf(stderr, "    "fmt",\n", __VA_ARGS__); \
 	} \
-	fprintf(stderr, "\b\b \n"); \
+	fprintf(stderr, "}\n"); \
 } while (0)
 
 #endif // ARRAY_H_

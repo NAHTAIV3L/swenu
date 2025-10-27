@@ -6,12 +6,18 @@ void init_layout(client_state* state) {
 
 }
 
-void calculate_layout(client_state* state, rect_t* input, rect_t* options, bool recalc_options) {
+void calculate_layout(client_state* state, rect_t* prompt, rect_t* input, rect_t* options, bool recalc_options) {
 
+	if (state->prompt && *state->prompt) {
+		*prompt = (rect_t){ .x = 0, .y = state->line_height * state->lines, .dx = state->prompt_text_buffer.pixel_len + state->horizontal_spacing, .dy = state->line_height };
+	}
+	else {
+		*prompt = (rect_t){ 0 };
+	}
 	// calculate input rect
-	*input = (rect_t){ .x = 0, .y = state->line_height * state->lines, .dx = state->width, .dy = state->line_height };
+	*input = (rect_t){ .x = prompt->dx, .y = state->line_height * state->lines, .dx = state->width - prompt->dx, .dy = state->line_height };
 	if (state->lines == 0 && array_size(state->filtered_items) != 0) {
-		input->dx = state->width / 3.0f;
+		input->dx = state->width / 3.0f - input->x;
 	}
 
 	// calculate options rect

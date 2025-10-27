@@ -31,4 +31,6 @@ key_repeat_t delete_char(client_state* state);
 key_repeat_t delete_char_backward(client_state* state);
 
 key_repeat_t clear_input(client_state* state);
+
+key_repeat_t paste_from_clipboard(client_state* state);
 #endif // KEYBIND_H_

@@ -178,8 +178,30 @@ void render_frame(client_state *state) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// calculate input buffer size
-	rect_t input, options;
-	calculate_layout(state, &input, &options, false);
+	rect_t prompt, input, options;
+	calculate_layout(state, &prompt, &input, &options, false);
+
+	if (state->prompt && *state->prompt) {
+		glScissor(prompt.x, prompt.y, prompt.dx, prompt.dy);
+
+		// draw rect
+		glUseProgram(state->box_shader);
+		glUniform4f(state->b_color_uniform, highlight_color.r,highlight_color.g,highlight_color.b,highlight_color.a);
+		glUniform2f(state->b_screen_size_uniform, state->width, state->height);
+		glUniform2f(state->b_start_uniform, prompt.x, prompt.y);
+		glUniform2f(state->b_size_uniform, prompt.dx, prompt.dy);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		// draw text
+		glUseProgram(state->text_shader);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
+		glBindVertexArray(state->prompt_text_buffer.vao);
+		glUniform2f(state->t_screen_size_uniform, state->width, state->height);
+		glUniform4f(state->t_color_uniform, text_color.r,text_color.g,text_color.b,text_color.a);
+		glUniform2f(state->t_offset_uniform, prompt.x + state->horizontal_spacing / 2.0f, prompt.y - state->atlas.vert_shift);
+		glDrawElements(GL_TRIANGLES, state->prompt_text_buffer.num_elements, GL_UNSIGNED_INT, 0);
+	}
 
 	// draw input buffer
 	glUseProgram(state->text_shader);
@@ -314,7 +336,7 @@ void init_text_buffer(client_state* state, text_buffer_t* buffer, char* text, si
 		// go forward
 		pen_x += m->advance_x;
 		buffer->pixel_len += ceil(m->advance_x);
-		if (n == 0) buffer->pixel_len += ceil(m->advance_x); // add a second if we are the first to equal padding on the right
+		// if (n == 0) buffer->pixel_len += ceil(m->advance_x); // add a second if we are the first to equal padding on the right
 	}
 
 	// vertex buffer

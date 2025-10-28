@@ -19,10 +19,10 @@ make install
 - [x] sort filtering by match %
 - [x] cursor
 - [x] protocol clipboard
-- [ ] page scroll
-- [ ] emacs keybindings
+- [x] page scroll
+- [x] emacs keybindings
+- [x] "prompt"
 - [ ] fuzzy filter
-- [ ] "prompt"
 - [ ] config file
 - [ ] unicode + shaping
 

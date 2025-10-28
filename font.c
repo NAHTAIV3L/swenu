@@ -70,7 +70,7 @@ bool freetype_init(client_state* state, const char* file) {
 	}
 	state->load_flags = FT_LOAD_RENDER | FT_LOAD_TARGET_NORMAL;
 	state->line_height = state->ft_face->size->metrics.height >> 6;
-	state->horizontal_spacing = state->line_height / 2.0f;
+	state->horizontal_spacing = state->line_height / 1.3f;
 
 	return true;
 }

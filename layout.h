@@ -3,7 +3,6 @@
 
 #include "state.h"
 
-void init_layout(client_state* state);
-void calculate_layout(client_state* state, rect_t* prompt, rect_t* input, rect_t* options, bool recalc_options);
+void calculate_layout(client_state* state, rect_t* prompt, rect_t* input, rect_t* options, bool recalc_options, bool recalc_pages);
 
 #endif

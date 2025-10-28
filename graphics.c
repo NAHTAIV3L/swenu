@@ -179,7 +179,7 @@ void render_frame(client_state *state) {
 
 	// calculate input buffer size
 	rect_t prompt, input, options;
-	calculate_layout(state, &prompt, &input, &options, false);
+	calculate_layout(state, &prompt, &input, &options, false, false);
 
 	if (state->prompt && *state->prompt) {
 		glScissor(prompt.x, prompt.y, prompt.dx, prompt.dy);
@@ -248,7 +248,7 @@ void render_frame(client_state *state) {
 	glUniform4f(state->t_color_uniform, text_color.r,text_color.g,text_color.b,text_color.a);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
-	for (uint32_t i = 0; i < array_size(state->filtered_items); ++i) {
+	for (uint32_t i = state->displayed_item_start; i < state->displayed_item_end; ++i) {
 		item_display_t* display = &state->filtered_items[i];
 		item_t* item = display->item;
 

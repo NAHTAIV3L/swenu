@@ -12,6 +12,7 @@
 #include "font.h"
 #include "array.h"
 #include "args.h"
+#include "layout.h"
 
 void poll_events(client_state* state);
 
@@ -39,6 +40,7 @@ int main(int argc, char* argv[]) {
 	state.input_buffer = array_new(char, 0);
 	state.filtered_items = array_new(item_display_t, 0);
 	state.selected_filtered_item = -1;
+	state.page_indices = array_new(size_t, 0);
 
 	// check locale
 	setlocale(LC_ALL, "");
@@ -51,8 +53,6 @@ int main(int argc, char* argv[]) {
 	// read input
 	parse_args(&state, argc, argv);
 	read_stdin(&state);
-
-	array_dump(state.items, item_t, item, "%s: %lu", item->text, strlen(item->text));
 
 	// find font
 	char* font = get_font("Monospace");
@@ -90,11 +90,10 @@ int main(int argc, char* argv[]) {
 	// create font altas textures
 	atlas_create_texture(&state);
 
+	// create text buffers
 	if (state.prompt && *state.prompt) {
 		init_text_buffer(&state, &state.prompt_text_buffer, state.prompt, strlen(state.prompt));
 	}
-
-	// create text buffers
 	init_text_buffer(&state, &state.input_buffer_grafix, "", 0);
 	array_for_all(item_t, item, state.items) {
 		init_text_buffer(&state, &item->text_buffer, item->text, strlen(item->text));

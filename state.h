@@ -132,7 +132,14 @@ typedef struct {
 	int selected_filtered_item;
 	char* input_buffer;
 	size_t cursor_index;
-	float fancy_scroll;
+
+	// scrolling
+	float scroll_offset;
+	size_t displayed_item_start;
+	size_t displayed_item_end;
+	// page scroll
+	size_t* page_indices; // page indices into filtered items
+	size_t current_page;
 
 } client_state;
 

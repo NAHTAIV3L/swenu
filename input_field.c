@@ -9,11 +9,6 @@ int compare(const void *a, const void *b) {
 	return strlen(((item_display_t*)a)->item->text) > strlen(((item_display_t*)b)->item->text);
 }
 
-void update_layout(client_state* state) {
-	rect_t prompt, input, options;
-	calculate_layout(state, &prompt, &input, &options, true);
-}
-
 void filter_items(client_state* state) {
 	if (!state->items) return;
 
@@ -43,7 +38,8 @@ void filter_items(client_state* state) {
 	}
 
 	// update layout
-	update_layout(state);
+	rect_t prompt, input, options;
+	calculate_layout(state, &prompt, &input, &options, true, true);
 }
 
 void update_text_buffer(client_state* state) {

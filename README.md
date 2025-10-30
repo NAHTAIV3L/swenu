@@ -10,6 +10,11 @@ To install(have to be root):
 make install
 ```
 
+Usage: just like dmenu
+
+## FAQ
+Q: What is an ENU? 
+
 ## Todo -
 - [x] "selection"
 - [x] figure out whats going on with stderr and exit code

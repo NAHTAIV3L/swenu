@@ -12,7 +12,6 @@
 #include "font.h"
 #include "array.h"
 #include "args.h"
-#include "layout.h"
 
 void poll_events(client_state* state);
 
@@ -21,13 +20,17 @@ void read_stdin(client_state* state) {
 	size_t a;
 	char* line = NULL;
 	while((len = getline(&line, &a, stdin)) != -1) {
-		if (line[len - 1] == '\n') {
-			line[len - 1] = '\0';
-			len -= 1;
+		if (len) {
+			if (line[len - 1] == '\n') {
+				line[len - 1] = '\0';
+				len -= 1;
+			}
 		}
 		if (len != 0) {
 			array_add(state->items, (item_t){0});
 			array_last(state->items).text = line;
+		} else {
+			free(line);
 		}
 		line = NULL;
 	}
@@ -37,6 +40,7 @@ void read_stdin(client_state* state) {
 int main(int argc, char* argv[]) {
 	client_state state = {0};
 	state.running = true;
+	state.items = array_new(item_t, 0);
 	state.input_buffer = array_new(char, 0);
 	state.filtered_items = array_new(item_display_t, 0);
 	state.selected_filtered_item = -1;
@@ -109,8 +113,21 @@ int main(int argc, char* argv[]) {
 
 	// cleanup (of course)
 	if (state.items) {
+		array_for_all(item_t, item, state.items) {
+			free(item->text);
+		}
 		array_free(state.items);
 	}
+	array_free(state.input_buffer);
+	array_free(state.filtered_items);
+	array_free(state.page_indices);
+	if (state.clipboard) free(state.clipboard);
+	FT_Done_Face(state.ft_face);
+	FT_Done_FreeType(state.ft_library);
+
+	xkb_state_unref(state.xkb_state);
+	xkb_keymap_unref(state.xkb_keymap);
+	xkb_context_unref(state.xkb_context);
 
 	return state.exit_code;
 }

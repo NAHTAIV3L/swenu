@@ -56,18 +56,6 @@ void wl_keyboard_keymap(void *data, struct wl_keyboard *wl_keyboard,
 		state->exit_code = EXIT_FAILURE;
 		return;
 	}
-
-	struct xkb_compose_table* xkb_compose_table = xkb_compose_table_new_from_locale(
-		state->xkb_context, setlocale(LC_CTYPE, NULL), XKB_COMPOSE_COMPILE_NO_FLAGS);
-
-	if (!xkb_compose_table) {
-		fprintf(stderr, "Failed to create xkb compose table");
-		state->running = false;
-		state->exit_code = EXIT_FAILURE;
-		return;
-	}
-
-	state->xkb_compose_state = xkb_compose_state_new(xkb_compose_table, XKB_COMPOSE_STATE_NO_FLAGS);
 }
 
 void wl_keyboard_enter(void *data, struct wl_keyboard *wl_keyboard,

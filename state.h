@@ -78,7 +78,6 @@ typedef struct {
 	struct xkb_context* xkb_context;
 	struct xkb_keymap* xkb_keymap;
 	struct xkb_state* xkb_state;
-	struct xkb_compose_state* xkb_compose_state;
 	int key_repeat_rate, key_repeat_delay;
 	int key_repeat_timer_fd;
 	xkb_keysym_t repeat_key;

@@ -53,6 +53,7 @@ typedef struct {
 typedef struct {
 	item_t* item;
 	rect_t r;
+	float perc;
 } item_display_t;
 
 typedef struct {
@@ -119,6 +120,8 @@ typedef struct {
 	bool center;
 	bool verbose;
 	bool password;
+	bool orderless;
+	char* (*strstr)(const char*, const char*);
 
 	// input
 	item_t* items;

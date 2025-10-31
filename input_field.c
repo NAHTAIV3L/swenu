@@ -9,6 +9,10 @@ int compare(const void *a, const void *b) {
 	return strlen(((item_display_t*)a)->item->text) > strlen(((item_display_t*)b)->item->text);
 }
 
+int orderless_compare(const void *a, const void *b) {
+	return ((item_display_t*)a)->perc < ((item_display_t*)b)->perc;
+}
+
 void filter_items(client_state* state) {
 	if (!state->items) return;
 
@@ -20,13 +24,45 @@ void filter_items(client_state* state) {
 
 	// add all strings with substring
 	array_clear(state->filtered_items);
-	array_for_all(item_t, i, state->items) {
-		if (strstr(i->text, input_buffer_string) != NULL) {
-			array_add(state->filtered_items, (item_display_t){ .item = i });
+	if (state->orderless) {
+		char** parts = array_new(char*, 0);
+		char* part = NULL;
+		for (part = strtok(input_buffer_string, " "); part; part = strtok(NULL, " ")) {
+			array_add(parts, part);
+		}
+		array_for_all(item_t, i, state->items) {
+			float total = strlen(i->text);
+			float part = 0;
+			bool add = true;
+			array_for_all(char*, j, parts) {
+				if (state->strstr(i->text, *j)) {
+					part += strlen(*j);
+				}
+				else {
+					add = false;
+				}
+			}
+			if (add) {
+				item_display_t tmp = {
+					.item = i,
+					.perc = part / total
+				};
+				array_add(state->filtered_items, tmp);
+			}
+		}
+		if (array_size(state->input_buffer)) {
+			qsort(state->filtered_items, array_size(state->filtered_items), sizeof(item_display_t), orderless_compare);
 		}
 	}
-	if (array_size(state->input_buffer)) {
-		qsort(state->filtered_items, array_size(state->filtered_items), sizeof(item_display_t), compare);
+	else {
+		array_for_all(item_t, i, state->items) {
+			if (state->strstr(i->text, input_buffer_string) != NULL) {
+				array_add(state->filtered_items, (item_display_t){ .item = i });
+			}
+		}
+		if (array_size(state->input_buffer)) {
+			qsort(state->filtered_items, array_size(state->filtered_items), sizeof(item_display_t), compare);
+		}
 	}
 
 	// select item

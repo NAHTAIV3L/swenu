@@ -4,7 +4,7 @@
 
 void calculate_layout(client_state* state, rect_t* prompt, rect_t* input, rect_t* options, bool recalc_options, bool recalc_pages) {
 	if (state->prompt && *state->prompt) {
-		
+
 		*prompt = (rect_t){ .x = 0, .y = state->line_height * state->lines, .dx = state->prompt_text_buffer.pixel_len + state->horizontal_spacing, .dy = state->line_height };
 	}
 	else {
@@ -150,6 +150,10 @@ void calculate_layout(client_state* state, rect_t* prompt, rect_t* input, rect_t
 					display->r.x += state->scroll_offset;
 				}
 			}
-		} 
+		}
+		else {
+			state->displayed_item_start = 0;
+			state->displayed_item_end = 0;
+		}
 	}
 }

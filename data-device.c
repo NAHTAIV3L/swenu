@@ -33,7 +33,7 @@ static void data_device_handle_selection(void *data,
 
 	// no clipboard contents
 	if (offer == NULL) {
-		state->clipboard = "";
+		state->clipboard = NULL;
 		return;
 	}
 

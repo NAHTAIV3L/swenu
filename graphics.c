@@ -174,7 +174,7 @@ void render_frame(client_state *state) {
 	// set up frame
 	glViewport(0, 0, state->width, state->height);
 	glScissor(0, 0, state->width, state->height);
-	glClearColor(background_color.r,background_color.g,background_color.b,background_color.a);
+	glClearColor(config.background_color.r,config.background_color.g,config.background_color.b,config.background_color.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	// calculate input buffer size
@@ -186,7 +186,7 @@ void render_frame(client_state *state) {
 
 		// draw rect
 		glUseProgram(state->box_shader);
-		glUniform4f(state->b_color_uniform, highlight_color.r,highlight_color.g,highlight_color.b,highlight_color.a);
+		glUniform4f(state->b_color_uniform, config.highlight_color.r,config.highlight_color.g,config.highlight_color.b,config.highlight_color.a);
 		glUniform2f(state->b_screen_size_uniform, state->width, state->height);
 		glUniform2f(state->b_start_uniform, prompt.x, prompt.y);
 		glUniform2f(state->b_size_uniform, prompt.dx, prompt.dy);
@@ -198,7 +198,7 @@ void render_frame(client_state *state) {
 		glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 		glBindVertexArray(state->prompt_text_buffer.vao);
 		glUniform2f(state->t_screen_size_uniform, state->width, state->height);
-		glUniform4f(state->t_color_uniform, text_color.r,text_color.g,text_color.b,text_color.a);
+		glUniform4f(state->t_color_uniform, config.text_color.r,config.text_color.g,config.text_color.b,config.text_color.a);
 		glUniform2f(state->t_offset_uniform, prompt.x + state->horizontal_spacing / 2.0f, prompt.y - state->atlas.vert_shift);
 		glDrawElements(GL_TRIANGLES, state->prompt_text_buffer.num_elements, GL_UNSIGNED_INT, 0);
 	}
@@ -210,7 +210,7 @@ void render_frame(client_state *state) {
 	glScissor(input.x, input.y, input.dx - state->horizontal_spacing / 2.0f, input.dy);
 	glBindVertexArray(state->input_buffer_grafix.vao);
 	glUniform2f(state->t_screen_size_uniform, state->width, state->height);
-	glUniform4f(state->t_color_uniform, text_color.r,text_color.g,text_color.b,text_color.a);
+	glUniform4f(state->t_color_uniform, config.text_color.r,config.text_color.g,config.text_color.b,config.text_color.a);
 	glUniform2f(state->t_offset_uniform, input.x + state->horizontal_spacing / 2.0f, input.y - state->atlas.vert_shift);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_grafix.num_elements, GL_UNSIGNED_INT, 0);
 
@@ -221,7 +221,7 @@ void render_frame(client_state *state) {
 	}
 	// draw cursor
 	glUseProgram(state->box_shader);
-	glUniform4f(state->b_color_uniform, cursor_color.r,cursor_color.g,cursor_color.b,cursor_color.a);
+	glUniform4f(state->b_color_uniform, config.cursor_color.r,config.cursor_color.g,config.cursor_color.b,config.cursor_color.a);
 	glUniform2f(state->b_screen_size_uniform, state->width, state->height);
 	glUniform2f(state->b_start_uniform, input.x + atlas_get_strwidth_len(state, state->input_buffer, state->cursor_index) + state->horizontal_spacing / 2.0f, input.y);
 	glUniform2f(state->b_size_uniform, cursor_size, input.dy);
@@ -235,7 +235,7 @@ void render_frame(client_state *state) {
 		item_display_t* display = &state->filtered_items[state->selected_filtered_item];
 
 		glUseProgram(state->box_shader);
-		glUniform4f(state->b_color_uniform, highlight_color.r,highlight_color.g,highlight_color.b,highlight_color.a);
+		glUniform4f(state->b_color_uniform, config.highlight_color.r,config.highlight_color.g,config.highlight_color.b,config.highlight_color.a);
 		glUniform2f(state->b_screen_size_uniform, state->width, state->height);
 		glUniform2f(state->b_start_uniform, display->r.x, display->r.y);
 		glUniform2f(state->b_size_uniform, display->r.dx, display->r.dy);
@@ -245,7 +245,7 @@ void render_frame(client_state *state) {
 	// draw options
 	glUseProgram(state->text_shader);
 	glUniform2f(state->t_screen_size_uniform, state->width, state->height);
-	glUniform4f(state->t_color_uniform, text_color.r,text_color.g,text_color.b,text_color.a);
+	glUniform4f(state->t_color_uniform, config.text_color.r,config.text_color.g,config.text_color.b,config.text_color.a);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, state->atlas.texture);
 	for (uint32_t i = state->displayed_item_start; i < state->displayed_item_end; ++i) {

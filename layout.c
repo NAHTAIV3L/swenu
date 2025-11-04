@@ -53,7 +53,7 @@ void calculate_layout(client_state* state, rect_t* prompt, rect_t* input, rect_t
 		}
 
 		// calculate page indices
-		if (recalc_pages && !fancy_scroll) {
+		if (recalc_pages && !config.fancy_scroll) {
 			state->current_page = 0;
 			array_clear(state->page_indices);
 
@@ -78,7 +78,7 @@ void calculate_layout(client_state* state, rect_t* prompt, rect_t* input, rect_t
 		}
 
 		if (array_size(state->filtered_items) != 0) {
-			if (fancy_scroll) {
+			if (config.fancy_scroll) {
 				// calculate fancy scroll offset
 				if (state->lines) {
 					// calc vertical scroll

@@ -4,6 +4,7 @@
 #include <poll.h>
 #include <unistd.h>
 
+#include "config.h"
 #include "array.h"
 #include "state.h"
 #include "wayland.h"
@@ -46,6 +47,8 @@ int main(int argc, char* argv[]) {
 	state.selected_filtered_item = -1;
 	state.page_indices = array_new(size_t, 0);
 	state.strstr = strstr;
+
+	init_conf();
 
 	// check locale
 	setlocale(LC_ALL, "");

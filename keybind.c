@@ -100,6 +100,27 @@ key_repeat_t delete_word(client_state* state) {
 	return KEY_REPEAT;
 }
 
+key_repeat_t delete_word_backward(client_state* state) {
+	if (state->cursor_index) {
+		size_t startidx = state->cursor_index - 1;
+		bool hit_non_white = false;
+		for (; startidx > 0; startidx--) {
+			if (state->input_buffer[startidx] == ' ') {
+				if (hit_non_white) {
+					++startidx;
+					break;
+				}
+			} else {
+				hit_non_white = true;
+			}
+		}
+		array_erase_range(state->input_buffer, startidx, state->cursor_index - 1);
+		state->cursor_index = startidx;
+		update_text_buffer(state);
+	}
+	return KEY_REPEAT;
+}
+
 key_repeat_t delete_char(client_state* state) {
 	if (state->cursor_index != array_size(state->input_buffer)) {
 		array_erase(state->input_buffer, state->cursor_index);

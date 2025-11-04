@@ -122,6 +122,7 @@ key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
 	else if (alt) {
 		switch (keysym) {
 			case XKB_KEY_d: return delete_word(state);
+            case XKB_KEY_BackSpace: return delete_word_backward(state);
 		}
 	}
 	switch (keysym) {

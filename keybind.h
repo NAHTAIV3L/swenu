@@ -27,6 +27,7 @@ key_repeat_t backward_char(client_state* state);
 key_repeat_t kill_to_end(client_state* state);
 
 key_repeat_t delete_word(client_state* state);
+key_repeat_t delete_word_backward(client_state* state);
 key_repeat_t delete_char(client_state* state);
 key_repeat_t delete_char_backward(client_state* state);
 

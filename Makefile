@@ -11,7 +11,7 @@ WLC=$(patsubst %.xml,$(OBJDIR)/%.c, $(WLPROT))
 WLH=$(patsubst %.xml,$(OBJDIR)/%.h, $(WLPROT))
 SRC=$(WLC) $(filter-out swenu-exes.c , $(wildcard *.c)) $(wildcard glad/*.c)
 OBJ=$(patsubst %.c,$(OBJDIR)/%.o, $(notdir $(SRC)))
-HDEPS=state.h wayland.h config.h
+HDEPS=state.h wayland.h
 
 .SILENT: $(OBJ) $(WLC) $(WLH) $(BIN) $(OBJDIR) compile_flags swenu-exes $(OBJDIR)/swenu-exes.o
 

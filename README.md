@@ -15,6 +15,21 @@ Usage: just like dmenu
 ## FAQ
 Q: What is an ENU? 
 
+## Configuration
+Create your config file at `XDG_CONFIG_HOME/swenu/conf.ini` or `HOME/.config/swenu/conf.ini`. 
+Example config file:
+```ini
+fancy_scroll = false
+min_width = 500
+font_size = 16
+
+[colors]
+text_color = (0.85, 0.85, 0.85, 1.0)
+highlight_color = (0.1, 0.3, 0.7, 1.0)
+background_color = (0.1, 0.1, 0.1, 1.0)
+cursor_color = (0.9, 0.9, 0.9, 0.5)
+```
+
 ## Todo -
 - [x] "selection"
 - [x] figure out whats going on with stderr and exit code
@@ -28,9 +43,10 @@ Q: What is an ENU?
 - [x] emacs keybindings
 - [x] "prompt"
 - [x] fuzzy filter
-- [ ] config file
+- [x] config file
 - [ ] scrolling in input
 - [ ] unicode + text shaping
 
 Stretch:
+- [ ] clean up the code (src folder, rename some files)
 - [ ] input fluff (icons, descriptions, output names)

@@ -131,9 +131,15 @@ key_repeat_t kill_to_end(client_state* state) {
 key_repeat_t delete_word(client_state* state) {
 	if (state->cursor_index != array_size(state->input_buffer)) {
 		size_t endidx = state->cursor_index;
+		bool hit_non_white = false;
 		for (; endidx < array_size(state->input_buffer) - 1; endidx++) {
 			if (state->input_buffer[endidx] == ' ') {
-				break;
+				if (hit_non_white) {
+					endidx--;
+					break;
+				}
+			} else {
+				hit_non_white = true;
 			}
 		}
 		array_erase_range(state->input_buffer, state->cursor_index, endidx);

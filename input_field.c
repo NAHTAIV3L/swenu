@@ -53,6 +53,7 @@ void filter_items(client_state* state) {
 		if (array_size(state->input_buffer)) {
 			qsort(state->filtered_items, array_size(state->filtered_items), sizeof(item_display_t), orderless_compare);
 		}
+		array_free(parts);
 	}
 	else {
 		array_for_all(item_t, i, state->items) {
@@ -92,6 +93,9 @@ key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
 		switch (keysym) {
 			case XKB_KEY_i: return insert_selected(state);
 			case XKB_KEY_d: return delete_word(state);
+			case XKB_KEY_BackSpace: return delete_word_backward(state);
+			case XKB_KEY_f: return forward_word(state);
+			case XKB_KEY_b: return backward_word(state);
 		}
 	}
 	else if (ctrl) {

@@ -41,7 +41,7 @@ char* get_conf_path() {
 
 // bool parser
 bool parse_bool(const char* value) {
-	if (strcasecmp(value, "true") == 0 || strcasecmp(value, "t") == 0 || strcasecmp(value, "yes") == 0) {
+	if (strcasecmp(value, "true") == 0 || strcasecmp(value, "t") == 0 || strcasecmp(value, "yes") == 0 || strcasecmp(value, "on") == 0) {
 		return true;
 	} else {
 		return false;

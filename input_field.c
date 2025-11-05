@@ -104,7 +104,7 @@ key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
 			case XKB_KEY_p: return select_previous(state);
 
 			case XKB_KEY_e: return goto_end(state);
-			case XKB_KEY_a: return goto_begining(state);
+			case XKB_KEY_a: return goto_start(state);
 
 			case XKB_KEY_f: return forward_char(state);
 			case XKB_KEY_b: return backward_char(state);
@@ -114,15 +114,16 @@ key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
 
 			case XKB_KEY_v: return paste_from_clipboard(state);
 
-			case XKB_KEY_BackSpace:
-			case XKB_KEY_Delete:
-				return clear_input(state);
+			case XKB_KEY_BackSpace: return kill_to_start(state);
+			case XKB_KEY_Delete: return clear_input(state);
 		}
 	}
 	else if (alt) {
 		switch (keysym) {
 			case XKB_KEY_d: return delete_word(state);
-            case XKB_KEY_BackSpace: return delete_word_backward(state);
+			case XKB_KEY_BackSpace: return delete_word_backward(state);
+			case XKB_KEY_f: return forward_word(state);
+			case XKB_KEY_b: return backward_word(state);
 		}
 	}
 	switch (keysym) {

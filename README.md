@@ -27,9 +27,10 @@ Q: What is an ENU?
 - [x] page scroll
 - [x] emacs keybindings
 - [x] "prompt"
-- [ ] fuzzy filter
+- [x] fuzzy filter
 - [ ] config file
-- [ ] unicode + shaping
+- [ ] scrolling in input
+- [ ] unicode + text shaping
 
 Stretch:
 - [ ] input fluff (icons, descriptions, output names)

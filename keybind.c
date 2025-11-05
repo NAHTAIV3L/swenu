@@ -61,7 +61,7 @@ key_repeat_t goto_end(client_state* state) {
 	return KEY_NO_REPEAT;
 }
 
-key_repeat_t goto_begining(client_state* state) {
+key_repeat_t goto_start(client_state* state) {
 	state->cursor_index = 0;
 	return KEY_NO_REPEAT;
 }
@@ -78,6 +78,48 @@ key_repeat_t backward_char(client_state* state) {
 		state->cursor_index--;
 	}
 	return KEY_REPEAT;
+}
+
+key_repeat_t forward_word(client_state* state) {
+	if (state->cursor_index < array_size(state->input_buffer)) {
+		bool hit_white = false;
+		for (; state->cursor_index < array_size(state->input_buffer); state->cursor_index++) {
+			if (state->input_buffer[state->cursor_index] == ' ') {
+				hit_white = true;
+			} else if (hit_white) {
+				break;
+			}
+		}
+	}
+	return KEY_REPEAT;
+}
+
+key_repeat_t backward_word(client_state* state) {
+	if (state->cursor_index > 0) {
+		bool hit_non_white = false;
+		state->cursor_index--;
+		for (; state->cursor_index > 0; state->cursor_index--) {
+			if (state->input_buffer[state->cursor_index] == ' ') {
+				if (hit_non_white) {
+					++state->cursor_index;
+					break;
+				}
+			} else {
+				hit_non_white = true;
+			}
+		}
+	}
+	return KEY_REPEAT;
+}
+
+key_repeat_t kill_to_start(client_state* state) {
+	if (array_size(state->input_buffer) && state->cursor_index) {
+		array_erase_range(state->input_buffer, 0, state->cursor_index - 1);
+		state->cursor_index = 0;
+		update_text_buffer(state);
+	}
+
+	return KEY_NO_REPEAT;
 }
 
 key_repeat_t kill_to_end(client_state* state) {

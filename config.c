@@ -51,17 +51,54 @@ bool parse_bool(const char* value) {
 // color parser (TODO - support hex codes)
 regex_t color_regex;
 const char *color_regex_pattern = "^\\([[:space:]]*([[:digit:].]*)[[:space:]]*,[[:space:]]*([[:digit:].]*)[[:space:]]*,[[:space:]]*([[:digit:].]*)[[:space:]]*,[[:space:]]*([[:digit:].]*)[[:space:]]*\\)$"; // this is fucking evil
-void parse_color(const char* value, color_t* color) {
-    regmatch_t matches[5];  // full match + 4 capture groups
-    if (regexec(&color_regex, value, 5, matches, 0) == 0) {
-        for (int i = 1; i <= 4; i++) {
-            size_t len = matches[i].rm_eo - matches[i].rm_so;
-			char match[len + 1];
-			memcpy(match, value + matches[i].rm_so, len);
-			match[len] = '\0';
-			*((float*)color + i - 1) = atof(match);
-        }
-    }
+bool parse_color(const char* value, color_t* color) {
+	if (!strlen(value)) {
+		return false;
+	}
+
+	if (value[0] == '(') {
+		// (r,g,b,a) format
+		regmatch_t matches[5];  // full match + 4 capture groups
+		if (regexec(&color_regex, value, 5, matches, 0) == 0) {
+			for (int i = 1; i <= 4; i++) {
+				size_t len = matches[i].rm_eo - matches[i].rm_so;
+				char match[len + 1];
+				memcpy(match, value + matches[i].rm_so, len);
+				match[len] = '\0';
+				*((float*)color + i - 1) = atof(match);
+			}
+			return true;
+		}
+	} else {
+		// hex format
+		const char* start = value;
+		if (*start == '#') ++start;
+
+		// scan
+		int code_len = strlen(start);
+		if (code_len == 6) {
+			unsigned char r,g,b;
+			sscanf(start, "%2hhx%2hhx%2hhx", &r, &g, &b);
+			printf("%d, %d, %d\n", r, g, b);
+			color->r = r / 255.0f;
+			color->g = g / 255.0f;
+			color->b = b / 255.0f;
+			color->a = 1.0f;
+		} else if (code_len == 8) {
+			unsigned char r,g,b,a;
+			sscanf(start, "%2hhx%2hhx%2hhx%2hhx", &r, &g, &b, &a);
+			color->r = r / 255.0f;
+			color->g = g / 255.0f;
+			color->b = b / 255.0f;
+			color->a = a / 255.0f;
+		} else {
+			return false;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 static int our_ini_handler(void* user, const char* section, const char* name, const char* value)
@@ -75,17 +112,27 @@ static int our_ini_handler(void* user, const char* section, const char* name, co
 		config->min_width = atoi(value);
 	} else if (MATCH("", "font_size")) {
 		config->font_size = atoi(value);
-	} else if (MATCH("colors", "text_color")) {
-		parse_color(value, &config->text_color);
-	} else if (MATCH("colors", "highlight_color")) {
-		parse_color(value, &config->highlight_color);
-	} else if (MATCH("colors", "background_color")) {
-		parse_color(value, &config->background_color);
-	} else if (MATCH("colors", "cursor_color")) {
-		parse_color(value, &config->cursor_color);
+	} else if (strcmp(section, "colors") == 0) {
+		color_t color;
+		if (!parse_color(value, &color)) {
+			return 0;
+		}
+
+		if (strcmp(name, "text_color") == 0) {
+			config->text_color = color;
+		} else if (strcmp(name, "highlight_color") == 0) {
+			config->highlight_color = color;
+		} else if (strcmp(name, "background_color") == 0) {
+			config->background_color = color;
+		} else if (strcmp(name, "cursor_color") == 0) {
+			config->cursor_color = color;
+		} else {
+			return 0;
+		}
 	} else {
 		return 0;  /* unknown section/name, error */
 	}
+
 	return 1;
 }
 

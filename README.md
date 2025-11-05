@@ -44,7 +44,6 @@ cursor_color = (0.9, 0.9, 0.9, 0.5)
 - [x] "prompt"
 - [x] fuzzy filter
 - [x] config file
-- [ ] scrolling in input
 - [ ] unicode + text shaping
 
 Stretch:

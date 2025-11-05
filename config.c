@@ -19,7 +19,7 @@ config_t config = {
 
 // get config file
 const char* conf_file_name = "/swenu/conf.ini";
-char* get_conf_file() {
+char* get_conf_path() {
 	// get from xdg config home
 	const char* xdg = getenv("XDG_CONFIG_HOME");
 	if (xdg && *xdg) {
@@ -39,16 +39,16 @@ char* get_conf_file() {
     return NULL;
 }
 
-// bool parse helper
+// bool parser
 bool parse_bool(const char* value) {
-	if (strcmp(value, "true") == 0 || strcmp(value, "t") == 0 || strcmp(value, "True") == 0 || strcmp(value, "T") == 0 || strcmp(value, "TRUE") == 0 || strcmp(value, "yes") == 0) {
+	if (strcasecmp(value, "true") == 0 || strcasecmp(value, "t") == 0 || strcasecmp(value, "yes") == 0) {
 		return true;
 	} else {
 		return false;
 	}
 }
 
-// color parse helper
+// color parser (TODO - support hex codes)
 regex_t color_regex;
 const char *color_regex_pattern = "^\\([[:space:]]*([[:digit:].]*)[[:space:]]*,[[:space:]]*([[:digit:].]*)[[:space:]]*,[[:space:]]*([[:digit:].]*)[[:space:]]*,[[:space:]]*([[:digit:].]*)[[:space:]]*\\)$"; // this is fucking evil
 void parse_color(const char* value, color_t* color) {
@@ -64,8 +64,7 @@ void parse_color(const char* value, color_t* color) {
     }
 }
 
-static int our_ini_handler(void* user, const char* section, const char* name,
-				   const char* value)
+static int our_ini_handler(void* user, const char* section, const char* name, const char* value)
 {
 	config_t* config = (config_t*)user;
 
@@ -97,15 +96,15 @@ void init_conf() {
     }
 	
 	// get config dir
-	char* conf_dir = get_conf_file();
-	if (!conf_dir) return;
+	char* conf_path = get_conf_path();
+	if (!conf_path) return;
 
 	// parse config file
-	int ini_res = ini_parse(conf_dir, our_ini_handler, &config);
+	int ini_res = ini_parse(conf_path, our_ini_handler, &config);
 	if (ini_res > 0) {
-		fprintf(stderr, "Error parsing config file (%s), on line %d\n", conf_dir, ini_res);
+		fprintf(stderr, "Error parsing config file (%s), on line %d\n", conf_path, ini_res);
     }
 
-	free(conf_dir);
+	free(conf_path);
     regfree(&color_regex);
 }

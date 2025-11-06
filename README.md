@@ -17,9 +17,10 @@ Q: What is an ENU?
 
 ## Configuration
 Create your config file at `XDG_CONFIG_HOME/swenu/conf.ini` or `HOME/.config/swenu/conf.ini`. 
-Example config file:
+Example config: (hex colors also supported!)
 ```ini
 fancy_scroll = false
+exit_on_focus_lost = true
 min_width = 500
 font_size = 16
 
@@ -44,7 +45,7 @@ cursor_color = (0.9, 0.9, 0.9, 0.5)
 - [x] "prompt"
 - [x] fuzzy filter
 - [x] config file
-- [ ] border, top padding in vertical and set exact height
+- [ ] border, top padding and set exact height
 - [ ] unicode + text shaping
 
 Stretch:

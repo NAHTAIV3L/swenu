@@ -9,6 +9,7 @@
 config_t config = {
 	// default config
 	.fancy_scroll = false,
+	.exit_on_focus_lost = true,
 	.min_width = 500,
 	.font_size = 16,
 	.text_color = {0.85, 0.85, 0.85, 1.0},
@@ -108,6 +109,8 @@ static int our_ini_handler(void* user, const char* section, const char* name, co
 	#define MATCH(s, n) strcmp(section, s) == 0 && strcmp(name, n) == 0
 	if (MATCH("", "fancy_scroll")) {
 		config->fancy_scroll = parse_bool(value);
+	} else if (MATCH("", "exit_on_focus_lost")) {
+		config->exit_on_focus_lost = parse_bool(value);
 	} else if (MATCH("", "min_width")) {
 		config->min_width = atoi(value);
 	} else if (MATCH("", "font_size")) {

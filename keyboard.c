@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <locale.h>
 
+#include "config.h"
 #include "state.h"
 #include "input_field.h"
 
@@ -67,9 +68,11 @@ void wl_keyboard_leave(void *data, struct wl_keyboard *wl_keyboard,
 					   uint32_t serial, struct wl_surface *surface) {
 	client_state *state = data;
 
-	// close on focus lost
-	state->running = false;
-	state->exit_code = EXIT_FAILURE;
+	// exit on focus lost
+	if (config.exit_on_focus_lost) {
+		state->running = false;
+		state->exit_code = EXIT_FAILURE;
+	}
 }
 
 void wl_keyboard_key(void *data, struct wl_keyboard *wl_keyboard,

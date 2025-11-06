@@ -10,6 +10,7 @@ typedef struct {
 
 typedef struct {
 	bool fancy_scroll;
+	bool exit_on_focus_lost;
 	uint32_t min_width;
 	uint32_t font_size;
 	color_t text_color;

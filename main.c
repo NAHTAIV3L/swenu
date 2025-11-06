@@ -115,9 +115,6 @@ int main(int argc, char* argv[]) {
 		wl_display_dispatch(state.display);
 	}
 
-	// leak 8 bytes of memory
-	malloc(8);
-
 	// cleanup (of course)
 	if (state.items) {
 		array_for_all(item_t, item, state.items) {

@@ -46,9 +46,10 @@ cursor_color = (0.9, 0.9, 0.9, 0.5)
 - [x] fuzzy filter
 - [x] config file
 - [ ] border, top padding and set exact height
-- [ ] unicode + text shaping
+- [ ] unicode + text shaping + display unrenderable characters as something
 
 Stretch:
 - [ ] clean up the code (src folder, rename some files)
 - [ ] input fluff (icons, descriptions, output names)
 - [ ] arguments to override config such as fancy scroll?
+- [ ] response history

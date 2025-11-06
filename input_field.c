@@ -13,7 +13,7 @@ int orderless_compare(const void *a, const void *b) {
 	return ((item_display_t*)a)->perc < ((item_display_t*)b)->perc;
 }
 
-void filter_items(client_state* state) {
+void refilter_items(client_state* state) {
 	if (!state->items) return;
 
 	// get null terminated input buffer
@@ -80,12 +80,12 @@ void filter_items(client_state* state) {
 }
 
 void update_text_buffer(client_state* state) {
-	filter_items(state);
+	refilter_items(state);
 	destroy_text_buffer(&state->input_buffer_grafix);
 	init_text_buffer(state, &state->input_buffer_grafix, state->input_buffer, array_size(state->input_buffer));
 }
 
-key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
+key_repeat_t execute_keypress(client_state* state, xkb_keysym_t keysym) {
 	bool ctrl = xkb_state_mod_name_is_active(state->xkb_state, XKB_MOD_NAME_CTRL, XKB_STATE_MODS_EFFECTIVE);
 	bool alt = xkb_state_mod_name_is_active(state->xkb_state, XKB_MOD_NAME_ALT, XKB_STATE_MODS_EFFECTIVE);
 
@@ -97,6 +97,7 @@ key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
 			case XKB_KEY_f: return forward_word(state);
 			case XKB_KEY_b: return backward_word(state);
 		}
+		return KEY_NO_REPEAT;
 	}
 	else if (ctrl) {
 		switch (keysym) {
@@ -107,8 +108,8 @@ key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
 			case XKB_KEY_n: return select_next(state);
 			case XKB_KEY_p: return select_previous(state);
 
-			case XKB_KEY_e: return goto_end(state);
 			case XKB_KEY_a: return goto_start(state);
+			case XKB_KEY_e: return goto_end(state);
 
 			case XKB_KEY_f: return forward_char(state);
 			case XKB_KEY_b: return backward_char(state);
@@ -121,6 +122,7 @@ key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
 			case XKB_KEY_BackSpace: return kill_to_start(state);
 			case XKB_KEY_Delete: return clear_input(state);
 		}
+		return KEY_NO_REPEAT;
 	}
 	else if (alt) {
 		switch (keysym) {
@@ -128,7 +130,10 @@ key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
 			case XKB_KEY_BackSpace: return delete_word_backward(state);
 			case XKB_KEY_f: return forward_word(state);
 			case XKB_KEY_b: return backward_word(state);
+			case XKB_KEY_less: return select_first(state);
+			case XKB_KEY_greater: return select_last(state);
 		}
+		return KEY_NO_REPEAT;
 	}
 	switch (keysym) {
 		case XKB_KEY_Tab: return insert_selected(state);
@@ -139,6 +144,10 @@ key_repeat_t type_key(client_state* state, xkb_keysym_t keysym) {
 		case XKB_KEY_BackSpace:
 		case XKB_KEY_Delete:
 			return delete_char_backward(state);
+		case XKB_KEY_Down: return select_next(state);
+		case XKB_KEY_Up: return select_previous(state);
+		case XKB_KEY_Left: return backward_char_or_select_previous(state);
+		case XKB_KEY_Right: return forward_char_or_select_next(state);
 	}
 
 	// type char into buffer

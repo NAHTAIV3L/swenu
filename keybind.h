@@ -15,8 +15,11 @@ key_repeat_t submit_line(client_state* state);
 // options
 key_repeat_t select_next(client_state* state);
 key_repeat_t select_previous(client_state* state);
-// select first
-// select last
+key_repeat_t select_first(client_state* state);
+key_repeat_t select_last(client_state* state);
+
+key_repeat_t forward_char_or_select_next(client_state* state);
+key_repeat_t backward_char_or_select_previous(client_state* state);
 
 // input
 key_repeat_t insert_selected(client_state* state);

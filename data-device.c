@@ -65,7 +65,7 @@ static void data_device_handle_selection(void *data,
 	// remove newlines
 	int i, j;
 	for (i = 0, j = 0; i < state->clipboard_size; i++) {
-		if (state->clipboard[i] != '\n' && state->clipboard[i] != '\r') {
+		if (state->clipboard[i] != '\n' && state->clipboard[i] != '\r' && state->clipboard[i] != '\t') {
 			state->clipboard[j++] = state->clipboard[i];
 		}
 	}

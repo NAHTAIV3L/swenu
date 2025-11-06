@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
 	array_for_all(item_t, item, state.items) {
 		init_text_buffer(&state, &item->text_buffer, item->text, strlen(item->text));
 	}
-	filter_items(&state);
+	refilter_items(&state);
 
 	// event loop
 	while (state.running) {
@@ -166,7 +166,12 @@ void poll_events(client_state* state) {
 			uint64_t repeats;
 			if (read(state->key_repeat_timer_fd, &repeats, sizeof(repeats)) == 8) {
 				for (uint64_t i = 0; i < repeats; i++) {
-					type_key(state, state->repeat_key);
+					if (execute_keypress(state, state->repeat_key) == KEY_NO_REPEAT) {
+						// stop key repeat if we shouldn't repeat anymore
+						struct itimerspec timer = {0};
+						timerfd_settime(state->key_repeat_timer_fd, 0, &timer, NULL);
+						break;
+					}
 				}
 				event = true;
 			}

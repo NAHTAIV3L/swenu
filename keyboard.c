@@ -81,7 +81,7 @@ void wl_keyboard_key(void *data, struct wl_keyboard *wl_keyboard,
 
 	if (key_state == WL_KEYBOARD_KEY_STATE_PRESSED) {
 		// if the key is one we should repeat
-		if (type_key(state, keysym)) {
+		if (execute_keypress(state, keysym) == KEY_REPEAT) {
 			// start repeat
 			state->repeat_key = keysym;
 			struct itimerspec timer = {0};

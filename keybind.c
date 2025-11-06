@@ -56,6 +56,24 @@ key_repeat_t select_previous(client_state* state) {
 	return KEY_REPEAT;
 }
 
+key_repeat_t select_first(client_state* state) {
+	if (state->selected_filtered_item != -1) {
+		state->selected_filtered_item = 0;
+		rect_t prompt, input, options;
+		calculate_layout(state, &prompt, &input, &options, true, false);
+	}
+	return KEY_NO_REPEAT;
+}
+
+key_repeat_t select_last(client_state* state) {
+	if (state->selected_filtered_item != -1) {
+		state->selected_filtered_item = array_size(state->filtered_items) - 1;
+		rect_t prompt, input, options;
+		calculate_layout(state, &prompt, &input, &options, true, false);
+	}
+	return KEY_NO_REPEAT;
+}
+
 key_repeat_t goto_end(client_state* state) {
 	state->cursor_index = array_size(state->input_buffer);
 	return KEY_NO_REPEAT;
@@ -64,6 +82,16 @@ key_repeat_t goto_end(client_state* state) {
 key_repeat_t goto_start(client_state* state) {
 	state->cursor_index = 0;
 	return KEY_NO_REPEAT;
+}
+
+key_repeat_t forward_char_or_select_next(client_state* state) {
+	if (state->cursor_index < array_size(state->input_buffer)) return forward_char(state);
+	else return select_next(state);
+}
+
+key_repeat_t backward_char_or_select_previous(client_state* state) {
+	if (state->cursor_index > 0) return backward_char(state);
+	else return select_previous(state);
 }
 
 key_repeat_t forward_char(client_state* state) {

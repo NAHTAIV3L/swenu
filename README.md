@@ -44,9 +44,10 @@ cursor_color = (0.9, 0.9, 0.9, 0.5)
 - [x] "prompt"
 - [x] fuzzy filter
 - [x] config file
-- [x] border
+- [ ] border, top padding in vertical and set exact height
 - [ ] unicode + text shaping
 
 Stretch:
 - [ ] clean up the code (src folder, rename some files)
 - [ ] input fluff (icons, descriptions, output names)
+- [ ] arguments to override config such as fancy scroll?

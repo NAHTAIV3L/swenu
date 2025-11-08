@@ -93,9 +93,6 @@ void atlas_init(client_state* state) {
 		metric->bearing_y = state->ft_face->glyph->bitmap_top;
 
 		state->atlas.vert_shift = MIN(state->atlas.vert_shift, (int32_t)metric->bearing_y - (int32_t)metric->bitmap_height);
-
-		// fprintf(stderr, "%c: advance: (%f, %f), bitmap: (%u, %u), bearing: (%d, %d), vert_shift: %d\n",
-		//  (char)i, metric->advance_x, metric->advance_y, metric->bitmap_width, metric->bitmap_height, metric->bearing_x, metric->bearing_y, state->atlas.vert_shift);
 	}
 }
 

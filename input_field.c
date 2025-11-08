@@ -66,12 +66,14 @@ void refilter_items(client_state* state) {
 		}
 	}
 
-	// select item
-	if (array_size(state->filtered_items) > 0) {
-		state->selected_filtered_item = 0;
-	}
-	else {
-		state->selected_filtered_item = -1;
+	// automatically select item
+	if (state->selected_filtered_item != -1 || state->forced_selected_zero) {
+		if (array_size(state->filtered_items) == 0) {
+			state->selected_filtered_item = -1;
+			state->forced_selected_zero = true;
+		} else {
+			state->selected_filtered_item = 0;
+		}
 	}
 
 	// update layout

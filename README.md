@@ -47,7 +47,7 @@ cursor_color = (0.9, 0.9, 0.9, 0.5)
 - [x] config file
 - [x] starting text
 - [x] if lines provided are less than specified, set lines to smallest possible amount
-- [ ] add ability to select the input field
+- [x] add ability to select the input field
 - [ ] fix prompt clipping issue
 - [ ] border, top padding and set exact height
 - [ ] unicode + text shaping + display unrenderable characters as something

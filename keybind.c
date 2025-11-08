@@ -39,7 +39,7 @@ key_repeat_t insert_selected(client_state* state) {
 }
 
 key_repeat_t select_next(client_state* state) {
-	if (state->selected_filtered_item != -1) {
+	if (state->selected_filtered_item + 1 < array_size(state->filtered_items)) {
 		state->selected_filtered_item = MIN(state->selected_filtered_item + 1, (int)array_size(state->filtered_items) - 1);
 		rect_t prompt, input, options;
 		calculate_layout(state, &prompt, &input, &options, true, false);
@@ -49,7 +49,8 @@ key_repeat_t select_next(client_state* state) {
 
 key_repeat_t select_previous(client_state* state) {
 	if (state->selected_filtered_item != -1) {
-		state->selected_filtered_item = MAX(state->selected_filtered_item - 1, 0);
+		state->selected_filtered_item = MAX(state->selected_filtered_item - 1, state->exact_match ? 0 : -1);
+		if (state->selected_filtered_item == -1) state->forced_selected_zero = false;
 		rect_t prompt, input, options;
 		calculate_layout(state, &prompt, &input, &options, true, false);
 	}
@@ -57,7 +58,7 @@ key_repeat_t select_previous(client_state* state) {
 }
 
 key_repeat_t select_first(client_state* state) {
-	if (state->selected_filtered_item != -1) {
+	if (array_size(state->filtered_items) > 0) {
 		state->selected_filtered_item = 0;
 		rect_t prompt, input, options;
 		calculate_layout(state, &prompt, &input, &options, true, false);
@@ -66,7 +67,7 @@ key_repeat_t select_first(client_state* state) {
 }
 
 key_repeat_t select_last(client_state* state) {
-	if (state->selected_filtered_item != -1) {
+	if (array_size(state->filtered_items) > 0) {
 		state->selected_filtered_item = array_size(state->filtered_items) - 1;
 		rect_t prompt, input, options;
 		calculate_layout(state, &prompt, &input, &options, true, false);

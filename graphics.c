@@ -181,6 +181,7 @@ void render_frame(client_state *state) {
 	rect_t prompt, input, options;
 	calculate_layout(state, &prompt, &input, &options, false, false);
 
+	// draw prompt
 	if (state->prompt && *state->prompt) {
 		glScissor(prompt.x, prompt.y, prompt.dx, prompt.dy);
 
@@ -203,6 +204,22 @@ void render_frame(client_state *state) {
 		glDrawElements(GL_TRIANGLES, state->prompt_text_buffer.num_elements, GL_UNSIGNED_INT, 0);
 	}
 
+	// calculate cursor size
+	float cursor_size = state->atlas.metrics['M'].bitmap_width;
+	if (state->cursor_index != array_size(state->input_buffer)) {
+		cursor_size = state->atlas.metrics[(int)state->input_buffer[state->cursor_index]].advance_x;
+	}
+
+	// draw selected input background
+	if (state->selected_filtered_item == -1 && !state->exact_match) {
+		glUseProgram(state->box_shader);
+		glUniform4f(state->b_color_uniform, config.highlight_color.r,config.highlight_color.g,config.highlight_color.b,config.highlight_color.a);
+		glUniform2f(state->b_screen_size_uniform, state->width, state->height);
+		glUniform2f(state->b_start_uniform, input.x, input.y);
+		glUniform2f(state->b_size_uniform, input.dx, input.dy);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+	}
+	
 	// draw input buffer
 	glUseProgram(state->text_shader);
 	glActiveTexture(GL_TEXTURE0);
@@ -214,11 +231,6 @@ void render_frame(client_state *state) {
 	glUniform2f(state->t_offset_uniform, input.x + state->horizontal_spacing / 2.0f, input.y - state->atlas.vert_shift);
 	glDrawElements(GL_TRIANGLES, state->input_buffer_grafix.num_elements, GL_UNSIGNED_INT, 0);
 
-	// calculate cursor size
-	float cursor_size = state->atlas.metrics['M'].bitmap_width;
-	if (state->cursor_index != array_size(state->input_buffer)) {
-		cursor_size = state->atlas.metrics[(int)state->input_buffer[state->cursor_index]].advance_x;
-	}
 	// draw cursor
 	glUseProgram(state->box_shader);
 	glUniform4f(state->b_color_uniform, config.cursor_color.r,config.cursor_color.g,config.cursor_color.b,config.cursor_color.a);
@@ -232,13 +244,13 @@ void render_frame(client_state *state) {
 
 	// draw highlighted option box
 	if (state->selected_filtered_item != -1) {
-		item_display_t* display = &state->filtered_items[state->selected_filtered_item];
+		rect_t rect = state->filtered_items[state->selected_filtered_item].r;
 
 		glUseProgram(state->box_shader);
 		glUniform4f(state->b_color_uniform, config.highlight_color.r,config.highlight_color.g,config.highlight_color.b,config.highlight_color.a);
 		glUniform2f(state->b_screen_size_uniform, state->width, state->height);
-		glUniform2f(state->b_start_uniform, display->r.x, display->r.y);
-		glUniform2f(state->b_size_uniform, display->r.dx, display->r.dy);
+		glUniform2f(state->b_start_uniform, rect.x, rect.y);
+		glUniform2f(state->b_size_uniform, rect.dx, rect.dy);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 

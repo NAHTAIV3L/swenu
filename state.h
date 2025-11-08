@@ -132,6 +132,7 @@ typedef struct {
 	uint32_t width, height;
 	item_display_t* filtered_items;
 	int selected_filtered_item;
+	bool forced_selected_zero;
 	char* input_buffer;
 	size_t cursor_index;
 

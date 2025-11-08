@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
 	char path[PATH_MAX];
 
 	char* dir = NULL;
-	for (dir = strtok(pathenv, ":"); (dir = strtok(NULL, ":"));) {
+	for (dir = strtok(pathenv, ":"); dir ;dir = strtok(NULL, ":")) {
 		DIR* dirfd = opendir(dir);
 		if (!dirfd) {
 			fprintf(stderr, "%s: %s\n", strerror(errno), dir);

@@ -4,7 +4,6 @@
 
 void calculate_layout(client_state* state, rect_t* prompt, rect_t* input, rect_t* options, bool recalc_options, bool recalc_pages) {
 	if (state->prompt && *state->prompt) {
-
 		*prompt = (rect_t){ .x = 0, .y = state->line_height * state->lines, .dx = state->prompt_text_buffer.pixel_len + state->horizontal_spacing, .dy = state->line_height };
 	}
 	else {
@@ -13,7 +12,7 @@ void calculate_layout(client_state* state, rect_t* prompt, rect_t* input, rect_t
 	// calculate input rect
 	*input = (rect_t){ .x = prompt->dx, .y = state->line_height * state->lines, .dx = state->width - prompt->dx, .dy = state->line_height };
 	if (state->lines == 0 && array_size(state->filtered_items) != 0) {
-		input->dx = state->width / 3.0f - input->x;
+		input->dx = state->width / 3.0f;
 	}
 
 	// calculate options rect

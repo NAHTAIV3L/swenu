@@ -211,6 +211,7 @@ void render_frame(client_state *state) {
 	}
 
 	// draw selected input background
+	glScissor(input.x, input.y, input.dx, input.dy);
 	if (state->selected_filtered_item == -1 && !state->exact_match) {
 		glUseProgram(state->box_shader);
 		glUniform4f(state->b_color_uniform, config.highlight_color.r,config.highlight_color.g,config.highlight_color.b,config.highlight_color.a);

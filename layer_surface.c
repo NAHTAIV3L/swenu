@@ -1,6 +1,8 @@
 #include "./state.h"
 #include "config.h"
 
+#include "font.h"
+
 struct zwlr_layer_surface_v1_listener layer_surface_listener;
 
 void create_surface(client_state* state) {
@@ -17,6 +19,9 @@ void create_surface(client_state* state) {
 	uint32_t desired_height = state->line_height;
 	if (state->center) {
 		desired_width = MAX(state->required_width, config.min_width);
+		if (!state->lines) {
+			desired_width += state->prompt ? atlas_get_strwidth(state, state->prompt) + state->horizontal_spacing : 0.0f;
+		}
 	}
 	if (state->lines) {
 		desired_height = (state->lines + 1) * state->line_height;

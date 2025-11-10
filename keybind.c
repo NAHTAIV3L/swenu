@@ -111,15 +111,13 @@ key_repeat_t backward_char(client_state* state) {
 
 key_repeat_t forward_word(client_state* state) {
 	if (state->cursor_index < array_size(state->input_buffer)) {
-		bool hit_white = false;
-		for (; state->cursor_index < array_size(state->input_buffer); state->cursor_index++) {
-			if (state->input_buffer[state->cursor_index] == ' ') {
-				hit_white = true;
-			} else if (hit_white) {
-				break;
-			}
-		}
-	}
+          for (; state->cursor_index < array_size(state->input_buffer) &&
+                 state->input_buffer[state->cursor_index] == ' ';
+               state->cursor_index++);
+          for (; state->cursor_index < array_size(state->input_buffer) &&
+                 state->input_buffer[state->cursor_index] != ' ';
+               state->cursor_index++);
+        }
 	return KEY_REPEAT;
 }
 

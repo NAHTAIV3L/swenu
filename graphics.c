@@ -216,8 +216,8 @@ void render_frame(client_state *state) {
 		glUseProgram(state->box_shader);
 		glUniform4f(state->b_color_uniform, config.highlight_color.r,config.highlight_color.g,config.highlight_color.b,config.highlight_color.a);
 		glUniform2f(state->b_screen_size_uniform, state->width, state->height);
-		glUniform2f(state->b_start_uniform, input.x, input.y);
-		glUniform2f(state->b_size_uniform, input.dx, input.dy);
+		glUniform2f(state->b_start_uniform, input.x + state->horizontal_spacing / 2.0f, input.y);
+		glUniform2f(state->b_size_uniform, state->input_buffer_grafix.pixel_len, input.dy);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
 	

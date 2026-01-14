@@ -48,7 +48,8 @@ cursor_color = (0.9, 0.9, 0.9, 0.5)
 - [x] starting text
 - [x] if lines provided are less than specified, set lines to smallest possible amount
 - [x] add ability to select the input field
-- [ ] fix prompt clipping issue
+- [x] fix prompt clipping issue (mostly)
+- [ ] cursor actually inverts text (and doesn't display transparent)
 - [ ] border, top padding and set exact height
 - [ ] unicode + text shaping + display unrenderable characters as something
 

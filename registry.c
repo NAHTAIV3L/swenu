@@ -27,7 +27,7 @@ void global(void *data, struct wl_registry *wl_registry, uint32_t name, const ch
 		state->seat = wl_registry_bind(wl_registry, name, &wl_seat_interface, 4);
 	}
 	else if (!strcmp(interface, zwlr_layer_shell_v1_interface.name)) {
-		state->layer_shell = wl_registry_bind(wl_registry, name, &zwlr_layer_shell_v1_interface, 5);
+		state->layer_shell = wl_registry_bind(wl_registry, name, &zwlr_layer_shell_v1_interface, 4);
 	}
 	else if (!strcmp(interface, wp_cursor_shape_manager_v1_interface.name)) {
 		state->cursor_shape_manager = wl_registry_bind( wl_registry, name, &wp_cursor_shape_manager_v1_interface, 1);

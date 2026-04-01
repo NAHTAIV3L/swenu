@@ -220,7 +220,7 @@ void render_frame(client_state *state) {
 		glUniform2f(state->b_size_uniform, state->input_buffer_grafix.pixel_len, input.dy);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
-	
+
 	// draw input buffer
 	glUseProgram(state->text_shader);
 	glActiveTexture(GL_TEXTURE0);

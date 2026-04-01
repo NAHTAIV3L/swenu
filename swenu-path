@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if [ "$1" ]; then
+	swenu-exes | sort -u | tee $cache
+fi
+
 cachedir="${XDG_CACHE_HOME:-"$HOME/.cache"}"
 cache="$cachedir/swenu-run"
 

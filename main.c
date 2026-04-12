@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
 	state.input_buffer = array_new(char, 0);
 	state.filtered_items = array_new(item_display_t, 0);
 	state.page_indices = array_new(size_t, 0);
-	state.strstr = strstr;
+	state.strstr2 = strstr;
 
 	// check locale
 	setlocale(LC_ALL, "");

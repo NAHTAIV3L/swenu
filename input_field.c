@@ -35,7 +35,7 @@ void refilter_items(client_state* state) {
 			float part = 0;
 			bool add = true;
 			array_for_all(char*, j, parts) {
-				if (state->strstr(i->text, *j)) {
+				if (state->strstr2(i->text, *j)) {
 					part += strlen(*j);
 				}
 				else {
@@ -57,7 +57,7 @@ void refilter_items(client_state* state) {
 	}
 	else {
 		array_for_all(item_t, i, state->items) {
-			if (state->strstr(i->text, input_buffer_string) != NULL) {
+			if (state->strstr2(i->text, input_buffer_string) != NULL) {
 				array_add(state->filtered_items, (item_display_t){ .item = i });
 			}
 		}
@@ -166,4 +166,3 @@ key_repeat_t execute_keypress(client_state* state, xkb_keysym_t keysym) {
 
 	return KEY_NO_REPEAT;
 }
-

@@ -121,7 +121,7 @@ typedef struct {
 	bool verbose;
 	bool password;
 	bool orderless;
-	char* (*strstr)(const char*, const char*);
+	char* (*strstr2)(const char*, const char*);
 
 	// input
 	item_t* items;

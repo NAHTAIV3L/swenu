@@ -46,7 +46,7 @@ void parse_args(client_state* state, int argc, char* argv[]) {
 				state->orderless = true;
 				break;
 			case 'i':
-				state->strstr = strcasestr;
+				state->strstr2 = strcasestr;
 				break;
 			case 's':
 				array_insert_many(state->input_buffer, 0, optarg, strlen(optarg));

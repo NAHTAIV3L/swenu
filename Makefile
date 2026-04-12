@@ -54,7 +54,7 @@ compile_flags:
 	echo $(CFLAGS) | tr ' ' '\n' > compile_flags.txt
 
 clean:
-	rm -rf $(BIN) $(OBJDIR)
+	rm -rf $(BIN) $(OBJDIR) swenu-exes
 
 install: all
 	install -m 755 ./$(BIN) $(PREFIX)/bin

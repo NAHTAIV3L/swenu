@@ -106,7 +106,7 @@ bool init_gl(client_state* state) {
 			return false;
 		}
 
-		if (state->verbose) {
+		if (state->verbose >= 1) { /*  */
 			fprintf(stderr, "EGL version %u.%u\n", major, minor);
 		}
 	}
@@ -139,7 +139,7 @@ bool init_gl(client_state* state) {
 		return false;
 	}
 
-	if (state->verbose) {
+	if (state->verbose >= 1) {
 		GLint major, minor;
 		glGetIntegerv(GL_MAJOR_VERSION, &major);
 		glGetIntegerv(GL_MINOR_VERSION, &minor);

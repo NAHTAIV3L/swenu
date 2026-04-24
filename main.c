@@ -46,19 +46,21 @@ int main(int argc, char* argv[]) {
 	state.filtered_items = array_new(item_display_t, 0);
 	state.page_indices = array_new(size_t, 0);
 	state.strstr2 = strstr;
+	if (!parse_args(&state, argc, argv)) {
+		return 1;
+	}
 
 	// check locale
 	setlocale(LC_ALL, "");
 	const char *encoding = nl_langinfo(CODESET);
 	if (strcmp(encoding, "UTF-8") != 0) {
 		fprintf(stderr, "Cannot continue because encoding (%s), is not UTF-8.", encoding);
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	// read input
 	init_conf();
 	read_stdin(&state);
-	parse_args(&state, argc, argv);
 
 	// find font
 	char* font = get_font("Monospace");
@@ -90,7 +92,7 @@ int main(int argc, char* argv[]) {
 	// set up graphics
 	if (!init_gl(&state)) {
 		fprintf(stderr, "Failed to Initalize EGL/OpenGL\n");
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	// create font altas textures

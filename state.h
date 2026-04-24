@@ -118,7 +118,7 @@ typedef struct {
 	char* prompt;
 	bool exact_match;
 	bool center;
-	bool verbose;
+	size_t verbose;
 	bool password;
 	bool orderless;
 	char* (*strstr2)(const char*, const char*);

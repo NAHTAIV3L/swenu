@@ -16,7 +16,7 @@ void setup_registry_and_globals(client_state* state) {
 void global(void *data, struct wl_registry *wl_registry, uint32_t name, const char *interface, uint32_t version) {
 	client_state* state = data;
 
-	if (state->verbose) {
+	if (state->verbose >= 2) {	/*  */
 		fprintf(stderr, "iface: %s v%d\n", interface, version);
 	}
 

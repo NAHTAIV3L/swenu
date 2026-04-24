@@ -3,6 +3,6 @@
 
 #include "state.h"
 
-void parse_args(client_state* state, int argc, char* argv[]);
+bool parse_args(client_state* state, int argc, char* argv[]);
 
 #endif

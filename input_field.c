@@ -95,7 +95,7 @@ key_repeat_t execute_keypress(client_state* state, xkb_keysym_t keysym) {
 		switch (keysym) {
 			case XKB_KEY_i: return insert_selected(state);
 			case XKB_KEY_d: return delete_word(state);
-			case XKB_KEY_BackSpace: return delete_word_backward(state);
+			case XKB_KEY_BackSpace: return kill_to_start(state);
 			case XKB_KEY_f: return forward_word(state);
 			case XKB_KEY_b: return backward_word(state);
 		}
@@ -121,7 +121,7 @@ key_repeat_t execute_keypress(client_state* state, xkb_keysym_t keysym) {
 
 			case XKB_KEY_v: return paste_from_clipboard(state);
 
-			case XKB_KEY_BackSpace: return kill_to_start(state);
+			case XKB_KEY_BackSpace: return delete_word_backward(state);
 			case XKB_KEY_Delete: return clear_input(state);
 		}
 		return KEY_NO_REPEAT;

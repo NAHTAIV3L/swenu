@@ -46,9 +46,6 @@ int main(int argc, char* argv[]) {
 	state.filtered_items = array_new(item_display_t, 0);
 	state.page_indices = array_new(size_t, 0);
 	state.strstr2 = strstr;
-	if (!parse_args(&state, argc, argv)) {
-		return 1;
-	}
 
 	// check locale
 	setlocale(LC_ALL, "");
@@ -61,6 +58,10 @@ int main(int argc, char* argv[]) {
 	// read input
 	init_conf();
 	read_stdin(&state);
+
+	if (!parse_args(&state, argc, argv)) {
+		return 1;
+	}
 
 	// find font
 	char* font = get_font("Monospace");

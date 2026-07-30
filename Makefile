@@ -57,10 +57,10 @@ clean:
 	rm -rf $(BIN) $(OBJDIR) swenu-exes
 
 install: all
-	install -Dm 755 ./$(BIN) $(DESTDIR)/$(PREFIX)/bin
-	install -Dm 755 ./swenu-run $(DESTDIR)/$(PREFIX)/bin
-	install -Dm 755 ./swenu-path $(DESTDIR)/$(PREFIX)/bin
-	install -Dm 755 ./swenu-exes $(DESTDIR)/$(PREFIX)/bin
+	install -Dm 755 ./$(BIN) -t $(DESTDIR)/$(PREFIX)/bin/
+	install -Dm 755 ./swenu-run -t $(DESTDIR)/$(PREFIX)/bin/
+	install -Dm 755 ./swenu-path -t $(DESTDIR)/$(PREFIX)/bin/
+	install -Dm 755 ./swenu-exes -t $(DESTDIR)/$(PREFIX)/bin/
 
 uninstall:
 	rm -f $(DESTDIR)/$(PREFIX)/bin/$(BIN)
